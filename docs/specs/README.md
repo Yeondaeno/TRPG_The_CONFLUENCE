@@ -18,6 +18,9 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
       │               │
       │               ▼
       │           05-scenario-data     시나리오 데이터화        ← 남음
+      │               │
+      │               ▼
+      │           07-gm-assistant      사람 GM 권위형 보조 엔진  ← 설계 완료
       ▼
   06-crafting-and-builder   즉석 조합 · 캐릭터 빌더            ← 남음
 ```
@@ -29,6 +32,10 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 05는 04 뒤에 해야 합니다 — 둘 다 `tools/build.mjs`를 만지고, 05가 시나리오를
 인라인할 때 04의 secret 필터를 우회하면 안 되기 때문입니다.
 06은 02에만 의존하므로 04·05와 **병렬로 진행해도 됩니다**(소유 파일이 겹치지 않습니다).
+
+07은 [사람 GM 권위형 보조 엔진](07-gm-assistant.md)입니다. 자유 행동 판정 보조는
+02만으로 구현할 수 있고, 시간·잔향 곡선·단서·NPC 기반 진행 제안은 05 완료 후
+활성화합니다. 엔진은 제안만 만들며 게임 상태는 사람 GM 승인 뒤에만 변경합니다.
 
 **01이 반드시 먼저입니다.** 01은 `rules.js`와 `net.js`를 *빈 껍데기로 생성하고
 `app.js`에서 호출까지 연결*합니다. 그래야 02와 03이 서로 다른 파일만 만지면서
@@ -44,6 +51,7 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 | 04 | `tools/build.mjs`, `web/template.html`, `web/src/data.js`, `web/src/net.js`, `web/src/ui-net.js` |
 | 05 | `data/scenarios/**`, `web/src/ui-scenario.js`, `tools/build.mjs`, `tools/audit.mjs` |
 | 06 | `web/src/ui-craft.js`, `web/src/ui-builder.js`, `web/src/rules.js`(추가만), `tools/verify-craft.mjs` |
+| 07 | `data/gm-assistant.json`, `web/src/gm-assistant.js`, `web/src/ui-gm-assistant.js`, 별도 검증 파일 |
 
 02와 03은 **`app.js`·`ui.js`·`store.js`를 수정하지 않습니다.** 01이 미리
 호출 지점을 만들어 두기 때문입니다. 만약 수정이 꼭 필요하다고 판단되면
