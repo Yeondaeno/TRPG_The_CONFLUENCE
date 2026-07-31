@@ -36,6 +36,8 @@ data/              ← 정본(single source of truth)
   rules.json       DC표, 4단계 결과, 무기, 위상잔향, 여파화 표, 조합, 구역
   characters.json  사전 제작 캐릭터 16종
   monsters.json    몬스터/NPC 스탯
+  scenarios/
+    station-0.json 시나리오 「역참-0」 — Act·씬·NPC·잔향 곡선
 web/
   index.html       세션 웹도구 — 전원에게 배포. 비밀 없음
   secrets.json     16명의 비밀만 — GM에게만. 빌드가 자동 생성 (명세 04)
@@ -46,6 +48,7 @@ tools/
   audit.mjs        데이터 정합성 검사기
   test.mjs         판정 엔진 단위 테스트
   verify-ui.mjs    브라우저 검증
+  verify-craft.mjs 조합·빌더 브라우저 검증
 assets/original/   원본 docx / html — 변경하지 않고 보존
 ```
 
@@ -59,7 +62,8 @@ node tools/audit.mjs
 ```
 
 `data/*.json`을 룰북 규칙과 대조해 어긋난 부분을 보고합니다.
-현재 37건이 나오며, 전부 [`docs/errata.md`](docs/errata.md)에 배경과 선택지를 정리해 두었습니다.
+현재 R-* 37건(원본 자료) + S-* 2건(시나리오)이 나오며,
+R-*는 전부 [`docs/errata.md`](docs/errata.md)에 배경과 선택지를 정리해 두었습니다.
 **원본 수치는 하나도 고치지 않았습니다** — 어떤 값이 맞는지는 디자이너가 정할 문제라서,
 도구는 "어긋나 있다"까지만 말합니다.
 
@@ -72,6 +76,10 @@ node tools/audit.mjs
 - **판정** — 기술과 DC를 고르면 능력치·숙련·부상·잔향 보정을 자동 합산하고
   룰북 1.4의 4단계 결과를 판정합니다. 8인 그룹 판정도 여기서 집계합니다
 - **전투** — 선제권 트래커, 몬스터 스탯
+- **시나리오 진행** (GM 전용) — Act·씬 목록과 목표 시간, 지연 경고,
+  **씬의 NPC를 트래커에 한 번에 투입**, 잔향 곡선 대비 파티 평균
+- **즉석 조합** — 룰북 4.2 레시피 5종. 결정편 자동 차감, 위상 필터 사용까지
+- **캐릭터 빌더** — 부록 A로 17번째 캐릭터 생성
 - **P2P 동기화** — GM이 방을 열고 나머지가 방 코드로 붙습니다
   ([ADR-001](docs/adr/001-p2p-sync.md))
 - **비밀 분리 빌드** — 사전 제작 캐릭터의 secret은 `web/index.html`(전원 배포)에는
@@ -88,8 +96,9 @@ node tools/audit.mjs
 ```bash
 npm install
 npm run build       # web/src/* + data/*.json → web/index.html + web/secrets.json
-npm run verify      # build + 단위 테스트 + 데이터 정합성 검사
-npm run verify:ui   # 브라우저 검증
+npm run verify        # build + 단위 테스트 + 데이터 정합성 검사
+npm run verify:ui     # 브라우저 검증
+npm run verify:craft  # 조합·빌더 브라우저 검증
 ```
 
 `npm run build`는 `web/index.html`(전원 배포, 비밀 없음)과 `web/secrets.json`
@@ -98,12 +107,17 @@ npm run verify:ui   # 브라우저 검증
 
 ## 아직 없는 것
 
-- 즉석 조합 UI (룰북 4.2)
-- 캐릭터 빌더 (부록 A)
-- 시나리오 NPC를 `data/`로 이식 ([명세 05](docs/specs/05-scenario-data.md))
+룰북의 규칙은 전부 도구에 들어갔습니다. 남은 것은 다듬는 일입니다.
 
-`docs/errata.md`의 37건은 **의도적으로 미해결**입니다. 어떤 값이 정본인지는
+- 빌더로 만든 캐릭터가 **새로고침하면 사라집니다** — 세션 중에는 정상
+  동작하지만 영속 계층에 올라가지 않습니다
+- 자유 굴림기와 판정기가 결과 박스를 공유해 헷갈립니다
+- 실제 NAT 통과 검증 — 서로 다른 네트워크의 사람 둘이 필요합니다
+  ([ADR-001의 대가](docs/adr/001-p2p-sync.md#감수하는-대가))
+
+`docs/errata.md`의 37건(R-*)은 **의도적으로 미해결**입니다. 어떤 값이 정본인지는
 디자이너가 정할 문제라, 검사기는 어긋난 지점만 보고합니다.
+시나리오 검사(S-*) 2건도 같은 성격입니다.
 
 ## 라이선스
 
