@@ -208,5 +208,6 @@ const Net = (() => {
 - [ ] 다른 사람 캐릭터의 비밀이 보이지 않음
 - [ ] 기존 기능(캐릭터시트·주사위·선제권·로그·타이머)이 전부 그대로 동작
 
-브라우저 확인은 Playwright(`/opt/pw-browsers/chromium`)로 하세요.
-`playwright install`은 절대 실행하지 마세요 — 이미 설치되어 있습니다.
+브라우저 확인은 `npm install && npm run verify:ui`로 하세요.
+브라우저 바이너리는 `/opt/pw-browsers`에 선설치되어 있으니
+**`npx playwright install`은 실행하지 마세요.**

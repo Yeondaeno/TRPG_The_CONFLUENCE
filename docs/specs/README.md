@@ -39,13 +39,26 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 3. **`data/*.json`이 정본입니다.** 규칙 수치를 코드에 하드코딩하지 마세요.
    DC표·무기·잔향 임계치·여파화 표는 전부 `rules.json`에 있습니다.
 4. 한국어 UI, 기존 디자인 토큰(`--rust`, `--amber`, `--paper` 등) 유지.
-5. **의존성을 추가하지 마세요.** 예외는 03의 PeerJS 하나이며 벤더링합니다.
-   빌드·테스트는 Node 표준 라이브러리(`node:test`, `node:fs`)만 씁니다.
-6. 작업 후 `node tools/build.mjs && node tools/test.mjs && node tools/audit.mjs`가
-   전부 통과해야 합니다.
+5. **런타임 의존성을 추가하지 마세요.** 빌드·테스트는 Node 표준 라이브러리
+   (`node:test`, `node:fs`)만 씁니다. 허용된 예외는 둘뿐입니다.
+   - 03의 **PeerJS** — `web/vendor/`에 벤더링해 빌드 시 인라인 (배포물은 외부 요청 0개)
+   - **playwright** — 브라우저 검증용 devDependency. 배포물에 들어가지 않습니다.
+6. 작업 후 `npm run verify`와 `npm run verify:ui`가 전부 통과해야 합니다.
 
 ## 검수 기준
 
 명세마다 "완료 조건"이 있습니다. 체크박스를 스스로 만족했다고 선언하지 말고,
-**실제로 실행해서 확인한 결과**를 보고하세요. 브라우저가 필요한 항목은
-Playwright(`/opt/pw-browsers/chromium`, 이미 설치됨)로 확인할 수 있습니다.
+**실제로 실행해서 확인한 결과**를 보고하세요.
+
+```bash
+npm install          # playwright (devDependency). 브라우저는 이미 있으므로 재다운로드 안 함
+npm run verify       # build + test + audit
+npm run verify:ui    # build + 브라우저 검증 (tools/verify-ui.mjs)
+```
+
+브라우저 바이너리는 `/opt/pw-browsers`에 이미 있고 `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`이
+설정되어 있습니다 — **`npx playwright install`을 실행하지 마세요.** 다만 `playwright`
+**패키지 자체는** `npm install`로 받아야 합니다(브라우저만 선설치되어 있습니다).
+
+`tools/verify-ui.mjs`에 검사를 덧붙이세요. "구현했다"가 아니라 "실행해서 확인했다"를
+남기는 것이 목적입니다.

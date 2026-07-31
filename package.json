@@ -1,0 +1,16 @@
+{
+  "name": "hapgyeong",
+  "version": "0.1.0",
+  "description": "합경 (合境 · CONFLUENCE) — 차원 융합 어반판타지 TRPG",
+  "private": true,
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "test": "node tools/test.mjs",
+    "audit": "node tools/audit.mjs",
+    "verify": "node tools/build.mjs && node tools/test.mjs && node tools/audit.mjs",
+    "verify:ui": "node tools/build.mjs && node tools/verify-ui.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.1"
+  }
+}

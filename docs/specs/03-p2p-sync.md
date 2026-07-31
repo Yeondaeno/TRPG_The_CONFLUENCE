@@ -151,8 +151,12 @@ GM이 상태를 내보내 다른 사람에게 넘기면 그 사람이 새 허브
 
 ## 7. 테스트
 
-브라우저 두 개(또는 Playwright 컨텍스트 두 개)를 띄워 확인하세요.
-`playwright install`은 실행하지 마세요 — `/opt/pw-browsers/chromium`에 이미 있습니다.
+브라우저 두 개(또는 Playwright 컨텍스트 두 개)를 띄워 확인하고, 검사를
+`tools/verify-ui.mjs`에 덧붙이세요. 브라우저 바이너리는 `/opt/pw-browsers`에
+선설치되어 있으니 **`npx playwright install`은 실행하지 마세요.**
+
+주의: 브라우저 컨텍스트가 다르면 localStorage도 분리됩니다. 같은 방을 공유하는
+검사는 그 점을 감안해 설계하세요.
 
 같은 머신의 두 탭은 STUN 없이도 붙으므로 **프로토콜 검증에는 충분하지만
 NAT 통과를 검증하지는 못합니다.** 그 한계를 보고서에 명시하세요.
