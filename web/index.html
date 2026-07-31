@@ -1399,6 +1399,13 @@ const UI = (() => {
     panel1.appendChild(grid);
     c.appendChild(panel1);
 
+    // 배선: 명세 06(ui-builder.js)이 여기에 부록 A 캐릭터 빌더를 채운다.
+    // "16명 중에 고르거나, 직접 만들거나"가 한 화면에 있어야 한다.
+    const builderSlot = document.createElement('div');
+    builderSlot.id = 'builder-slot';
+    UIBuilder.render(builderSlot, ctx);
+    c.appendChild(builderSlot);
+
     let selectedChar = ctx.selectedChar;
     if (!selectedChar) {
       const mineChar = Object.keys(ROOM.claims).find((n) => ROOM.claims[n] === PLAYER_NAME);
@@ -1496,6 +1503,14 @@ const UI = (() => {
     const statusSel = panel2.querySelector('#f-status');
     if (statusSel) statusSel.onchange = save;
     if (notesArea) notesArea.onchange = save;
+
+    // 배선: 명세 06(ui-craft.js)이 여기에 즉석 조합 UI를 채운다.
+    // 조합은 이 캐릭터의 결정편을 쓰는 행동이라 시트 바로 아래가 맞다 —
+    // 별도 탭이면 "누구의 결정편인지"를 다시 고르게 된다.
+    const craftSlot = document.createElement('div');
+    craftSlot.id = 'craft-slot';
+    UICraft.render(craftSlot, { ...ctx, selectedCharDef: p, selectedCharState: cs });
+    c.appendChild(craftSlot);
   }
 
   function renderDice(c, ctx) {
@@ -1586,6 +1601,16 @@ const UI = (() => {
     gmNetSlot.id = 'gm-net-slot';
     UINet.render(gmNetSlot, ctx);
     claimPanel.appendChild(gmNetSlot);
+
+    // 배선: 명세 05(ui-scenario.js)가 시나리오 진행 UI를 여기 채운다.
+    // GM 대시보드 탭 안이라 플레이어에게는 애초에 렌더되지 않는다 —
+    // 명세 05가 따로 GM 여부를 검사할 필요가 없다.
+    // 이니셔티브 트래커 바로 위에 두는 이유: 씬의 NPC를 트래커로 투입하는
+    // 것이 이 화면의 핵심 동작이라 둘이 붙어 있어야 한다.
+    const scenarioSlot = document.createElement('div');
+    scenarioSlot.id = 'scenario-slot';
+    UIScenario.render(scenarioSlot, ctx);
+    c.appendChild(scenarioSlot);
 
     // Initiative tracker
     const initPanel = el(`<div class="panel"><h3>이니셔티브 트래커 — 라운드 <span class="mono" id="round-num">${ROOM.round || 1}</span></h3></div>`);
@@ -2700,6 +2725,84 @@ const UINet = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = UINet;
+
+
+// ==== web/src/ui-scenario.js ====
+// web/src/ui-scenario.js — 시나리오 진행 UI 껍데기
+//
+// 내용은 docs/specs/05-scenario-data.md(명세 05) 담당이며, 그 문서가 이
+// 파일과 data/scenarios/** 의 유일한 소유자다.
+//
+// 배선: ui.js 의 renderGM() 이 #scenario-slot 을 만들고 이 render() 를
+// 호출한다. GM 대시보드 탭 안이므로 **플레이어에게는 애초에 안 보인다** —
+// 명세 05 가 따로 GM 여부를 검사할 필요가 없다는 뜻이다.
+//
+// 지금은 아무것도 그리지 않으므로 GM 대시보드는 종전과 똑같이 보인다.
+const UIScenario = (() => {
+  // ctx: { ROOM, PLAYER_NAME, RULES, PREGENS, MONSTERS, SCENARIOS, isGM, actions }
+  //   actions.withRoom / addLog / render 는 ui.js 가 넘겨주는 것과 동일하다.
+  //   선제권 트래커에 NPC를 투입하려면 state.initiative 에 push 하면 된다
+  //   (형식은 ui.js 의 renderGM 안 '전투 참가자 추가' 참고).
+  function render(container, ctx) {
+    if (!ctx || !ctx.ROOM) return;
+    // 명세 05 가 채운다.
+  }
+
+  return { render };
+})();
+
+if (typeof module !== 'undefined') module.exports = UIScenario;
+
+
+// ==== web/src/ui-craft.js ====
+// web/src/ui-craft.js — 즉석 조합 UI 껍데기 (룰북 4.2)
+//
+// 내용은 docs/specs/06-crafting-and-builder.md(명세 06) 담당.
+//
+// 배선: ui.js 의 renderChar() 가 선택된 캐릭터 시트 **아래**에
+// #craft-slot 을 만들고 이 render() 를 호출한다. 조합은 그 캐릭터의
+// 결정편을 쓰는 행동이라 시트 옆에 두는 게 맞다 — 별도 탭을 만들면
+// "누구의 결정편인지"를 다시 고르게 된다.
+//
+// ctx.selectedCharDef / ctx.selectedCharState 로 대상 캐릭터가 넘어온다.
+// 판정은 새로 짜지 말고 Rules.resolve / Rules.modifiers(char, 'tinker') 를
+// 재사용할 것 (명세 02 가 이미 만들어 둔 엔진).
+const UICraft = (() => {
+  function render(container, ctx) {
+    if (!ctx || !ctx.selectedCharDef) return;
+    // 명세 06 이 채운다.
+  }
+
+  return { render };
+})();
+
+if (typeof module !== 'undefined') module.exports = UICraft;
+
+
+// ==== web/src/ui-builder.js ====
+// web/src/ui-builder.js — 캐릭터 빌더 UI 껍데기 (룰북 부록 A)
+//
+// 내용은 docs/specs/06-crafting-and-builder.md(명세 06) 담당.
+//
+// 배선: ui.js 의 renderChar() 가 캐릭터 선택 그리드 **아래**에
+// #builder-slot 을 만들고 이 render() 를 호출한다. "16명 중에 고르거나,
+// 직접 만들거나"가 한 화면에 있어야 17번째 플레이어가 헤매지 않는다.
+//
+// 규칙 수치는 RULES.characterCreation 에 있다(능력치 배열, HP/AC 공식,
+// 시작 결정편). 하드코딩하지 말 것.
+//
+// 주의: 부록 A 로 만든 캐릭터는 사전 제작 16명보다 HP 가 낮다
+// (docs/errata.md R-2). 데이터를 고쳐 맞추지 말고 화면에 그 사실을 알릴 것.
+const UIBuilder = (() => {
+  function render(container, ctx) {
+    if (!ctx || !ctx.RULES) return;
+    // 명세 06 이 채운다.
+  }
+
+  return { render };
+})();
+
+if (typeof module !== 'undefined') module.exports = UIBuilder;
 
 
 // ==== web/src/app.js ====

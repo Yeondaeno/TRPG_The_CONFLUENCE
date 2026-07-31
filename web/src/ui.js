@@ -146,6 +146,13 @@ const UI = (() => {
     panel1.appendChild(grid);
     c.appendChild(panel1);
 
+    // 배선: 명세 06(ui-builder.js)이 여기에 부록 A 캐릭터 빌더를 채운다.
+    // "16명 중에 고르거나, 직접 만들거나"가 한 화면에 있어야 한다.
+    const builderSlot = document.createElement('div');
+    builderSlot.id = 'builder-slot';
+    UIBuilder.render(builderSlot, ctx);
+    c.appendChild(builderSlot);
+
     let selectedChar = ctx.selectedChar;
     if (!selectedChar) {
       const mineChar = Object.keys(ROOM.claims).find((n) => ROOM.claims[n] === PLAYER_NAME);
@@ -243,6 +250,14 @@ const UI = (() => {
     const statusSel = panel2.querySelector('#f-status');
     if (statusSel) statusSel.onchange = save;
     if (notesArea) notesArea.onchange = save;
+
+    // 배선: 명세 06(ui-craft.js)이 여기에 즉석 조합 UI를 채운다.
+    // 조합은 이 캐릭터의 결정편을 쓰는 행동이라 시트 바로 아래가 맞다 —
+    // 별도 탭이면 "누구의 결정편인지"를 다시 고르게 된다.
+    const craftSlot = document.createElement('div');
+    craftSlot.id = 'craft-slot';
+    UICraft.render(craftSlot, { ...ctx, selectedCharDef: p, selectedCharState: cs });
+    c.appendChild(craftSlot);
   }
 
   function renderDice(c, ctx) {
@@ -333,6 +348,16 @@ const UI = (() => {
     gmNetSlot.id = 'gm-net-slot';
     UINet.render(gmNetSlot, ctx);
     claimPanel.appendChild(gmNetSlot);
+
+    // 배선: 명세 05(ui-scenario.js)가 시나리오 진행 UI를 여기 채운다.
+    // GM 대시보드 탭 안이라 플레이어에게는 애초에 렌더되지 않는다 —
+    // 명세 05가 따로 GM 여부를 검사할 필요가 없다.
+    // 이니셔티브 트래커 바로 위에 두는 이유: 씬의 NPC를 트래커로 투입하는
+    // 것이 이 화면의 핵심 동작이라 둘이 붙어 있어야 한다.
+    const scenarioSlot = document.createElement('div');
+    scenarioSlot.id = 'scenario-slot';
+    UIScenario.render(scenarioSlot, ctx);
+    c.appendChild(scenarioSlot);
 
     // Initiative tracker
     const initPanel = el(`<div class="panel"><h3>이니셔티브 트래커 — 라운드 <span class="mono" id="round-num">${ROOM.round || 1}</span></h3></div>`);

@@ -31,6 +31,9 @@ const SCRIPT_ORDER = [
   'ui.js',
   'ui-check.js',
   'ui-net.js',
+  'ui-scenario.js',
+  'ui-craft.js',
+  'ui-builder.js',
   'app.js',
 ];
 

@@ -16,11 +16,20 @@
 룰북에는 있는데 도구에는 없는 마지막 두 규칙입니다. 둘 다 독립적이라
 따로 진행해도 되고 순서도 상관없습니다.
 
-> **배선은 이미 되어 있습니다.** 탭 버튼(`data-tab="craft"`, `data-tab="builder"`)과
-> 렌더 슬롯(`#craft-slot`, `#builder-slot`)이 `template.html`·`app.js`에 미리
-> 만들어져 있고, `app.js`가 `UiCraft.render()` / `UiBuilder.render()`를 호출합니다.
+> **배선은 이미 되어 있습니다 — 다만 탭이 아니라 슬롯입니다.**
+> 탭을 3개 더 늘리는 대신, 각 기능이 이미 맥락을 갖는 자리에 넣었습니다.
+>
+> | 모듈 | 렌더 위치 | 슬롯 |
+> |---|---|---|
+> | `ui-craft.js` → `UICraft.render(el, ctx)` | **캐릭터시트 탭** — 선택된 시트 바로 아래 | `#craft-slot` |
+> | `ui-builder.js` → `UIBuilder.render(el, ctx)` | **캐릭터시트 탭** — 16종 선택 그리드 아래 | `#builder-slot` |
+>
+> 조합을 시트 옆에 둔 이유: 조합은 그 캐릭터의 결정편을 쓰는 행동이라,
+> 별도 탭이면 "누구의 결정편인지"를 다시 고르게 됩니다. `ctx.selectedCharDef`와
+> `ctx.selectedCharState`로 대상 캐릭터가 이미 넘어옵니다.
+>
 > **`template.html`·`app.js`·`ui.js`를 수정하지 마세요** — 파일 내용만 채우면
-> 즉시 살아납니다. 슬롯이 없다면 작업을 멈추고 보고하세요(배선이 누락된 것입니다).
+> 즉시 살아납니다. 슬롯이 없다면 멈추고 보고하세요(배선이 누락된 것입니다).
 
 ---
 
