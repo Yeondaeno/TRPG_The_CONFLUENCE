@@ -49,6 +49,7 @@ tools/
   test.mjs         판정 엔진 단위 테스트
   verify-ui.mjs    브라우저 검증
   verify-craft.mjs 조합·빌더 브라우저 검증
+  demo-session.mjs 시연 영상 녹화 (npm run demo)
 assets/original/   원본 docx / html — 변경하지 않고 보존
 ```
 
@@ -99,7 +100,12 @@ npm run build       # web/src/* + data/*.json → web/index.html + web/secrets.j
 npm run verify        # build + 단위 테스트 + 데이터 정합성 검사
 npm run verify:ui     # 브라우저 검증
 npm run verify:craft  # 조합·빌더 브라우저 검증
+npm run demo          # 시나리오 오프닝을 실제로 굴려 영상으로 녹화 (약 2분)
 ```
+
+`npm run demo`는 검증이 아니라 **시연**입니다 — 도구가 세션에서 실제로 어떻게
+쓰이는지 자막과 함께 보여줍니다. 새 GM에게 설명하거나, 화면 배치를 바꾼 뒤
+흐름이 여전히 자연스러운지 눈으로 확인할 때 쓰세요.
 
 `npm run build`는 `web/index.html`(전원 배포, 비밀 없음)과 `web/secrets.json`
 (GM 전용, 배포 산출물이 아님)을 함께 만들고, 산출물에 비밀 문자열이 하나라도
