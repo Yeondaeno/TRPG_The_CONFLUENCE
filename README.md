@@ -90,7 +90,7 @@ npm run verify:ui   # 브라우저 검증
 - **비밀 분리 빌드** — 위 경고 참고. 가장 시급합니다 ([명세 04](docs/specs/04-secret-split.md))
 - 즉석 조합 UI (룰북 4.2)
 - 캐릭터 빌더 (부록 A)
-- 시나리오 NPC를 `data/`로 이식 ([roadmap 6단계](docs/roadmap.md#6단계--콘텐츠))
+- 시나리오 NPC를 `data/`로 이식 ([명세 05](docs/specs/05-scenario-data.md))
 
 `docs/errata.md`의 37건은 **의도적으로 미해결**입니다. 어떤 값이 정본인지는
 디자이너가 정할 문제라, 검사기는 어긋난 지점만 보고합니다.
