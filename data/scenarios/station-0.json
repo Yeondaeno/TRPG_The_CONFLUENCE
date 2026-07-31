@@ -1,0 +1,113 @@
+{
+  "id": "station-0",
+  "title": "역참-0",
+  "logline": "차원을 잇던 옛 역참이 수십 년 만에 눈을 떠 \"정상 운행 재개\"를 선언한다 — 뒤섞인 도시를 원래 세계로 '반송'하기 전에, 표를 받은 여덟 명이 자정의 개찰구를 넘는다.",
+  "targetMinutes": 210,
+  "source": "docs/scenario-station-0.md",
+  "districts": ["교환장", "강선지구", "심야회랑", "무영가"],
+  "acts": [
+    {
+      "id": "act0",
+      "title": "오프닝",
+      "minutes": 20,
+      "scenes": [
+        { "id": "0", "title": "표가 도착한 밤 (교환장)", "minutes": 20, "resonance": "1d6" }
+      ]
+    },
+    {
+      "id": "act1",
+      "title": "조사",
+      "minutes": 55,
+      "scenes": [
+        {
+          "id": "1-1", "title": "사라진 사람들", "minutes": 15, "resonance": "1d6", "optional": true,
+          "npcs": [ { "name": "여파에 물든 시민", "count": 1, "note": "반쯤 여파화된 노점상 — 목격자, 반드시 적대적이지는 않음" } ]
+        },
+        {
+          "id": "1-2", "title": "세 갈래 조사 (분기)", "minutes": 25, "resonance": "A조 1d6 / B·C조 2d6",
+          "branches": [
+            {
+              "id": "1-2A", "title": "선환그룹 지사", "district": "강선지구",
+              "npcs": [
+                { "name": "결함 드론 (다수)", "count": 4, "note": "잠입 실패 시 경보 전투" },
+                { "name": "수금원 '창'", "count": 1, "note": "돌발 — 미행하던 도경의 감시자" }
+              ]
+            },
+            { "id": "1-2B", "title": "흔적 서가", "district": "심야회랑" },
+            {
+              "id": "1-2C", "title": "옛 개찰구 골목", "district": "무영가",
+              "npcs": [ { "name": "여파에 물든 시민", "count": 1, "note": "실종된 등불 장인의 아들 — 설득/치유로 아군화 가능" } ]
+            }
+          ]
+        },
+        { "id": "1-3", "title": "자정의 개찰구", "minutes": 15, "resonance": "2d6" }
+      ]
+    },
+    {
+      "id": "act2",
+      "title": "역참 진입",
+      "minutes": 70,
+      "scenes": [
+        {
+          "id": "2-1", "title": "검표", "minutes": 15, "resonance": "2d6",
+          "npcs": [
+            { "name": "개찰기 7호", "count": 1 },
+            { "name": "결함 드론 (다수)", "count": 4 }
+          ]
+        },
+        {
+          "id": "2-2", "title": "승강장 — 경비와 차장", "minutes": 20, "resonance": "2d6", "optional": true,
+          "npcs": [
+            { "name": "무경 (선환 경비대장)", "count": 1 },
+            { "name": "헌터 길드 정찰병", "count": 2, "instanceNames": ["마르코", "단"] },
+            { "name": "결함 드론 (다수)", "count": 4 },
+            { "name": "탈선한 차장", "count": 1 }
+          ]
+        },
+        {
+          "id": "2-3", "title": "대합실 (분기 가능)", "minutes": 20, "resonance": "2d6",
+          "npcs": [
+            { "name": "여파에 물든 시민", "count": 1, "note": "치유술로 각성시킨 승객이 폭주하는 경우" },
+            { "name": "결함 드론 (다수)", "count": 2, "note": "좌석 결계 강제 해제 실패 시 출현" }
+          ]
+        },
+        { "id": "2-4", "title": "정차 시간 — 휴식과 여파화", "minutes": 15, "resonance": "1d6" }
+      ]
+    },
+    {
+      "id": "act3",
+      "title": "관제실",
+      "minutes": 45,
+      "scenes": [
+        {
+          "id": "3-1", "title": "관제실 진입", "minutes": 10, "resonance": "2d6~3d6 (다이얼)",
+          "npcs": [ { "name": "차은성 (발굴 책임자)", "count": 1 } ]
+        },
+        {
+          "id": "3-2", "title": "길잡이 — 발차까지 6", "minutes": 35, "resonance": "피격·펄스마다 1d6",
+          "npcs": [ { "name": "역참 인격체 코어 '길잡이'", "count": 1 } ]
+        }
+      ]
+    },
+    {
+      "id": "epilogue",
+      "title": "에필로그",
+      "minutes": 20,
+      "scenes": [
+        { "id": "epilogue", "title": "결말 정산 + 개인 에필로그", "minutes": 20 }
+      ]
+    }
+  ],
+  "npcs": [
+    { "name": "개찰기 7호", "hp": 20, "ac": 14, "atk": "d20+4, 1d8 (구속 사슬)", "note": "기계 — 설득 불가. 규정의 허점(지식)·결계 해석에 취약. 파괴 시 경보 + 드론 호출" },
+    { "name": "탈선한 차장", "hp": 26, "ac": 13, "atk": "d20+4, 1d8 (위상 갈고리, 명중 시 잔향 +2)", "note": "퇴마술 성공 시 1라운드 정지, DC 15 정화 2회 성공으로 비전투 해소. 융합 그날의 기억 보유" },
+    { "name": "무경 (선환 경비대장)", "hp": 22, "ac": 14, "atk": "d20+4, 2d6 (결계 산탄포, 근거리)", "note": "무경이 물러나면 경비 전원 철수. '재해 시 철수' 조항이 설득의 급소" },
+    { "name": "수금원 '창'", "hp": 14, "ac": 12, "atk": "d20+3, 1d6 (결정탄)", "note": "돈이 최우선 — 결정편 5개 또는 채무 정보로 매수 가능. 전투보다 도주를 택한다" },
+    { "name": "차은성 (발굴 책임자)", "hp": 10, "ac": 10, "atk": "비무장 (d20+0, 1d4)", "note": "전투 불가. 중단할 명분을 주면 협조 — 코어 기억 봉인 코드 소지" }
+  ],
+  "resonanceCurve": [
+    { "checkpoint": "act1-end", "label": "Act 1 종료 (씬 1-3 후)", "target": [20, 25], "autoAverage": 19 },
+    { "checkpoint": "act2-end", "label": "Act 2 종료 (씬 2-4 후)", "target": [45, 55], "autoAverage": 44 },
+    { "checkpoint": "climax-start", "label": "클라이맥스 진입 (씬 3-2 시작)", "target": [65, 75], "autoAverage": 55 }
+  ]
+}

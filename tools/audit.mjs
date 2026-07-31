@@ -5,7 +5,7 @@
 // docs/errata.md 에 정리된 문제들을 재현한다. 종료 코드는 항상 0 —
 // 여기서 나오는 건 "버그"가 아니라 디자이너가 판단할 "불일치"이기 때문이다.
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -14,6 +14,13 @@ const read = (p) => JSON.parse(readFileSync(join(root, p), 'utf8'));
 
 const chars = read('data/characters.json');
 const rules = read('data/rules.json');
+
+// data/scenarios/*.json — 명세 05(docs/specs/05-scenario-data.md). 파일이
+// 아직 없어도(예: 이 명세 전) 조용히 빈 배열로 넘어간다.
+const scenarioDir = 'data/scenarios';
+const scenarios = existsSync(join(root, scenarioDir))
+  ? readdirSync(join(root, scenarioDir)).filter((f) => f.endsWith('.json')).map((f) => read(join(scenarioDir, f)))
+  : [];
 
 const STANDARD_ARRAY = [3, 2, 1, 1, 0, -1];
 const ARRAY_TOTAL = STANDARD_ARRAY.reduce((a, b) => a + b, 0);
@@ -92,6 +99,39 @@ for (const c of chars) {
   }
 }
 
+// ── S-1: 시나리오 Act 목표 시간 합계가 targetMinutes와 일치 (명세 05) ──
+for (const s of scenarios) {
+  const actTotal = (s.acts || []).reduce((sum, a) => sum + (num(a.minutes) || 0), 0);
+  if (actTotal !== s.targetMinutes) {
+    report('S-1', `${s.id}: Act 시간 합계 ${actTotal}분 ≠ targetMinutes ${s.targetMinutes}분`);
+  }
+}
+
+// ── S-2: 시나리오 NPC의 atk 표기가 data/monsters.json과 같은 형식인지 (명세 05) ──
+// monsters.json의 표기는 전부 "d20+N, XdY [피해/설명]" 꼴이다. 형식이 다르면
+// 실패시키지 않고 보고만 한다 — 차은성처럼 "비무장"이라 의도적으로
+// 벗어나는 항목도 있을 수 있어(docs/scenario-station-0.md 12장), 디자이너가
+// 판단할 문제다.
+const ATK_FORMAT = /^d20[+-]\d+,\s*\d+d\d+/;
+for (const s of scenarios) {
+  for (const n of s.npcs || []) {
+    if (n.atk && !ATK_FORMAT.test(n.atk)) {
+      report('S-2', `${s.id}/${n.name}: atk '${n.atk}'이 monsters.json 표기 형식(d20+N, XdY ...)과 다름`);
+    }
+  }
+}
+
+// ── S-3: 시나리오가 참조하는 구역이 rules.json의 districts에 있는지 (명세 05) ──
+// R-1과 같은 이유로 '교환장'은 아직 없다(errata R-1) — 없다고 실패시키지
+// 않고 R-1과 같은 방식으로 보고만 한다.
+for (const s of scenarios) {
+  for (const d of s.districts || []) {
+    if (!knownDistricts.has(d)) {
+      report('S-3', `${s.id}: 참조하는 구역 '${d}'이 구역 표에 없음 (교환장은 errata R-1 참고)`);
+    }
+  }
+}
+
 // ── 출력 ──────────────────────────────────────────────────────────────
 const byId = new Map();
 for (const f of findings) {
@@ -106,12 +146,21 @@ const TITLES = {
   'R-4': '시작 결정편이 2d6 범위 밖',
   'R-5': '기술명 표기 불일치',
   'R-7': '사용 제한 없는 강력 특성',
+  'S-1': '시나리오 Act 시간 합계가 targetMinutes와 불일치',
+  'S-2': '시나리오 NPC atk 표기가 monsters.json 형식과 다름',
+  'S-3': '시나리오가 참조하는 구역이 구역 표에 없음',
 };
 
-console.log(`합경 데이터 정합성 검사 — 캐릭터 ${chars.length}명\n`);
+// R-* (기존, errata.md 대응)와 S-*(신규, 명세 05 — 시나리오 데이터)를 따로
+// 집계해 보여준다. "37건 유지"가 데이터 무변경의 증거였으므로, 이 둘을
+// 섞어서 세면 그 증거가 무의미해진다(docs/specs/05-scenario-data.md 주의).
+const legacyFindings = findings.filter((f) => f.id.startsWith('R-'));
+const scenarioFindings = findings.filter((f) => f.id.startsWith('S-'));
+
+console.log(`합경 데이터 정합성 검사 — 캐릭터 ${chars.length}명, 시나리오 ${scenarios.length}개\n`);
 for (const [id, msgs] of [...byId].sort()) {
   console.log(`${id} ${TITLES[id] ?? ''} (${msgs.length}건)`);
   for (const m of msgs) console.log(`  · ${m}`);
   console.log('');
 }
-console.log(`총 ${findings.length}건 — 자세한 배경과 선택지는 docs/errata.md 참고`);
+console.log(`기존(R-*, errata.md) ${legacyFindings.length}건 + 신규(S-*, 명세 05 — 시나리오) ${scenarioFindings.length}건 = 총 ${findings.length}건`);

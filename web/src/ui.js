@@ -350,10 +350,14 @@ const UI = (() => {
     claimPanel.appendChild(gmNetSlot);
 
     // 배선: 명세 05(ui-scenario.js)가 시나리오 진행 UI를 여기 채운다.
-    // GM 대시보드 탭 안이라 플레이어에게는 애초에 렌더되지 않는다 —
-    // 명세 05가 따로 GM 여부를 검사할 필요가 없다.
     // 이니셔티브 트래커 바로 위에 두는 이유: 씬의 NPC를 트래커로 투입하는
     // 것이 이 화면의 핵심 동작이라 둘이 붙어 있어야 한다.
+    //
+    // ⚠ "GM 대시보드 탭이니까 GM 전용"이 아니다. 탭 버튼은 역할과 무관하게
+    // 항상 보이고 renderGM()도 isGM을 검사하지 않는다(클레임 패널·트래커·
+    // 몬스터 참고자료·타이머 전부 마찬가지 — 이 도구의 원래 동작이다).
+    // 따라서 **여기 들어가는 모듈이 스스로 ctx.isGM을 검사해야 한다.**
+    // ui-scenario.js가 실제로 그렇게 하고 있다.
     const scenarioSlot = document.createElement('div');
     scenarioSlot.id = 'scenario-slot';
     UIScenario.render(scenarioSlot, ctx);

@@ -814,6 +814,130 @@ await ctxE.close();
 await ctxB.close(); await ctxC.close();
 await browser2.close();
 
+// ══════════════════════════════════════════════════════════════════════
+// 명세 05 — 시나리오 데이터화 (docs/specs/05-scenario-data.md)
+// 핵심 가치: "씬의 NPC를 선제권 트래커에 한 번에 투입하는 버튼". 새 독립
+// 브라우저 인스턴스로 확인한다(위 검사들이 이미 status/room을 여러 번
+// 바꿔 놓았으므로 깨끗한 상태에서 시작).
+// ══════════════════════════════════════════════════════════════════════
+const scenarioData = JSON.parse(readFileSync(join(process.cwd(), 'data/scenarios/station-0.json'), 'utf8'));
+
+const browser3 = await chromium.launch({ executablePath: chromePath() });
+
+// ── GM: 시나리오 탭이 GM 대시보드 안에 실제로 보인다 ──────────────────
+const pageGM2 = await browser3.newPage();
+pageGM2.on('dialog', (d) => d.accept());
+await pageGM2.goto(URL);
+await pageGM2.fill('#in-name', 'GM검증');
+await pageGM2.fill('#in-code', 'SCEN01');
+await pageGM2.click('#btn-join');
+await pageGM2.waitForTimeout(500);
+await pageGM2.click('.tab-btn[data-tab="gm"]');
+await pageGM2.waitForTimeout(200);
+await pageGM2.click('button:has-text("내가 이 세션의 GM입니다")');
+await pageGM2.waitForTimeout(300);
+
+const scenarioSlot = pageGM2.locator('#scenario-slot');
+let scenarioText = await scenarioSlot.innerText();
+check('GM 대시보드에 시나리오 제목(역참-0)이 보임', scenarioText.includes('역참-0'));
+check('시나리오 로그라인이 보임', scenarioText.includes(scenarioData.logline.slice(0, 20)));
+check('목표 시간(210분)이 보임', scenarioText.includes('3시간 30분') || scenarioText.includes('210분'));
+check('Act 제목들이 보임', ['오프닝', '조사', '역참 진입', '관제실', '에필로그'].every((t) => scenarioText.includes(t)));
+check('데이터 이식용 JSON과 같은 5종 신규 NPC 이름이 최소 하나 보임(씬 목록 어딘가)',
+  scenarioData.npcs.some((n) => scenarioText.includes(n.name)));
+// .kv b에 text-transform:uppercase가 걸려 있어(기존 디자인 토큰) innerText는
+// "Act"를 "ACT"로 보여준다 — 렌더링 결과이지 데이터 손실이 아니므로 이 검사만
+// 대소문자 무시 비교로 확인한다.
+check('잔향 곡선 체크포인트가 보임(Act 1 종료 등)',
+  scenarioData.resonanceCurve.every((cp) => scenarioText.toLowerCase().includes(cp.label.toLowerCase())));
+
+// ── 씬의 NPC를 트래커로 한 번에 투입 (이 명세의 핵심 가치) ─────────────
+// 씬 2-1 '검표'는 개찰기 7호 1 + 결함 드론(다수) 4 = 5마리를 투입해야 한다.
+const 검표scene = scenarioData.acts.flatMap((a) => a.scenes).find((s) => s.id === '2-1');
+const 검표NpcCount = 검표scene.npcs.reduce((a, n) => a + (n.count || 1), 0);
+const 검표Row = scenarioSlot.locator('.init-item', { hasText: '검표' }).first();
+await 검표Row.locator('button', { hasText: 'NPC 투입' }).click();
+await pageGM2.waitForTimeout(500);
+let initiative = await pageGM2.evaluate(() => ROOM.initiative || []);
+check(`씬 '검표' NPC 투입 버튼 클릭 → 트래커에 ${검표NpcCount}마리가 한 번에 들어감`,
+  initiative.length === 검표NpcCount, `실제 ${initiative.length}명, 이름=${initiative.map((i) => i.name).join(',')}`);
+check('투입된 개체는 전부 적(비PC)으로 표시됨', initiative.every((i) => i.isPC === false));
+check('개찰기 7호가 정확한 HP로 투입됨(문서/데이터 값 그대로, 임의 수치 없음)',
+  initiative.some((i) => i.name === '개찰기 7호' && i.hp === 20 && i.maxHp === 20));
+check('결함 드론 4기가 각각 구분되는 이름으로 투입됨(전부 같은 이름으로 뭉치지 않음)',
+  new Set(initiative.filter((i) => i.name.startsWith('결함 드론')).map((i) => i.name)).size === 4);
+check('NPC 투입이 세션 로그에 남음(GM이 뭘 넣었는지 추적 가능)',
+  await pageGM2.evaluate(() => (ROOM.log || []).some((l) => l.text.includes('시나리오 NPC 투입'))));
+
+// 씬 3-2 '길잡이'까지 추가로 투입해 8인 파티 규모(5종 NPC + 몬스터)가 정상
+// 누적되는지 확인 — 초기화하지 않고 이어서 넣는다(실제 세션에서 GM이 여러
+// 씬을 오가며 트래커를 채우는 흐름과 같다).
+const 길잡이Row = scenarioSlot.locator('.init-item', { hasText: '길잡이 — 발차까지 6' }).first();
+await 길잡이Row.locator('button', { hasText: 'NPC 투입' }).click();
+await pageGM2.waitForTimeout(400);
+initiative = await pageGM2.evaluate(() => ROOM.initiative || []);
+check("기존 트래커 위에 다른 씬의 NPC(길잡이)를 추가로 얹을 수 있음(누적, 초기화 아님)",
+  initiative.length === 검표NpcCount + 1 && initiative.some((i) => i.name.includes('길잡이')));
+
+// ── 지연 경고: 세션 타이머 시작 후 목표 시간을 넘기면 경고가 뜬다 ──────
+// Date.now()를 흉내 낼 수 없으므로(파일 기반, Node/브라우저 시계 조작
+// 없음), 대신 Store에 저장된 progress.startedAt을 과거로 직접 밀어 넣어
+// "이미 목표 시간을 초과한 상태"를 재현한다 — UI 로직만 검증하고 실제
+// 시간이 흐르길 기다리지 않는다.
+await pageGM2.evaluate((code) => {
+  const key = `hg:${code}:scenario`;
+  const past = Date.now() - (300 * 60 * 1000); // 300분 전 시작 → 210분 목표를 넘김
+  return Store.set(key, { sceneId: '2-1', startedAt: past });
+}, 'SCEN01');
+await pageGM2.click('.tab-btn[data-tab="char"]');
+await pageGM2.waitForTimeout(150);
+await pageGM2.click('.tab-btn[data-tab="gm"]');
+await pageGM2.waitForTimeout(400);
+scenarioText = await scenarioSlot.innerText();
+check('목표 시간을 넘기면 지연 경고가 표시됨', /지연/.test(scenarioText));
+
+// ── 잔향 곡선: 파티 평균이 실제 캐릭터 상태에서 계산됨 ─────────────────
+// 이든의 잔향을 55로 올리면(앞선 P2P 섹션과 무관한 새 방이므로 0에서 시작)
+// 평균이 그 값을 반영해야 한다(16명 중 1명만 55, 나머지 0 → 평균 55/16).
+await pageGM2.click('.tab-btn[data-tab="char"]');
+await pageGM2.waitForTimeout(200);
+await pageGM2.locator('.char-card', { hasText: '이든' }).first().click();
+await pageGM2.waitForTimeout(400);
+await pageGM2.fill('#f-rad', '55');
+await pageGM2.dispatchEvent('#f-rad', 'change');
+await pageGM2.waitForTimeout(500);
+await pageGM2.click('.tab-btn[data-tab="gm"]');
+await pageGM2.waitForTimeout(300);
+scenarioText = await scenarioSlot.innerText();
+const expectedAvg = (55 / chars.length).toFixed(1);
+check('잔향 곡선 패널이 실제 캐릭터 상태에서 계산한 파티 평균을 보여줌',
+  scenarioText.includes(expectedAvg), `기대 평균 ${expectedAvg}, 실제 텍스트에 없음`);
+
+// ── 플레이어(비GM)는 시나리오 탭을 보지 못한다 (완료 조건) ────────────
+// 같은 방에 GM을 자처하지 않은 손님으로 들어가 GM 탭을 눌러도 #scenario-slot이
+// 비어 있어야 한다. ui.js의 "GM 대시보드" 탭은 역할과 무관하게 항상
+// 클릭 가능하다는 걸 위에서 확인했으므로(이니셔티브 트래커·몬스터
+// 참고자료 등은 실제로 보인다), 시나리오 UI 자체가 ctx.isGM을 검사해
+// 스스로 숨어야 한다 — 그걸 검증한다.
+const pagePlayer = await browser3.newPage();
+pagePlayer.on('dialog', (d) => d.accept());
+await pagePlayer.goto(URL);
+await pagePlayer.fill('#in-name', '구경꾼플레이어');
+await pagePlayer.fill('#in-code', 'SCEN01');
+await pagePlayer.click('#btn-join');
+await pagePlayer.waitForTimeout(500);
+await pagePlayer.click('.tab-btn[data-tab="gm"]');
+await pagePlayer.waitForTimeout(300);
+const playerGmTabText = await pagePlayer.locator('.panel', { hasText: 'GM 지정' }).innerText().catch(() => '');
+check('플레이어도 "GM 대시보드" 탭 자체는 볼 수 있음(기존 동작, 이 명세가 바꾸지 않음)',
+  /GM 지정/.test(playerGmTabText));
+const playerScenarioSlotText = await pagePlayer.locator('#scenario-slot').innerText().catch(() => '');
+check('플레이어 화면의 #scenario-slot은 비어 있음(시나리오 탭이 없음)', playerScenarioSlotText.trim() === '');
+check('플레이어 화면 어디에도 시나리오 제목이 새지 않음', !(await pagePlayer.locator('#app').innerText()).includes('역참-0'));
+
+await pageGM2.close(); await pagePlayer.close();
+await browser3.close();
+
 // ── 출력 ─────────────────────────────────────────────────────────────
 console.log('\n웹도구 브라우저 검증\n' + '─'.repeat(62));
 for (const r of results) {
