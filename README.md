@@ -16,17 +16,22 @@ d20 기반 판정에, **규칙서에 없는 행동도 5초 안에 판정하는 �
 |---|---|
 | 처음 왔다 | [룰북](docs/rulebook.md) — 30분이면 다 읽힙니다 |
 | 오늘 플레이한다 | [사전 제작 캐릭터 16종](docs/pregens.md)에서 하나 고르세요 |
-| GM이다 | [룰북 6장](docs/rulebook.md#6-gm을-위한-조언) + [세션 웹도구](web/index.html) |
-| 이 저장소에 기여한다 | [개선점과 구현 방향](docs/roadmap.md) |
+| **오늘 GM을 한다** | [시나리오 「역참-0」](docs/scenario-station-0.md) — 원샷 3~4시간, 이거 하나면 됩니다 |
+| 세계관을 더 알고 싶다 | [설정 보충](docs/setting-supplement.md) — 교환장, 위상잔향 운용 |
+| 이 저장소에 기여한다 | [개선점과 구현 방향](docs/roadmap.md) → [구현 명세](docs/specs/) |
 
 ## 저장소 구조
 
 ```
 docs/
-  rulebook.md      룰북 (원본 docx의 마크다운판)
-  pregens.md       사전 제작 캐릭터 16종 — data/characters.json 에서 생성
-  errata.md        원본 자료 교차검증에서 나온 정합성 이슈 37건
-  roadmap.md       개선점 분석과 구현 순서
+  rulebook.md            룰북 (원본 docx의 마크다운판)
+  pregens.md             사전 제작 캐릭터 16종 — data/characters.json 에서 생성
+  scenario-station-0.md  원샷 시나리오 「역참-0」 (3~4시간)
+  setting-supplement.md  설정 보충 — 교환장 구역, 위상잔향 운용 곡선
+  errata.md              원본 자료 교차검증에서 나온 정합성 이슈 37건
+  roadmap.md             개선점 분석과 구현 순서
+  adr/                   구조 결정 기록
+  specs/                 구현 명세
 data/              ← 정본(single source of truth)
   rules.json       DC표, 4단계 결과, 무기, 위상잔향, 여파화 표, 조합, 구역
   characters.json  사전 제작 캐릭터 16종
@@ -63,11 +68,14 @@ node tools/audit.mjs
 
 ## 아직 없는 것
 
-- **시나리오 「역참-0」** — 룰북이 참조하지만 문서가 없습니다. 저장소에서 가장 큰 결손입니다.
-  ([errata R-6](docs/errata.md#r-6-시나리오-역참-0-문서-부재))
 - 판정 엔진 — 4단계 결과 판정과 그룹 판정이 도구에 미구현
-  ([roadmap 3단계](docs/roadmap.md#3단계--판정-엔진-핵심))
+  ([명세 02](docs/specs/02-check-engine.md))
+- P2P 동기화 — 아티팩트 스토리지 의존을 걷어내는 작업
+  ([ADR-001](docs/adr/001-p2p-sync.md), [명세 03](docs/specs/03-p2p-sync.md))
 - 캐릭터 빌더 (부록 A)
+
+`docs/errata.md`의 37건은 **의도적으로 미해결**입니다. 어떤 값이 정본인지는
+디자이너가 정할 문제라, 검사기는 어긋난 지점만 보고합니다.
 
 ## 라이선스
 
