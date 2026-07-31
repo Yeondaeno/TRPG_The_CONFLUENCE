@@ -358,9 +358,11 @@ const UICheck = (() => {
     </div>`);
     panel.appendChild(woundBox);
     if (mismatch) {
+      // .kv b 는 라벨용으로 display:block 이라 문장 중간에 쓰면 줄이 끊긴다.
+      // 여기서는 문장 안의 강조이므로 b 대신 인라인 span 을 쓴다.
       panel.appendChild(el(`<div class="kv" style="color:var(--danger)">
         ⚠ 캐릭터시트의 수동 상태값('${escapeHtml(cs.status)}')이 자동 계산값('${escapeHtml(TIER_LABEL[autoTier])}')과 다릅니다.
-        판정 보정은 <b>자동 계산값을 기준</b>으로 적용됩니다.
+        판정 보정은 <span style="font-weight:700">자동 계산값을 기준</span>으로 적용됩니다.
       </div>`));
     }
 
@@ -460,6 +462,12 @@ const UICheck = (() => {
       form.appendChild(row);
 
       const rosterField = el('<div class="field"><label>참가자 (기본값: 현재 점유된 캐릭터)</label></div>');
+
+      // 시나리오가 "전원 판정"을 자주 요구하는데, GM 단말에서는 점유된 캐릭터가
+      // 보통 1명뿐이라 매번 8번씩 클릭하게 된다. 일괄 선택 버튼을 둔다.
+      const rosterTools = el('<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px"></div>');
+      const rosterCount = el('<span class="small-note" style="margin:0 0 0 auto;align-self:center"></span>');
+
       const rosterGrid = el('<div class="char-grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))"></div>');
       const checkboxes = {};
       PREGENS.forEach((p) => {
@@ -468,13 +476,37 @@ const UICheck = (() => {
         row2.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:6px 8px;cursor:pointer';
         const cb = document.createElement('input');
         cb.type = 'checkbox'; cb.style.width = 'auto'; cb.checked = claimed; cb.value = p.name;
+        cb.onchange = () => updateRosterCount();
         checkboxes[p.name] = cb;
         row2.appendChild(cb);
         row2.appendChild(document.createTextNode(p.name));
         rosterGrid.appendChild(row2);
       });
+
+      function updateRosterCount() {
+        const n = PREGENS.filter((p) => checkboxes[p.name].checked).length;
+        rosterCount.textContent = `선택 ${n}명`;
+      }
+      function setRoster(pick) {
+        PREGENS.forEach((p) => { checkboxes[p.name].checked = pick(p); });
+        updateRosterCount();
+      }
+
+      const allBtn = el(`<button type="button">전원 선택 (${PREGENS.length}명)</button>`);
+      allBtn.onclick = () => setRoster(() => true);
+      const claimedBtn = el('<button type="button">점유된 캐릭터만</button>');
+      claimedBtn.onclick = () => setRoster((p) => !!(ROOM.claims && ROOM.claims[p.name]));
+      const noneBtn = el('<button type="button" class="ghost">전체 해제</button>');
+      noneBtn.onclick = () => setRoster(() => false);
+      rosterTools.appendChild(allBtn);
+      rosterTools.appendChild(claimedBtn);
+      rosterTools.appendChild(noneBtn);
+      rosterTools.appendChild(rosterCount);
+
+      rosterField.appendChild(rosterTools);
       rosterField.appendChild(rosterGrid);
       form.appendChild(rosterField);
+      updateRosterCount();
 
       const startBtn = el('<button class="primary">그룹 판정 개시</button>');
       startBtn.onclick = () => {

@@ -320,6 +320,63 @@ check('판정 굴림이 세션 로그에 남음', /판정:/.test(logText) || /�
 
 check('페이지 에러 없음', consoleErrors.length === 0, consoleErrors.slice(0, 2).join(' | '));
 
+
+// ══════════════════════════════════════════════════════════════════════
+// 그룹 판정 참가자 일괄 선택 (실제 세션에서 나온 불편 — 8인 파티는 매번 8번 클릭)
+// ══════════════════════════════════════════════════════════════════════
+{
+  await page.click('.tab-btn[data-tab="dice"]');
+  await page.waitForTimeout(400);
+  const gslot = page.locator('#check-slot');
+  const boxes = gslot.locator('.char-grid input[type=checkbox]');
+
+  await gslot.locator('button', { hasText: '전원 선택' }).click();
+  await page.waitForTimeout(200);
+  let picked = 0;
+  for (let i = 0; i < (await boxes.count()); i++) if (await boxes.nth(i).isChecked()) picked++;
+  check('그룹 판정: "전원 선택"이 16명을 모두 고름', picked === chars.length, `${picked}/${chars.length}`);
+  check('선택 인원수가 표시됨', /선택 \d+명/.test(await gslot.innerText()));
+
+  await gslot.locator('button', { hasText: '전체 해제' }).click();
+  await page.waitForTimeout(200);
+  picked = 0;
+  for (let i = 0; i < (await boxes.count()); i++) if (await boxes.nth(i).isChecked()) picked++;
+  check('그룹 판정: "전체 해제"가 전부 품', picked === 0, `${picked}명 남음`);
+
+  await gslot.locator('button', { hasText: '점유된 캐릭터만' }).click();
+  await page.waitForTimeout(200);
+  picked = 0;
+  for (let i = 0; i < (await boxes.count()); i++) if (await boxes.nth(i).isChecked()) picked++;
+  check('그룹 판정: "점유된 캐릭터만"이 점유자 수와 일치', picked >= 1, `${picked}명`);
+}
+
+// 상태 자동화 경고가 한 문장으로 이어지는가 (.kv b 의 display:block 때문에
+// 문장 중간에서 줄이 끊기던 문제 — 실제 화면 스크린샷에서 발견).
+// 앞선 P2P 검사들이 페이지/방 상태를 바꿔 놓으므로 빈 방에서 새로 시작한다.
+{
+  const wp = await browser.newPage();
+  wp.on('dialog', (d) => d.accept());
+  await wp.goto(URL);
+  await wp.fill('#in-name', '경고검증');
+  await wp.fill('#in-code', 'WARN');
+  await wp.click('#btn-join');
+  await wp.waitForTimeout(700);
+  await wp.click('.tab-btn[data-tab="char"]');
+  await wp.waitForTimeout(300);
+  await wp.locator('.char-card', { hasText: '세라' }).first().click();
+  await wp.waitForTimeout(450);
+  await wp.fill('#f-hp', '5');            // 19의 절반 미만 → 자동 '중상', 수동값은 '경상'
+  await wp.dispatchEvent('#f-hp', 'change');
+  await wp.waitForTimeout(600);
+  await wp.click('.tab-btn[data-tab="dice"]');
+  await wp.waitForTimeout(500);
+  const warn = (await wp.locator('#check-slot').innerText())
+    .split('\n').find((l) => l.includes('수동 상태값')) || '(경고 없음)';
+  check('상태 불일치 경고가 한 줄로 이어짐(문장 중간 줄바꿈 없음)',
+    warn.includes('자동 계산값을 기준으로 적용됩니다'), warn.slice(0, 70));
+  await wp.close();
+}
+
 await browser.close();
 
 // ══════════════════════════════════════════════════════════════════════
