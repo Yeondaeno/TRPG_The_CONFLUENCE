@@ -28,6 +28,27 @@ function chromePath() {
 const results = [];
 const check = (name, pass, detail = '') => results.push({ name, pass, detail });
 
+// ══════════════════════════════════════════════════════════════════════
+// 명세 04 — 비밀 분리 빌드 (docs/specs/04-secret-split.md)
+// 아래 두 검사는 브라우저가 필요 없다 — 빌드 산출물 파일을 그대로 읽는다.
+// [렌더링] 기준 검사(위 브라우저 검사들)와 다르게 이건 **소스 기준**이다:
+// document.body.innerText가 아니라 파일 바이트 자체에 비밀 문자열이
+// 있는지를 본다. docs/adr/001-p2p-sync.md '단서' 절이 지적한 차이가 이거다.
+// ══════════════════════════════════════════════════════════════════════
+{
+  const indexHtmlRaw = readFileSync(join(process.cwd(), 'web/index.html'), 'utf8');
+  const leaked = chars.filter((c) => indexHtmlRaw.includes(c.secret));
+  check('[소스] web/index.html에 16개 비밀이 하나도 인라인되지 않음 (완료 조건의 node -e 검사 재현)',
+    leaked.length === 0, leaked.length ? `누출: ${leaked.map((c) => c.name).join(', ')}` : '0/16');
+
+  const secretsPath = join(process.cwd(), 'web/secrets.json');
+  const secretsExists = existsSync(secretsPath);
+  check('web/secrets.json이 빌드로 생성됨', secretsExists);
+  const secretsMap = secretsExists ? JSON.parse(readFileSync(secretsPath, 'utf8')) : {};
+  check('web/secrets.json에 캐릭터 16명의 비밀이 정확히 담김(data/characters.json과 일치)',
+    Object.keys(secretsMap).length === chars.length && chars.every((c) => secretsMap[c.name] === c.secret));
+}
+
 const browser = await chromium.launch({ executablePath: chromePath() });
 const page = await browser.newPage();
 const consoleErrors = [];
@@ -60,11 +81,32 @@ await page.click('.tab-btn[data-tab="char"]');
 await page.waitForTimeout(300);
 check('캐릭터 16종 렌더', (await page.locator('.char-card').count()) === chars.length);
 
+// ── 명세 04: 이 세션의 사용자가 GM을 겸하며 web/secrets.json을 불러온다 ──
+// 명세 01/03 시절에는 secret이 항상 PREGENS에 인라인돼 있어 "점유하면 곧
+// 보인다"가 전제였다. 명세 04부터는 그 전제 자체가 사라진다 — 아무도
+// secrets.json을 불러오지 않으면 PREGENS[].secret이 아예 없다(빌드가
+// 뺐다). 그래서 바로 아래 "점유한 본인의 비밀은 보임" 검사(명세 01)가
+// 여전히 성립하려면, 그 전에 누군가 GM을 자처하고 비밀 파일을 실제로
+// 불러온 상태여야 한다 — 1인 로컬 플레이에서는 GM과 점유자가 같은
+// 사람일 수 있으므로 이 흐름 자체가 정상적인 사용 시나리오다.
+await page.click('.tab-btn[data-tab="gm"]');
+await page.waitForTimeout(200);
+await page.click('button:has-text("내가 이 세션의 GM입니다")');
+await page.waitForTimeout(300);
+check('GM을 자처하면 isGM 전용 "비밀 파일" 슬롯이 나타남', await page.locator('#gm-net-slot').innerText().then((t) => /비밀 파일/.test(t)));
+await page.setInputFiles('#gm-net-slot input[type=file]', join(process.cwd(), 'web/secrets.json'));
+await page.waitForTimeout(300);
+check('GM이 secrets.json을 불러오면 "비밀 로드됨" 배지로 바뀜',
+  await page.locator('#gm-net-slot').innerText().then((t) => /비밀 로드됨/.test(t)));
+await page.click('.tab-btn[data-tab="char"]');
+await page.waitForTimeout(200);
+
 // ── 비밀: 점유자 본인에게는 보인다 ───────────────────────────────────
 // 주의: 아래 비밀 검사는 전부 **렌더링 기준**(document.body.innerText)이다.
-// 사전 제작 캐릭터의 secret 16개는 빌드 시 index.html에 인라인되므로 DOM
-// 소스와 콘솔에서는 여전히 읽힌다. 소스 기준 차단은 명세 04의 일이다.
-// docs/adr/001-p2p-sync.md 의 '단서' 절 참고.
+// 명세 04 이후 사전 제작 캐릭터의 secret 16개는 빌드 시 index.html에
+// 인라인되지 않는다(위 [소스] 검사가 그걸 확인한다) — 위에서 이 세션이
+// GM으로서 secrets.json을 이미 불러왔으므로, 아래 검사는 "불러온 비밀이
+// 점유자 본인에게는 실제로 보이는가"를 확인한다.
 // 카드 클릭은 곧 점유다. 따라서 '미점유 열람'은 남이 점유한 캐릭터를
 // 열었을 때만 성립하며, 그 검사는 아래 플레이어 B 흐름에서 한다.
 await page.locator('.char-card', { hasText: '세라' }).first().click();
@@ -114,6 +156,17 @@ check('[렌더링] 남이 점유한 캐릭터의 비밀은 안 보임', !text.in
 check('비밀 자리에 안내 문구가 남음', /비밀[^\n]*GM/.test(text));
 check('[렌더링] B의 화면 어디에도 비밀이 없음',
   chars.filter((c) => text.includes(c.secret)).length === 0);
+
+// [소스] 명세 04 — GM이 secrets.json을 한 번도 불러오지 않은 이 세션에서는
+// page.content()(현재 DOM의 직렬화된 마크업 — 렌더된 텍스트가 아니라 소스)와
+// localStorage 어디에도 비밀 문자열이 없어야 한다. [렌더링] 검사와 달리
+// document.body.innerText가 아니라 DOM 소스/저장소를 직접 훑는다는 게 차이다.
+const bPageSource = await page.content();
+check('[소스] B의 페이지 소스(DOM 마크업)에 어떤 비밀 문자열도 없음(명세 04 — 렌더링이 아니라 소스 기준)',
+  chars.filter((c) => bPageSource.includes(c.secret)).length === 0);
+const bLocalStorageDump = await page.evaluate(() => JSON.stringify(localStorage));
+check('[소스] B의 localStorage에 어떤 비밀 문자열도 없음(명세 04)',
+  chars.filter((c) => bLocalStorageDump.includes(c.secret)).length === 0);
 
 // ── XSS: 로그 + 평문 보존 ────────────────────────────────────────────
 await page.click('.tab-btn[data-tab="log"]');
@@ -581,6 +634,69 @@ check('GM 자신은 남의 캐릭터 메모를 그대로 봄',
 check('점유하지 않은 손님 브라우저의 메모리(JSON.stringify(ROOM))에는 그 메모가 아예 없음(§4 — 안 보여주기가 아니라 안 보내기)',
   !(await loserPage.evaluate((m) => JSON.stringify(ROOM).includes(m), SECRET_MARKER)) &&
   !(await winnerPage.evaluate((m) => JSON.stringify(ROOM).includes(m), SECRET_MARKER)));
+
+// ══════════════════════════════════════════════════════════════════════
+// 비밀 분리 빌드(§4, docs/specs/04-secret-split.md) — GM이 실제 "비밀 파일
+// 불러오기" UI(#gm-net-slot의 file input)로 web/secrets.json을 읽어들이면,
+// 그 시점부터 점유자에게만 자기 캐릭터의 비밀이 P2P로 도착하는지 확인한다.
+// winnerPage는 앞서 '겨울'을 점유했고, loserPage는 아무것도 점유하지 않은
+// 상태다(위 동시 점유 경합 결과) — 그래서 winnerPage만 겨울의 비밀을 받아야
+// 하고, loserPage는 어떤 비밀도 받지 말아야 한다.
+// ══════════════════════════════════════════════════════════════════════
+const secretsMap = JSON.parse(readFileSync(join(process.cwd(), 'web/secrets.json'), 'utf8'));
+const winterSecret = secretsMap['겨울'];
+const otherSecretsForWinner = Object.entries(secretsMap).filter(([n]) => n !== '겨울').map(([, s]) => s);
+const allSecretValues = Object.values(secretsMap);
+
+await pageGM.click('.tab-btn[data-tab="gm"]');
+await pageGM.waitForTimeout(300);
+const secretsDir = mkdtempSync(join(tmpdir(), 'hg-secrets-'));
+const secretsFilePath = join(secretsDir, 'secrets.json');
+writeFileSync(secretsFilePath, JSON.stringify(secretsMap));
+await pageGM.setInputFiles('#gm-net-slot input[type=file]', secretsFilePath);
+await pageGM.waitForTimeout(500);
+
+check('GM이 secrets.json을 불러오면 로컬 PREGENS 전체에 비밀이 즉시 채워짐',
+  await pageGM.evaluate((expected) => PREGENS.every((p) => p.secret === expected[p.name]), secretsMap));
+const gmSecretsSlotText = await pageGM.locator('#gm-net-slot').innerText();
+check('GM 화면에 "비밀 로드됨" 배지가 표시됨', /비밀 로드됨/.test(gmSecretsSlotText));
+
+await winnerPage.waitForTimeout(500);
+check('[소스] 겨울 점유자(winnerPage)의 PREGENS에 자기 캐릭터의 비밀이 P2P로 도착함(안 보여주기가 아니라 안 보내기)',
+  await winnerPage.evaluate((expected) => {
+    const p = PREGENS.find((x) => x.name === '겨울');
+    return !!p && p.secret === expected;
+  }, winterSecret));
+check('[소스] 겨울을 점유하지 않은 손님(loserPage)의 PREGENS에는 겨울의 비밀이 오지 않음',
+  await loserPage.evaluate(() => {
+    const p = PREGENS.find((x) => x.name === '겨울');
+    return !p || !p.secret;
+  }));
+
+const winnerSourceAfterSecrets = await winnerPage.content();
+check('[소스] 겨울 점유자의 페이지 소스(DOM 마크업)에 다른 캐릭터의 비밀 문자열이 없음',
+  otherSecretsForWinner.every((s) => !winnerSourceAfterSecrets.includes(s)));
+const winnerLocalStorageAfterSecrets = await winnerPage.evaluate(() => JSON.stringify(localStorage));
+check('[소스] 겨울 점유자의 localStorage에 다른 캐릭터의 비밀 문자열이 없음',
+  otherSecretsForWinner.every((s) => !winnerLocalStorageAfterSecrets.includes(s)));
+
+const loserSourceAfterSecrets = await loserPage.content();
+check('[소스] 미점유 손님(loserPage)의 페이지 소스에 어떤 비밀 문자열도 없음',
+  allSecretValues.every((s) => !loserSourceAfterSecrets.includes(s)));
+const loserLocalStorageAfterSecrets = await loserPage.evaluate(() => JSON.stringify(localStorage));
+check('[소스] 미점유 손님(loserPage)의 localStorage에 어떤 비밀 문자열도 없음',
+  allSecretValues.every((s) => !loserLocalStorageAfterSecrets.includes(s)));
+
+// 이중 방어(명세 01의 렌더링 차단) 확인 — 자기 비밀을 받은 점유자가 실제로
+// 캐릭터시트를 열면 화면에 보이고, 남의 비밀은 여전히 안 보여야 한다.
+await winnerPage.click('.tab-btn[data-tab="char"]');
+await winnerPage.waitForTimeout(200);
+await winnerPage.locator('.char-card', { hasText: '겨울' }).first().click();
+await winnerPage.waitForTimeout(400);
+const winnerSheetText = await winnerPage.evaluate(() => document.body.innerText);
+check('[렌더링] P2P로 비밀을 받은 점유자는 자기 캐릭터의 비밀을 실제로 봄', winnerSheetText.includes(winterSecret));
+check('[렌더링] 점유자 화면에도 남의 비밀은 안 보임(이중 방어 — 명세 01 렌더링 게이트 유지)',
+  otherSecretsForWinner.every((s) => !winnerSheetText.includes(s)));
 
 // ── GM 이탈 → 플레이어 쪽 "연결 끊김" 표시 + 로컬 조작은 계속 ────────
 await ctxGM.close();

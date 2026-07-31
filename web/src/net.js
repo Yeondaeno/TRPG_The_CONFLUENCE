@@ -39,18 +39,27 @@
 // 고정한다. 대신 GM 자신의 화면은 messageHandlers를 직접 호출해 즉시
 // 갱신한다(handleNetMessage가 이미 'state'를 받으면 ROOM을 통째로 바꾼다).
 //
-// 비밀(§4): 사전 제작 캐릭터의 `secret` 필드는 PREGENS(정적 데이터)에
-// 있다. PREGENS는 오프라인 우선 원칙 때문에 빌드 시 모든 클라이언트에
-// 동일하게 인라인되고(tools/build.mjs, 명세 01 소유) net.js가 손댈 수
-// 있는 지점이 아니다 — 그건 네트워크를 하나도 안 붙여도 캐릭터 시트가
-// 동작해야 한다는 원칙 자체의 대가다. net.js가 실제로 막을 수 있는 건
-// **세션 중 오가는 동적 상태**(ROOM)뿐이고, 거기서 사적인 필드는 캐릭터당
-// 자유 메모(notes)뿐이다. 그래서 filterRoomFor()는 수신자가 그 캐릭터의
-// 점유자(또는 GM)가 아니면 notes를 지운다 — "남의 비밀이 애초에 그
-// 브라우저에 도착하지 않는다"를 net.js가 다루는 데이터 범위 안에서
-// 실질적으로 구현한 것이다. ui.js §"비밀 차단" 주석은 여전히 렌더링
-// 단계 얘기를 하고 있는데, ui.js는 이 명세의 소유가 아니라 고칠 수
-// 없다 — 이 사실을 완료 조건 미비점으로 보고한다.
+// 비밀(§4, docs/specs/04-secret-split.md): 사전 제작 캐릭터의 `secret`
+// 필드는 더 이상 PREGENS(빌드 시 인라인되는 정적 데이터)에 없다 —
+// tools/build.mjs가 web/index.html을 만들 때 아예 빼 버린다. 대신
+// web/secrets.json(GM 전용, data/characters.json에서 빌드가 자동 생성)에만
+// 담겨 있고, GM이 그 파일을 불러오면 ui-net.js가 Net.setSecrets(map)을
+// 호출한다. 그때부터 hostSecrets가 그 맵을 들고 있으며:
+//   - GM 자신의 PREGENS 원소에는 즉시 secret을 대입한다(로컬 반영, 네트워크
+//     불필요 — GM은 파일을 가진 사람이므로 전부 볼 수 있는 게 맞다).
+//   - 호스트 역할이면, notes와 완전히 같은 자리(filterRoomFor)에서 **그
+//     캐릭터를 점유한 수신자에게만** characters[그캐릭터].secret을 실어
+//     보낸다. 다른 캐릭터의 characters[…] 엔트리에는 secret 키 자체가
+//     없다 — "안 보여주기"가 아니라 "안 보내기"다.
+//   - 게스트 쪽 net.js(handleHostMessage → applyIncomingSecrets)는 받은
+//     secret을 자기 PREGENS 원소로 옮겨 붙이고 ROOM에서는 지운다. 그래서
+//     이 브라우저의 PREGENS[].secret은 "내가 점유한 캐릭터"만 값이 있고
+//     나머지는 여전히 undefined다.
+// GM이 secrets.json을 안 불러왔으면 hostSecrets는 null이고 위 로직은 전부
+// 조용히 아무 일도 하지 않는다 — PREGENS[].secret이 계속 없는 채로 세션이
+// 정상 진행된다(ui.js의 escapeHtml()이 undefined를 빈 문자열로 다루므로
+// ui.js를 고칠 필요가 없다). ui.js §"비밀 차단"의 렌더링 게이트(점유자
+// 본인 + GM만 렌더링)는 그대로 두 번째 방어선으로 남는다.
 const Net = (() => {
   const VERSION = 1;
   const ROOM_PREFIX = 'hapgyeong-';
@@ -66,6 +75,11 @@ const Net = (() => {
   let peer = null;
   let roomCode = '';
   let selfName = '';
+
+  // GM이 web/secrets.json을 불러오면 채워지는 { 캐릭터명: secret } 맵.
+  // 연결(cleanupPeer) 여부와 무관한 상태다 — GM이 재접속해도 다시 불러올
+  // 필요가 없게 유지한다. host()/join()이 호출돼도 초기화하지 않는다.
+  let hostSecrets = null;
 
   // ---- 호스트 상태 ----
   let connections = new Map(); // peerId -> { id, conn, name }
@@ -179,12 +193,24 @@ const Net = (() => {
 
   // 비밀 필터링(§4) — 점유자 또는 GM이 아니면 그 캐릭터의 자유 메모를 지운다.
   // GM 자신에게 되돌려 보내는 로컬 echo는 이 함수를 거치지 않는다(GM은 전부 본다).
+  //
+  // 사전 제작 캐릭터의 secret도 같은 자리에서 같은 원리로 다룬다
+  // (docs/specs/04-secret-split.md §4): hostSecrets가 로드돼 있고 수신자가
+  // 그 캐릭터의 점유자면 secret 필드를 실어 보낸다. 그 외에는 secret 키
+  // 자체를 넣지 않는다(값을 빈 문자열로 지우는 게 아니라 아예 안 보낸다 —
+  // notes와 달리 secret은 원래 characters[…]에 없는 필드이므로 "지운다"가
+  // 성립하지 않는다).
   function filterRoomFor(room, recipientName) {
     const claims = room.claims || {};
     const characters = {};
     Object.keys(room.characters || {}).forEach((name) => {
       const cs = room.characters[name] || {};
-      if (claims[name] === recipientName) { characters[name] = { ...cs }; return; }
+      if (claims[name] === recipientName) {
+        const copy = { ...cs };
+        if (hostSecrets && hostSecrets[name]) copy.secret = hostSecrets[name];
+        characters[name] = copy;
+        return;
+      }
       const copy = { ...cs };
       copy.notes = '';
       characters[name] = copy;
@@ -416,8 +442,34 @@ const Net = (() => {
     queued.forEach((intent) => safeSend(hostConn, intent));
   }
 
+  // GM이 보낸 state에 내가 점유한 캐릭터의 secret이 실려 있으면 그 값을
+  // 이 브라우저의 PREGENS 원소로 옮겨 붙이고, ROOM 쪽에서는 지운다 — secret은
+  // PREGENS(정적 캐릭터 데이터)가 있을 자리이지 ROOM(세션 중 동적 상태)의
+  // 필드가 아니다. app.js는 이 함수를 거친 뒤의 room만 받는다.
+  function applyIncomingSecrets(room) {
+    if (!room || !room.characters) return room;
+    const characters = {};
+    Object.keys(room.characters).forEach((name) => {
+      const cs = room.characters[name];
+      if (cs && Object.prototype.hasOwnProperty.call(cs, 'secret')) {
+        if (typeof PREGENS !== 'undefined' && cs.secret) {
+          const pregen = PREGENS.find((p) => p.name === name);
+          if (pregen) pregen.secret = cs.secret;
+        }
+        const { secret, ...rest } = cs;
+        characters[name] = rest;
+      } else {
+        characters[name] = cs;
+      }
+    });
+    return { ...room, characters };
+  }
+
   function handleHostMessage(data) {
     if (!data || data.v !== VERSION) return;
+    if (data.t === 'state' && data.room) {
+      data = { ...data, room: applyIncomingSecrets(data.room) };
+    }
     // 주의: 여기서 받은 GM의 권위 있는 state로 lastLocalRoom을 갱신하지
     // 않는다 — 위 lastLocalRoom 선언부 주석 참고. app.js로만 전달한다.
     messageHandlers.forEach((cb) => { try { cb(data); } catch (e) { /* 무해 */ } });
@@ -506,9 +558,25 @@ const Net = (() => {
   // ============================================================
   return {
     get status() { return status; },
+    // GM 화면 배지용(docs/specs/04-secret-split.md §3): secrets.json을
+    // 불러왔는지 여부. 로드 안 했으면 false — "비밀 미로드" 배지에 쓴다.
+    get hasSecrets() { return !!hostSecrets; },
 
     host,
     join,
+
+    // ui-net.js가 GM의 "비밀 파일 불러오기"에서 호출한다. map은
+    // { 캐릭터명: secret } 형태(web/secrets.json과 같은 모양). 연결 여부와
+    // 무관하게 항상 동작한다 — 로컬(비연결) GM도 자기 화면에서 즉시 본다.
+    setSecrets(map) {
+      hostSecrets = (map && typeof map === 'object') ? { ...map } : null;
+      if (typeof PREGENS !== 'undefined' && hostSecrets) {
+        PREGENS.forEach((p) => { if (hostSecrets[p.name]) p.secret = hostSecrets[p.name]; });
+      }
+      // 이미 접속해 있는 손님들에게도 즉시 반영한다(GM이 접속 후에 뒤늦게
+      // 파일을 불러온 경우) — notifyLocal:false, GM 자신은 위에서 이미 반영했다.
+      if (role === 'host' && lastBroadcastRoom) broadcastState(lastBroadcastRoom, false);
+    },
 
     send(msg) {
       if (!msg) return;

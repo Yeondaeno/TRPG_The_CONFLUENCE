@@ -1,4 +1,4 @@
-// web/src/ui-net.js — 연결 상태 UI (명세 03)
+// web/src/ui-net.js — 연결 상태 UI (명세 03·04)
 //
 // ui.js(명세 01, 수정 금지)가 세 군데에서 UINet.render(container, ctx)를
 // 부른다 — container.id로 자리를 구분한다:
@@ -9,10 +9,16 @@
 //      Store를 미리 채워 둔다. 그러면 app.js가 곧이어 host()를 부를 때
 //      이미 그 방 상태가 있는 채로 새 허브가 선다.
 //   2. #topbar-net-slot — 매 렌더. 연결 상태 배지.
-//   3. #gm-net-slot — GM 대시보드 탭. 접속자 목록 + "상태 내보내기".
+//   3. #gm-net-slot — GM 대시보드 탭. isGM이면 "비밀 파일 불러오기"
+//      (docs/specs/04-secret-split.md §3) + 접속자 목록 + "상태 내보내기".
 //
 // ctx: app.js buildCtx() 참고. 여기서 쓰는 필드는 netStatus(=Net.status),
 // peers(=Net.peers() 결과), ROOM, ROOM_CODE, isGM.
+//
+// 비밀 파일 불러오기(§3, 명세 04): GM만 보는 자리다. web/secrets.json을
+// 읽어 Net.setSecrets(map)에 그대로 넘긴다 — 검증·필터링·전송은 전부
+// net.js의 몫이고, 이 파일은 파일 선택 UI와 "로드됨/미로드" 배지만 그린다.
+// 안 눌러도 세션은 정상 진행된다(비밀 칸만 빈 채로).
 //
 // 입장 시점에 GM을 정하는 문제(§6 — "현재는 GM 지정이 입장 후에 이뤄지는데
 // 허브를 세우려면 입장 시점에 정해져야 한다")는 이 파일이 아니라 net.js의
@@ -155,7 +161,73 @@ const UINet = (() => {
     container.appendChild(span);
   }
 
+  // 비밀 파일 불러오기 (docs/specs/04-secret-split.md §3). GM에게만 보인다 —
+  // ROOM.gm === PLAYER_NAME인 사람만 secrets.json을 불러올 수 있게 한다.
+  // 불러오지 않아도 세션은 정상 진행되므로(비밀 칸만 빔) 이 블록은 순전히
+  // 선택 사항이라는 걸 배지로 항상 알려 둔다.
+  function renderSecretsSlot(container, ctx) {
+    if (!ctx.isGM) return;
+
+    const box = document.createElement('div');
+    box.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid var(--border);';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:11px;color:var(--olive);text-transform:uppercase;font-weight:700;margin-bottom:6px;letter-spacing:.05em;';
+    title.textContent = '비밀 파일 (GM 전용)';
+    box.appendChild(title);
+
+    const loaded = !!(typeof Net !== 'undefined' && Net.hasSecrets);
+    const badge = document.createElement('span');
+    badge.className = 'store-badge';
+    badge.style.marginLeft = '0';
+    badge.style.borderColor = loaded ? 'var(--olive)' : 'var(--danger)';
+    badge.style.color = loaded ? 'var(--olive)' : 'var(--danger)';
+    badge.textContent = loaded
+      ? '비밀 로드됨 — 점유자 본인에게만 전송됩니다'
+      : '비밀 미로드 — 플레이어에게 전달되지 않습니다';
+    box.appendChild(badge);
+
+    const fileRow = document.createElement('div');
+    fileRow.style.marginTop = '8px';
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json,.json';
+    const fileNote = document.createElement('div');
+    fileNote.className = 'small-note';
+    fileNote.style.marginTop = '4px';
+    fileNote.textContent = 'web/secrets.json을 선택하세요. 캐릭터를 점유한 사람에게만 그 캐릭터의 비밀이 전송됩니다.';
+    fileInput.onchange = () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let map;
+        try {
+          map = JSON.parse(String(reader.result));
+          if (!map || typeof map !== 'object' || Array.isArray(map)) throw new Error('형식이 올바르지 않습니다.');
+        } catch (e) {
+          fileNote.textContent = '비밀 파일을 읽지 못했습니다 — ' + e.message;
+          fileNote.style.color = 'var(--danger)';
+          return;
+        }
+        if (typeof Net !== 'undefined') Net.setSecrets(map);
+        fileNote.textContent = `비밀을 불러왔습니다 (${Object.keys(map).length}명분). 점유자가 있는 캐릭터는 즉시 전송됩니다.`;
+        fileNote.style.color = 'var(--olive)';
+        if (ctx.actions && ctx.actions.render) ctx.actions.render();
+      };
+      reader.onerror = () => { fileNote.textContent = '파일을 읽는 중 오류가 발생했습니다.'; fileNote.style.color = 'var(--danger)'; };
+      reader.readAsText(file);
+    };
+    fileRow.appendChild(fileInput);
+    fileRow.appendChild(fileNote);
+    box.appendChild(fileRow);
+
+    container.appendChild(box);
+  }
+
   function renderGmSlot(container, ctx) {
+    renderSecretsSlot(container, ctx);
+
     const box = document.createElement('div');
     box.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid var(--border);';
 

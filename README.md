@@ -16,7 +16,7 @@ d20 기반 판정에, **규칙서에 없는 행동도 5초 안에 판정하는 �
 |---|---|
 | 처음 왔다 | [룰북](docs/rulebook.md) — 30분이면 다 읽힙니다 |
 | 오늘 플레이한다 | [사전 제작 캐릭터 16종](docs/pregens.md)에서 하나 고르세요 |
-| **오늘 GM을 한다** | [시나리오 「역참-0」](docs/scenario-station-0.md) — 원샷 3~4시간, 이거 하나면 됩니다 |
+| **오늘 GM을 한다** | [시나리오 「역참-0」](docs/scenario-station-0.md) — 원샷 3~4시간, 이거 하나면 됩니다.<br>플레이어에겐 `web/index.html`만 주고, `web/secrets.json`은 **혼자 갖고 계세요** |
 | 세계관을 더 알고 싶다 | [설정 보충](docs/setting-supplement.md) — 교환장, 위상잔향 운용 |
 | 이 저장소에 기여한다 | [개선점과 구현 방향](docs/roadmap.md) → [구현 명세](docs/specs/) |
 
@@ -37,9 +37,15 @@ data/              ← 정본(single source of truth)
   characters.json  사전 제작 캐릭터 16종
   monsters.json    몬스터/NPC 스탯
 web/
-  index.html       세션 웹도구 (캐릭터시트 · 주사위 · GM 대시보드 · 로그)
+  index.html       세션 웹도구 — 전원에게 배포. 비밀 없음
+  secrets.json     16명의 비밀만 — GM에게만. 빌드가 자동 생성 (명세 04)
+  src/             웹도구 소스. 빌드가 index.html로 인라인한다
+  vendor/          PeerJS (P2P 동기화용)
 tools/
+  build.mjs        src + data → index.html + secrets.json
   audit.mjs        데이터 정합성 검사기
+  test.mjs         판정 엔진 단위 테스트
+  verify-ui.mjs    브라우저 검증
 assets/original/   원본 docx / html — 변경하지 않고 보존
 ```
 
@@ -68,6 +74,11 @@ node tools/audit.mjs
 - **전투** — 선제권 트래커, 몬스터 스탯
 - **P2P 동기화** — GM이 방을 열고 나머지가 방 코드로 붙습니다
   ([ADR-001](docs/adr/001-p2p-sync.md))
+- **비밀 분리 빌드** — 사전 제작 캐릭터의 secret은 `web/index.html`(전원 배포)에는
+  아예 들어가지 않습니다. `web/secrets.json`(GM 전용)에 따로 있고, GM이 GM
+  대시보드에서 그 파일을 불러오면 P2P로 각 점유자에게 자기 캐릭터의 비밀만
+  전송됩니다. GM이 안 불러와도 세션은 정상 진행되며 비밀 칸만 비어 있습니다
+  ([명세 04](docs/specs/04-secret-split.md))
 
 **네트워크가 하나도 안 붙어도 도구는 전부 동작합니다.** P2P는 동기화 계층이지
 저장 계층이 아닙니다. 연결이 안 되면 조용히 로컬 모드로 남습니다.
@@ -76,18 +87,17 @@ node tools/audit.mjs
 
 ```bash
 npm install
-npm run build       # web/src/* + data/*.json → web/index.html (단일 파일)
+npm run build       # web/src/* + data/*.json → web/index.html + web/secrets.json
 npm run verify      # build + 단위 테스트 + 데이터 정합성 검사
 npm run verify:ui   # 브라우저 검증
 ```
 
-> ⚠️ **아직 남은 것**: 사전 제작 캐릭터의 비밀 16개가 빌드 산출물에 인라인되어
-> 개발자 도구로 읽힙니다. 화면에는 안 보이지만 소스에는 있습니다.
-> 해결 방향은 [명세 04](docs/specs/04-secret-split.md)에 있습니다.
+`npm run build`는 `web/index.html`(전원 배포, 비밀 없음)과 `web/secrets.json`
+(GM 전용, 배포 산출물이 아님)을 함께 만들고, 산출물에 비밀 문자열이 하나라도
+남아 있으면 종료 코드 1로 실패합니다.
 
 ## 아직 없는 것
 
-- **비밀 분리 빌드** — 위 경고 참고. 가장 시급합니다 ([명세 04](docs/specs/04-secret-split.md))
 - 즉석 조합 UI (룰북 4.2)
 - 캐릭터 빌더 (부록 A)
 - 시나리오 NPC를 `data/`로 이식 ([명세 05](docs/specs/05-scenario-data.md))
