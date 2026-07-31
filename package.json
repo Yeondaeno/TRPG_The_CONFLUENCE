@@ -8,7 +8,8 @@
     "test": "node tools/test.mjs",
     "audit": "node tools/audit.mjs",
     "verify": "node tools/build.mjs && node tools/test.mjs && node tools/audit.mjs",
-    "verify:ui": "node tools/build.mjs && node tools/verify-ui.mjs"
+    "verify:ui": "node tools/build.mjs && node tools/verify-ui.mjs",
+    "verify:craft": "node tools/build.mjs && node tools/verify-craft.mjs"
   },
   "devDependencies": {
     "playwright": "^1.62.1"

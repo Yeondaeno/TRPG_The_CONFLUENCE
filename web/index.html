@@ -208,6 +208,8 @@
 const RULES = {"$comment":"룰북(docs/rulebook.md)의 표를 기계 판독 가능한 형태로 옮긴 것. 원본 규칙을 바꾸지 않았다. 정합성 문제는 docs/errata.md 참고.","version":"0.1.0","abilities":[{"id":"STR","name":"근력","covers":"근접 공격, 무거운 것 옮기기, 강제로 부수기"},{"id":"AGI","name":"민첩","covers":"사격, 회피, 은신, 반응속도, 선제권"},{"id":"CON","name":"지구력","covers":"체력, 차원 여파 저항, 피로/저주 저항"},{"id":"INT","name":"지능","covers":"마도구 정비, 결계 해석/시스템 해킹, 의식/주술 지식"},{"id":"WIS","name":"감각","covers":"관찰, 생존술, 직감, 기척 추적"},{"id":"CHA","name":"매력","covers":"설득, 협박, 교역, 리더십, 사교계 처세"}],"check":{"formula":"d20 + ability + (proficient ? 2 : 0)","proficiencyBonus":2,"situationalDcShift":[-4,4]},"dcTable":[{"label":"쉬움","dc":8,"example":"잠기지 않은 문 열기, 뻔한 사실 떠올리기"},{"label":"보통","dc":12,"example":"낡은 결계 자물쇠 풀기, 낯선 이 설득하기"},{"label":"어려움","dc":15,"example":"움직이는 표적 저격, 폭주하는 술식 해체"},{"label":"매우 어려움","dc":18,"example":"무너지는 건물에서 동료 구조, 다중 결계 동시 해킹"},{"label":"거의 불가능","dc":22,"example":"맨몸으로 상급 이형체 제압, 폭주하는 역참 코어 즉석 안정화"}],"outcomeTiers":[{"id":"crit","label":"대성공","rule":"natural20 || total >= dc + 10","effect":"의도한 대로 완벽하게, 부가 이득 하나 추가"},{"id":"success","label":"성공","rule":"total >= dc","effect":"의도한 대로 이루어짐"},{"id":"partial","label":"부분 성공","rule":"total >= dc - 4","effect":"원하는 걸 얻지만 대가가 따름 (소음, 부상, 자원 소모, 여파 획득 등)"},{"id":"fail","label":"실패","rule":"natural1 || total <= dc - 5","effect":"원하는 걸 얻지 못하고 상황이 악화됨"}],"groupCheck":{"successThreshold":0.5,"onMajority":"success","onMinority":"partial","helperBonus":2,"helperCheckDc":12},"skills":[{"id":"melee","name":"근접전투","aliases":["결투"],"abilities":["STR"],"use":"칼과 주먹이 오가는 정면 승부"},{"id":"ranged","name":"사격","abilities":["AGI"],"use":"총기·석궁 등 원거리 무기"},{"id":"stealth","name":"은신","aliases":["손재주"],"abilities":["AGI"],"use":"숨기, 잠그기, 몰래 처리하기"},{"id":"intimidate","name":"위협","aliases":["협박"],"abilities":["STR","CHA"],"use":"힘 또는 기세로 상대를 굴복시키기"},{"id":"persuade","name":"설득","aliases":["매혹"],"abilities":["CHA"],"use":"말과 매력으로 마음을 움직이기"},{"id":"trade","name":"교역","abilities":["CHA"],"use":"값을 매기고 흥정하기"},{"id":"heal","name":"치유술","abilities":["INT","WIS"],"use":"부상과 상태이상을 다스리기"},{"id":"spirit","name":"정령술","aliases":["저주술"],"abilities":["INT","WIS"],"use":"정령과의 교감, 금지된 술식 시전"},{"id":"exorcise","name":"퇴마술","abilities":["WIS"],"use":"이형체·요괴를 가려내고 정화하기"},{"id":"tinker","name":"마도구 정비","aliases":["결계 해석"],"abilities":["INT"],"use":"기계와 마법이 뒤섞인 장치 다루기"},{"id":"survival","name":"생존술","aliases":["추적·관찰","관찰"],"abilities":["WIS"],"use":"흔적을 읽고 위험을 먼저 감지하기"},{"id":"beast","name":"동물 교감","abilities":["WIS"],"use":"동물·정령체와 의사소통하기"},{"id":"lore","name":"지식","abilities":["INT"],"use":"역사, 금기, 구역 사정에 대한 앎"}],"combat":{"initiative":"d20 + AGI","turn":{"action":1,"move":1,"reaction":1},"attack":"d20 + ability + (proficient ? 2 : 0) >= target.ac","dyingCheck":{"die":"d20","dieOnBelow":10,"stabilizeSkill":"heal","stabilizeDc":12},"woundTiers":[{"id":"light","label":"경상","hpRatioAtLeast":0.5,"effect":"페널티 없음","checkModifier":0},{"id":"serious","label":"중상","hpRatioBelow":0.5,"effect":"모든 판정에 -2, 이동거리 절반","checkModifier":-2},{"id":"dying","label":"빈사","hp":0,"effect":"행동 불가, 매 라운드 사망 판정","checkModifier":null}]},"weapons":[{"id":"unarmed","name":"맨손 / 둔기","damage":"1d4","ability":"STR"},{"id":"rune_melee","name":"룬각인 검·창 등 근접 무기","damage":"1d6","ability":"STR"},{"id":"pistol","name":"권총형 결정탄 무기","damage":"1d6","ability":"AGI"},{"id":"railgun","name":"장거리 결정탄/레일건","damage":"1d8","ability":"AGI"},{"id":"scatter","name":"산탄형 결계포","damage":"2d6","ability":"AGI","note":"근거리 한정"},{"id":"runebomb","name":"즉석 룬폭탄 / 술식","damage":"2d8","ability":"INT","altAbility":"AGI","note":"범위"}],"damageDieLadder":["1d4","1d6","1d8","2d6","2d8"],"resonance":{"name":"위상잔향","range":[0,100],"gainPerScene":"1d6~2d6","reduceOnFilterOrRest":"1d10","thresholds":[{"at":25,"checkModifier":-1,"scope":"physical","effect":"모든 신체 능력치 판정에 -1"},{"at":50,"checkModifier":-2,"scope":"physical","effect":"-2 페널티, 매 장시간 휴식마다 여파화 판정(d20)","mutationCheckOnLongRest":true},{"at":75,"checkModifier":-3,"scope":"physical","effect":"-3 페널티, 최대 HP -25%","maxHpMultiplier":0.75},{"at":100,"checkModifier":-3,"scope":"physical","effect":"즉시 여파화 표를 굴려 강제 변용 또는 위상 붕괴로 행동불능","forceMutation":true}],"mutationTable":[{"roll":1,"name":"재생의 인장","tone":"긍정","effect":"장시간 휴식 시 HP 완전 회복"},{"roll":2,"name":"야조(夜鳥)의 눈","tone":"긍정","effect":"어둠 속 판정 페널티 없음"},{"roll":3,"name":"결정 폐","tone":"긍정","effect":"잔향/저주 판정에 +2"},{"roll":4,"name":"비늘 피부","tone":"중립","effect":"근접 피해 1 감소, 매력 판정 -1"},{"roll":5,"name":"떨리는 손","tone":"중립","effect":"사격 판정 -1, 근접 판정 +1"},{"roll":6,"name":"과민 감각","tone":"중립","effect":"선제권 +2, 최대 HP -2"},{"roll":7,"name":"홍채 변색","tone":"중립","effect":"순수 외형 변화, 효과 없음"},{"roll":8,"name":"환청 발작","tone":"부정","effect":"은신 판정에 불리"},{"roll":9,"name":"근육 위축","tone":"부정","effect":"STR 판정 -2"},{"roll":10,"name":"GM 재량","tone":"가변","effect":"캐릭터가 머물던 구역 테마에 맞는 독특한 여파 창작"}]},"currency":{"id":"shard","name":"결정편","note":"융합 현상 당시 응축된 차원의 파편. 교역·수리·제작에 사용"},"crafting":{"checkSkill":"tinker","onFailure":"결정편만 소모","recipes":[{"id":"bandage","name":"즉석 결정 붕대","cost":1,"dc":8,"effect":"HP 1d6 회복"},{"id":"runebomb","name":"즉석 룬폭탄","cost":3,"dc":13,"effect":"2d8 범위 피해"},{"id":"filter","name":"위상 필터","cost":2,"dc":10,"effect":"잔향 1d10 감소"},{"id":"engrave","name":"무기 룬각인","cost":3,"dc":14,"effect":"선택 무기 피해 주사위 1단계 상승"},{"id":"ward","name":"방어 결계 강화","cost":2,"dc":12,"effect":"AC +1 (다음 전투까지)"}]},"districts":[{"id":"muyeongga","name":"무영가","hanja":"無影街","theme":"동양 요괴 골목","mood":"등불, 여우불, 옛 신사, 말수 적은 요괴 상인"},{"id":"gangseon","name":"강선지구","hanja":"鋼線地区","theme":"사이버펑크","mood":"네온, 기업 보안, 해커, 인공보철"},{"id":"pureunppuri","name":"푸른뿌리","theme":"자연 친화","mood":"건물을 삼킨 숲, 정령, 소리 없는 경고"},{"id":"simyahoerang","name":"심야회랑","theme":"오컬트","mood":"금지 의식, 지하 서점, 대가를 요구하는 거래"},{"id":"jaeuimun","name":"재의문","theme":"고딕 (뱀파이어·헌터)","mood":"안개, 오래된 저택, 밤의 규율"},{"id":"baekgisaryeong","name":"백기사령","theme":"기사의 도시","mood":"성문, 서약, 결투로 해결되는 분쟁"},{"id":"magongdanji","name":"마공단지","theme":"마공학 도시","mood":"마법으로 돌아가는 공장, 폭주 위험, 발명가"}],"characterCreation":{"$comment":"부록 A 간이 규칙. 사전 제작 캐릭터가 이 규칙을 따르지 않는다 — docs/errata.md R-2/R-3/R-4 참고.","abilityArray":[3,2,1,1,0,-1],"districtProficiencies":2,"startingHp":"10 + CON * 2","startingAc":"10 + AGI (+ 방어구)","startingShards":"2d6","startingGear":"GM과 상의해 1~2개"}};
 const PREGENS = [{"name":"이든","title":"백기사령 소속 서약 기사","district":"백기사령","role":"전투 · 탱커","color":"#8B2E6B","icon":"shield","bg":"기사령의 서약을 15년째 지켜온 기사. 몸으로 막아내는 것에 익숙하다.","stats":{"STR":"+3","AGI":"+1","CON":"+2","INT":"+0","WIS":"+1","CHA":"-1"},"maxHp":22,"ac":13,"startParts":8,"skills":["근접전투(숙련)","위협(숙련)","결투(숙련)"],"equip":"룬각인 대검(1d6+3), 서약 갑주, 즉석 결정 붕대 x2","traits":[{"name":"앞장서기","type":"기계적","text":"파티원을 대신해 공격을 받아낼 때 판정 없이 자동 성공"},{"name":"서약의 무게","type":"RP","text":"한번 뱉은 말은 반드시 지키려 한다 — 거짓 서약을 강요받으면 거부한다"}],"personality":"우직함 · 책임감 · 무뚝뚝","speech":"격식체, 짧고 단호하게 말한다","motive":"후배 기사들을 지키는 것","bond":"세라 — 옛 동료 기사. 파문된 세라를 여전히 신뢰한다"},{"name":"세라","title":"백기사령 파문기사","district":"백기사령","role":"전투 · 결투가","color":"#B0455A","icon":"sword","bg":"부당한 명령을 거부했다가 파문당한 전 기사. 규율보다 자신의 검을 믿는다.","stats":{"STR":"+2","AGI":"+2","CON":"+1","INT":"+0","WIS":"+0","CHA":"+1"},"maxHp":19,"ac":14,"startParts":6,"skills":["근접전투(숙련)","결투(숙련)","관찰(숙련)"],"equip":"부러진 서약검(1d8, 방어 결계 사용 불가), 사슬 갑옷, 은화 몇 닢","traits":[{"name":"일대일 결투","type":"기계적","text":"단독 대상과의 전투에서만 공격 판정에 +2"},{"name":"규율에 대한 반발","type":"RP","text":"부당한 명령이나 규칙을 보면 즉시 지적하거나 어긴다"}],"personality":"반항적 · 명예 중시 · 고독","speech":"직설적, 예의는 지키되 권위엔 고분고분하지 않다","motive":"자신을 파문한 기사령의 진짜 부패를 밝히는 것","bond":"이든 — 옛 동료. 이든만은 자신을 믿어준다는 걸 안다"},{"name":"라비","title":"무영가 출신 반요 척후","district":"무영가","role":"정찰 · 은신","color":"#3E6B8B","icon":"talisman","bg":"여우불이 도는 골목에서 자란 반요. 발소리를 내지 않는다.","stats":{"STR":"+0","AGI":"+3","CON":"+1","INT":"+1","WIS":"+2","CHA":"-1"},"maxHp":16,"ac":14,"startParts":6,"skills":["은신(숙련)","관찰(숙련)","손재주(숙련)"],"equip":"부적 석궁(1d6, 원거리 은신 보너스), 경량 장비, 여우불 부적","traits":[{"name":"그림자처럼","type":"기계적","text":"은신 판정 시 자연 1이 아니면 실패해도 위치가 노출되지 않는다"},{"name":"홀린 기색","type":"RP","text":"낯선 이의 기척에 극도로 예민해 소음에 먼저 반응한다"}],"personality":"새침함 · 독립적 · 은근히 다정함","speech":"짧고 건조한 문장으로 말한다","motive":"반요라는 정체를 숨긴 채 살아갈 곳을 찾는 것","bond":"준 — 같은 무영가 출신. 준은 라비의 정체를 이미 눈치채고 있다"},{"name":"준","title":"무영가 요괴 퇴마사","district":"무영가","role":"전투 · 퇴마","color":"#5E4A8B","icon":"talisman","bg":"상급 이형체에게 스승을 잃고 그 뒤를 쫓는 퇴마사. 과묵하지만 원칙에 어긋난 일은 못 참는다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+2","WIS":"+3","CHA":"-1"},"maxHp":17,"ac":12,"startParts":6,"skills":["퇴마술(숙련)","관찰(숙련)","생존술(숙련)"],"equip":"축귀 부적 다발, 정화의 방울, 단검(1d6)","traits":[{"name":"결계 감지","type":"기계적","text":"위상잔향이나 이형 존재가 근처에 있으면 판정 없이 자동으로 감지한다"},{"name":"정결 강박","type":"RP","text":"부정한 것과 접촉하면 반드시 짧게라도 정화 의식을 치르려 한다"}],"personality":"과묵함 · 원칙주의 · 의외로 다정함","speech":"누구에게나 존댓말, '-하십시오'체를 고수한다","motive":"스승을 해친 상급 이형체를 쫓는 것","bond":"라비 — 같은 무영가 출신. 라비의 정체를 알지만 말하지 않는다"},{"name":"소민","title":"심야회랑 소속 치유 주술사","district":"심야회랑","role":"지원 · 의료","color":"#5E3E8B","icon":"staff","bg":"금지된 의식서를 읽고도 무사했다는 소문이 있다. 손이 차분하다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+2","WIS":"+2","CHA":"+1"},"maxHp":15,"ac":11,"startParts":6,"skills":["치유술(숙련)","생존술(숙련)","지식(숙련)"],"equip":"치유 결정 키트(응급처치 시 +2), 진통 부적 3회분, 소형 결정탄총(1d6)","traits":[{"name":"안정화","type":"기계적","text":"빈사 상태 동료를 응급처치하면 자동 성공(굴림 불필요)"},{"name":"히포크라테스의 맹세","type":"RP","text":"다친 자는 적이라도 최소한의 치료는 해준다"}],"personality":"차분함 · 원칙 · 속은 여림","speech":"나긋한 존댓말","motive":"실종된 의술 스승의 행방을 찾는 것","bond":"카일 — 위험한 지식을 주고받는 거래 상대"},{"name":"카일","title":"심야회랑 금서 수집가","district":"심야회랑","role":"기술 · 저주","color":"#4A2E6B","icon":"book","bg":"금기를 알아야 직성이 풀리는 지식 수집가. 이미 자신에게 저주 하나를 걸어둔 상태다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+3","WIS":"+1","CHA":"+2"},"maxHp":14,"ac":11,"startParts":8,"skills":["저주술(숙련)","지식(숙련)","협상(숙련)"],"equip":"금서 파편(주문서), 저주 표식 잉크, 소형 결정탄총(1d6)","traits":[{"name":"대가의 거래","type":"기계적","text":"저주술 판정 실패 시, 위상잔향 1d6을 받는 대신 재굴림할 수 있다"},{"name":"지식욕","type":"RP","text":"새로운 금기나 비밀을 알게 되면 대화를 멈추고 캐묻는다"}],"personality":"냉소적 · 호기심 과잉 · 계산적","speech":"현학적인 어휘를 즐겨 쓰며 잘난 척한다","motive":"심야회랑 최심부의 금서 완전판을 손에 넣는 것","bond":"소민 — 위험한 지식을 주고받는 거래 상대"},{"name":"파블로","title":"마공단지 출신 마도공학자","district":"마공단지","role":"기술 · 해킹","color":"#8B7A2E","icon":"gear","bg":"고철 더미에서 작동하는 마도구를 찾아내는 데 천재적이다.","stats":{"STR":"-1","AGI":"+1","CON":"+0","INT":"+3","WIS":"+1","CHA":"+0"},"maxHp":14,"ac":11,"startParts":10,"skills":["마도구 정비(숙련)","결계 해석(숙련)","사격(숙련)"],"equip":"휴대용 결계 단말기, 공구세트, 결정편 여분","traits":[{"name":"빠른 손","type":"기계적","text":"마도구 정비/결계 해석 판정 실패 시, 하루에 1번 재굴림할 수 있다"},{"name":"완벽주의","type":"RP","text":"미완성 상태의 물건을 보면 참지 못하고 손을 댄다"}],"personality":"몰입형 · 서투른 사교성 · 다정한 괴짜","speech":"혼잣말이 많다","motive":"자신만의 걸작 마도구를 완성하는 것","bond":"리타 — 같은 구역 출신 라이벌 발명가"},{"name":"리타","title":"마공단지 마도 포격수","district":"마공단지","role":"전투 · 기술","color":"#B08B2E","icon":"gear","bg":"발명품 오작동으로 동료를 다치게 한 이후, 더 안전한 마도구를 만들겠다고 다짐했다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+3","WIS":"+0","CHA":"+1"},"maxHp":15,"ac":12,"startParts":11,"skills":["마도구 정비(숙련)","사격(숙련)","교역(숙련)"],"equip":"휴대용 결계 포탑(설치형, 1d8 자동 공격), 예비 부품, 방염 장갑","traits":[{"name":"포탑 설치","type":"기계적","text":"전투 시작 시 1회, 결계 포탑을 설치해 매 라운드 자동으로 1d8 피해를 가한다(행동 소모 없음)"},{"name":"발명가 기질","type":"RP","text":"새로운 기계나 마도구를 보면 분해해보고 싶어한다"}],"personality":"낙천적 · 수다스러움 · 실험 정신","speech":"전문 용어를 섞어 빠르게 말한다","motive":"마공단지의 폭주 사고를 자신의 발명품으로 줄이는 것","bond":"파블로 — 같은 구역 출신 라이벌 발명가"},{"name":"노아","title":"교환장 출신 중개인","district":"교환장","role":"사교 · 교역","color":"#C1552D","icon":"coin","bg":"일곱 구역 사이를 오가며 뭐든 팔고 사는 상인. 말이 곧 무기다.","stats":{"STR":"-1","AGI":"+0","CON":"+0","INT":"+1","WIS":"+1","CHA":"+3"},"maxHp":13,"ac":11,"startParts":14,"skills":["설득(숙련)","교역(숙련)","관찰(숙련)"],"equip":"품질 좋은 이계 술(선물용), 소형 결정탄총(1d6), 흥정용 잡화 다수","traits":[{"name":"첫인상","type":"기계적","text":"처음 만나는 NPC와의 첫 설득/교역 판정에 +3"},{"name":"손해는 없다","type":"RP","text":"모든 대화를 거래처럼 접근한다 — 파티에게도 장난스럽게 값을 부른다"}],"personality":"사교적 · 계산적 · 은근히 정 많음","speech":"흥정하듯 말끝을 늘인다","motive":"교환장 최고의 중개인이 되는 것","bond":"유나 — 교환장에서 가장 친한 동료"},{"name":"유나","title":"교환장 서기 / 올라운더","district":"교환장","role":"균형형","color":"#6B6B63","icon":"coin","bg":"특출난 하나보다 여러 구역에서 두루 쓸모 있는 사람이 되기로 했다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+1","WIS":"+1","CHA":"+1"},"maxHp":16,"ac":12,"startParts":9,"skills":["교역(숙련)","관찰(숙련)","지식(숙련)"],"equip":"다용도 룬나이프, 소형 결정탄총(1d6), 기록용 수첩","traits":[{"name":"만능","type":"기계적","text":"하루 1번, 숙련 없는 기술 판정에 임시로 숙련(+2)을 적용할 수 있다"},{"name":"중재자","type":"RP","text":"파티 내 의견이 갈리면 항상 중재를 자처한다"}],"personality":"온화함 · 성실함 · 눈치 빠름","speech":"정중하고 조곤조곤하게 말한다","motive":"모든 구역의 기록을 정리해 도시의 역사책을 만드는 것","bond":"노아 — 교환장에서 가장 친한 동료"},{"name":"하윤","title":"강선지구 출신 저격수","district":"강선지구","role":"전투 · 원거리","color":"#2E6B6B","icon":"scope","bg":"네온 사이 옥상에서 상황을 읽는 눈을 가졌다. 말수가 적다.","stats":{"STR":"+0","AGI":"+2","CON":"+0","INT":"+0","WIS":"+3","CHA":"-1"},"maxHp":15,"ac":12,"startParts":6,"skills":["사격(숙련)","관찰(숙련)","은신(숙련)"],"equip":"레일건형 저격총(1d8, 첫 공격 시 +3), 열감지 고글, 위장 망토","traits":[{"name":"조준","type":"기계적","text":"같은 전투에서 두 번째 공격부터 판정에 -2"},{"name":"거리 두기","type":"RP","text":"완전히 신뢰하기 전까진 누구에게도 등을 보이지 않는다"}],"personality":"과묵함 · 신중함 · 예리한 관찰력","speech":"필요한 말만 한다","motive":"강선지구 기업에게 빼앗긴 것을 되찾는 것","bond":"도경 — 같은 이유로 쫓기는 동료"},{"name":"도경","title":"강선지구 의체 격투가","district":"강선지구","role":"전투 · 근접","color":"#2E8B7A","icon":"fist","bg":"지하 격투장에서 이름을 날렸지만, 의체 수술비를 갚기 위해 위험한 일을 자처한다.","stats":{"STR":"+2","AGI":"+2","CON":"+1","INT":"+0","WIS":"+0","CHA":"+1"},"maxHp":18,"ac":13,"startParts":7,"skills":["근접전투(숙련)","위협(숙련)","기계정비(숙련)"],"equip":"의수 건틀릿(1d6+2), 충격 흡수 코트, 즉석 결정 붕대","traits":[{"name":"과부하 일격","type":"기계적","text":"라운드에 1회, 결정편 1개를 태워 공격 피해를 +1d6 할 수 있다"},{"name":"전적 자랑","type":"RP","text":"지하 격투장 우승 경력을 툭하면 언급한다"}],"personality":"허세 · 의리파 · 은근히 계산적","speech":"반말 섞인 거친 말투, 상대를 별명으로 부른다","motive":"의체 수술비를 갚고 자유로워지는 것","bond":"하윤 — 같은 구역 출신, 데면데면하지만 서로 신뢰한다"},{"name":"겨울","title":"푸른뿌리 출신 드루이드 추적자","district":"푸른뿌리","role":"생존 · 탐지","color":"#4A6B4A","icon":"leaf","bg":"건물을 삼킨 숲에서 나고 자라 도심보다 정령의 언어를 더 잘 안다.","stats":{"STR":"+0","AGI":"+1","CON":"+3","WIS":"+3","INT":"-1","CHA":"+0"},"maxHp":19,"ac":12,"startParts":5,"skills":["생존술(숙련)","추적/관찰(숙련)","동물 교감(숙련)"],"equip":"위상 필터 x3, 정령의 활(1d6), 나뭇잎 방독 마스크","traits":[{"name":"익숙함","type":"기계적","text":"위상잔향 획득량을 항상 1 감소시킨다"},{"name":"침묵 우선","type":"RP","text":"꼭 필요한 말이 아니면 손짓으로 대화한다"}],"personality":"과묵함 · 인내심 · 자연 존중","speech":"짧고 은유적으로 말한다","motive":"잠식당하는 푸른뿌리의 경계를 지키는 것","bond":"아이린 — 사제 관계에 가까운 후배"},{"name":"아이린","title":"푸른뿌리 정령 샤먼","district":"푸른뿌리","role":"지원 · 정령술","color":"#6B8B4A","icon":"flame","bg":"정령과의 계약으로 힘을 얻은 대가로 수명의 일부를 내주었다. 온화하지만 고집이 세다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+1","WIS":"+3","CHA":"+2"},"maxHp":14,"ac":11,"startParts":5,"skills":["정령술(숙련)","치유술(숙련)","설득(숙련)"],"equip":"정령 지팡이(원거리 1d6 정령탄), 씨앗 주머니(치유 물약 대용), 나뭇잎 로브","traits":[{"name":"작은 정령의 가호","type":"기계적","text":"하루 1번, 파티원 1명의 판정 실패를 성공으로 바꿀 수 있다"},{"name":"자연의 대변인","type":"RP","text":"자연을 해치는 선택지 앞에서 반드시 반대 의견을 낸다"}],"personality":"온화함 · 고집 · 생명 존중","speech":"자연의 이미지를 섞어 비유적으로 말한다","motive":"푸른뿌리가 다른 구역에 잠식당하지 않도록 지키는 것","bond":"겨울 — 자신을 지켜보는 든든한 선배"},{"name":"레오","title":"재의문 헌터 길드 출신 사냥꾼","district":"재의문","role":"전투 · 위협","color":"#6B2E4A","icon":"bat","bg":"헌터 길드를 떠나 새 삶을 택했지만, 그 시절 말투는 남아있다.","stats":{"STR":"+1","AGI":"+1","CON":"+2","CHA":"+2","INT":"-1","WIS":"+0"},"maxHp":20,"ac":13,"startParts":9,"skills":["협박(숙련)","근접전투(숙련)","결투(숙련)"],"equip":"은각인 쇠파이프(1d6+1), 헌터 길드 표식, 결계 산탄포(2d6, 탄약 4발)","traits":[{"name":"악명","type":"기계적","text":"헌터 길드 관련 NPC 상대로 협박 판정에 +3, 대신 설득 판정에 -2"},{"name":"과거 청산","type":"RP","text":"옛 헌터 길드 동료를 마주치면 시선을 피하지 않고 정면으로 마주한다"}],"personality":"거침 · 의리 · 죄책감","speech":"거친 말투, 가끔 옛 길드 은어가 튀어나온다","motive":"헌터 길드 시절의 실수를 갚는 것","bond":"릴리스 — 과거의 악연"},{"name":"릴리스","title":"재의문 뱀파이어 혈족","district":"재의문","role":"전투 · 매혹","color":"#8B2E4A","icon":"bat","bg":"몰락한 가문의 마지막 혈족. 우아함 뒤에 은근한 외로움을 감춘다.","stats":{"STR":"+1","AGI":"+2","CON":"+0","INT":"+0","WIS":"+0","CHA":"+3"},"maxHp":16,"ac":13,"startParts":10,"skills":["매혹(숙련)","근접전투(숙련)","은신(숙련)"],"equip":"혈검(1d6+1, 명중 시 소량 흡혈), 벨벳 망토, 회중시계(가문 유품)","traits":[{"name":"피의 갈증","type":"기계적","text":"전투에서 적에게 피해를 입힐 때마다 라운드당 최대 1회 HP 1을 회복한다"},{"name":"가문의 자존심","type":"RP","text":"헌터나 하급자 취급을 받으면 반드시 되받아친다"}],"personality":"오만함 · 우아함 · 은근한 외로움","speech":"고풍스러운 존댓말, 상대를 '그대'라 칭한다","motive":"몰락한 가문의 명예를 되찾는 것","bond":"레오 — 과거의 악연"}];
 const MONSTERS = [{"name":"결함 드론 (다수)","hp":6,"ac":11,"atk":"d20+2, 1d4 피해","note":"3기 이하면 위협적이지 않음, 대군일 때 위험"},{"name":"여파에 물든 시민","hp":18,"ac":12,"atk":"d20+3, 1d6 피해","note":"설득으로 전투 회피 가능, 회피 시 아군화"},{"name":"헌터 길드 정찰병","hp":14,"ac":13,"atk":"d20+4, 1d8 피해(레일건)","note":"2인 1조 행동, 협상 여지 있음"},{"name":"역참 인격체 코어 '길잡이'","hp":40,"ac":15,"atk":"d20+5, 2d6 (위상충격)","note":"물리 피해 절반 저항, 결계 해석/설득이 더 효과적"}];
+// SCENARIOS: data/scenarios/*.json을 id로 인덱싱 (docs/specs/05-scenario-data.md).
+const SCENARIOS = {"station-0":{"id":"station-0","title":"역참-0","logline":"차원을 잇던 옛 역참이 수십 년 만에 눈을 떠 \"정상 운행 재개\"를 선언한다 — 뒤섞인 도시를 원래 세계로 '반송'하기 전에, 표를 받은 여덟 명이 자정의 개찰구를 넘는다.","targetMinutes":210,"source":"docs/scenario-station-0.md","districts":["교환장","강선지구","심야회랑","무영가"],"acts":[{"id":"act0","title":"오프닝","minutes":20,"scenes":[{"id":"0","title":"표가 도착한 밤 (교환장)","minutes":20,"resonance":"1d6"}]},{"id":"act1","title":"조사","minutes":55,"scenes":[{"id":"1-1","title":"사라진 사람들","minutes":15,"resonance":"1d6","optional":true,"npcs":[{"name":"여파에 물든 시민","count":1,"note":"반쯤 여파화된 노점상 — 목격자, 반드시 적대적이지는 않음"}]},{"id":"1-2","title":"세 갈래 조사 (분기)","minutes":25,"resonance":"A조 1d6 / B·C조 2d6","branches":[{"id":"1-2A","title":"선환그룹 지사","district":"강선지구","npcs":[{"name":"결함 드론 (다수)","count":4,"note":"잠입 실패 시 경보 전투"},{"name":"수금원 '창'","count":1,"note":"돌발 — 미행하던 도경의 감시자"}]},{"id":"1-2B","title":"흔적 서가","district":"심야회랑"},{"id":"1-2C","title":"옛 개찰구 골목","district":"무영가","npcs":[{"name":"여파에 물든 시민","count":1,"note":"실종된 등불 장인의 아들 — 설득/치유로 아군화 가능"}]}]},{"id":"1-3","title":"자정의 개찰구","minutes":15,"resonance":"2d6"}]},{"id":"act2","title":"역참 진입","minutes":70,"scenes":[{"id":"2-1","title":"검표","minutes":15,"resonance":"2d6","npcs":[{"name":"개찰기 7호","count":1},{"name":"결함 드론 (다수)","count":4}]},{"id":"2-2","title":"승강장 — 경비와 차장","minutes":20,"resonance":"2d6","optional":true,"npcs":[{"name":"무경 (선환 경비대장)","count":1},{"name":"헌터 길드 정찰병","count":2,"instanceNames":["마르코","단"]},{"name":"결함 드론 (다수)","count":4},{"name":"탈선한 차장","count":1}]},{"id":"2-3","title":"대합실 (분기 가능)","minutes":20,"resonance":"2d6","npcs":[{"name":"여파에 물든 시민","count":1,"note":"치유술로 각성시킨 승객이 폭주하는 경우"},{"name":"결함 드론 (다수)","count":2,"note":"좌석 결계 강제 해제 실패 시 출현"}]},{"id":"2-4","title":"정차 시간 — 휴식과 여파화","minutes":15,"resonance":"1d6"}]},{"id":"act3","title":"관제실","minutes":45,"scenes":[{"id":"3-1","title":"관제실 진입","minutes":10,"resonance":"2d6~3d6 (다이얼)","npcs":[{"name":"차은성 (발굴 책임자)","count":1}]},{"id":"3-2","title":"길잡이 — 발차까지 6","minutes":35,"resonance":"피격·펄스마다 1d6","npcs":[{"name":"역참 인격체 코어 '길잡이'","count":1}]}]},{"id":"epilogue","title":"에필로그","minutes":20,"scenes":[{"id":"epilogue","title":"결말 정산 + 개인 에필로그","minutes":20}]}],"npcs":[{"name":"개찰기 7호","hp":20,"ac":14,"atk":"d20+4, 1d8 (구속 사슬)","note":"기계 — 설득 불가. 규정의 허점(지식)·결계 해석에 취약. 파괴 시 경보 + 드론 호출"},{"name":"탈선한 차장","hp":26,"ac":13,"atk":"d20+4, 1d8 (위상 갈고리, 명중 시 잔향 +2)","note":"퇴마술 성공 시 1라운드 정지, DC 15 정화 2회 성공으로 비전투 해소. 융합 그날의 기억 보유"},{"name":"무경 (선환 경비대장)","hp":22,"ac":14,"atk":"d20+4, 2d6 (결계 산탄포, 근거리)","note":"무경이 물러나면 경비 전원 철수. '재해 시 철수' 조항이 설득의 급소"},{"name":"수금원 '창'","hp":14,"ac":12,"atk":"d20+3, 1d6 (결정탄)","note":"돈이 최우선 — 결정편 5개 또는 채무 정보로 매수 가능. 전투보다 도주를 택한다"},{"name":"차은성 (발굴 책임자)","hp":10,"ac":10,"atk":"비무장 (d20+0, 1d4)","note":"전투 불가. 중단할 명분을 주면 협조 — 코어 기억 봉인 코드 소지"}],"resonanceCurve":[{"checkpoint":"act1-end","label":"Act 1 종료 (씬 1-3 후)","target":[20,25],"autoAverage":19},{"checkpoint":"act2-end","label":"Act 2 종료 (씬 2-4 후)","target":[45,55],"autoAverage":44},{"checkpoint":"climax-start","label":"클라이맥스 진입 (씬 3-2 시작)","target":[65,75],"autoAverage":55}]}};
 
 // ==== web/vendor/peerjs.min.js ====
 // web/vendor/peerjs.min.js — vendored PeerJS 1.5.5 (MIT License, https://peerjs.com)
@@ -609,6 +611,66 @@ const Rules = (() => {
         if (value >= t.at && (!matched || t.at > matched.at)) matched = t;
       }
       return matched || null;
+    },
+
+    // ==================================================================
+    // 아래는 명세 06(즉석 조합 · 캐릭터 빌더)이 추가한 헬퍼다. 기존 함수는
+    // 한 줄도 고치지 않았다 — 새 판정 로직도 없다. 즉석 조합의 성공/실패는
+    // 여전히 위 resolve()/modifiers()를 그대로 쓴다(ui-craft.js 참고).
+    // 여기 추가되는 건 전부 "rules.json의 문자열 공식을 숫자로 풀어내는
+    // 순수 파서"뿐이다 — 수치 자체는 여전히 코드에 하드코딩하지 않는다
+    // (docs/specs/README.md 공통 규칙 1/3).
+    // ==================================================================
+
+    // RULES.crafting.recipes에서 id로 레시피 하나를 찾는다(없으면 null).
+    craftingRecipe(id) {
+      return (RULES_DATA.crafting.recipes || []).find((r) => r.id === id) || null;
+    },
+
+    // "10 + CON * 2"(부록 A 시작 HP), "10 + AGI (+ 방어구)"(시작 AC) 같은
+    // 선형 공식 문자열에서 { base, ability, multiplier }만 뽑는다.
+    // 위 dcOffset()과 같은 패턴 — 숫자를 코드에 다시 박지 않고 rules.json
+    // 문자열을 그대로 따라간다. "* N"이 없으면 배수는 1(암묵적)로 본다.
+    // 파싱 자체가 실패하면 null — 호출부가 "자동 계산 불가"로 처리해야
+    // 하며, 임의의 수치로 조용히 대체해선 안 된다.
+    parseLinearFormula(str) {
+      const m = /^\s*(-?\d+)\s*\+\s*([A-Z]+)(?:\s*\*\s*(-?\d+))?/.exec(str || '');
+      if (!m) return null;
+      return { base: parseInt(m[1], 10), ability: m[2], multiplier: m[3] != null ? parseInt(m[3], 10) : 1 };
+    },
+
+    // parseLinearFormula() 결과와 실제 능력치 보정값으로 수치를 계산한다.
+    // 공식을 못 읽으면 null(조용히 0을 돌려주지 않는다 — 호출부가 "이 값은
+    // 자동 계산 안 됨"을 사용자에게 보여야 하기 때문).
+    computeLinearFormula(str, abilityValue) {
+      const f = this.parseLinearFormula(str);
+      if (!f) return null;
+      return f.base + f.multiplier * toNum(abilityValue);
+    },
+
+    // "2d6"(부록 A 시작 결정편) 같은 주사위 표기에서 { count, sides }만
+    // 뽑는다. 실제 굴림(Math.random)은 이 함수의 몫이 아니다 — 이 파일은
+    // "부수효과 없는 순수 함수"만 담는다(파일 맨 위 주석). 굴림 자체는
+    // 호출부(ui-builder.js)가 한다.
+    parseDiceNotation(str) {
+      const m = /^\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
+      if (!m) return null;
+      return { count: parseInt(m[1], 10), sides: parseInt(m[2], 10) };
+    },
+
+    // 부록 A 표준 배열(RULES.characterCreation.abilityArray, 보통
+    // [3,2,1,1,0,-1])의 순열인지 검사한다. assigned는 { STR:n, AGI:n, ... }
+    // 형태. 능력치 6개 전부 채워져 있고, 그 값들의 다중집합이 배열과
+    // 정확히 같아야 true — 캐릭터 빌더가 "배열을 벗어난 배분을 막는" 데 쓴다.
+    isValidAbilityAssignment(assigned) {
+      const pool = (RULES_DATA.characterCreation.abilityArray || []).slice().sort((a, b) => a - b);
+      const values = ABILITY_IDS.map((id) => {
+        const v = assigned ? assigned[id] : undefined;
+        return typeof v === 'number' ? v : NaN;
+      });
+      if (values.some((v) => Number.isNaN(v))) return false;
+      const sortedValues = values.slice().sort((a, b) => a - b);
+      return pool.length === sortedValues.length && pool.every((v, i) => v === sortedValues[i]);
     },
   };
 })();
@@ -1603,10 +1665,14 @@ const UI = (() => {
     claimPanel.appendChild(gmNetSlot);
 
     // 배선: 명세 05(ui-scenario.js)가 시나리오 진행 UI를 여기 채운다.
-    // GM 대시보드 탭 안이라 플레이어에게는 애초에 렌더되지 않는다 —
-    // 명세 05가 따로 GM 여부를 검사할 필요가 없다.
     // 이니셔티브 트래커 바로 위에 두는 이유: 씬의 NPC를 트래커로 투입하는
     // 것이 이 화면의 핵심 동작이라 둘이 붙어 있어야 한다.
+    //
+    // ⚠ "GM 대시보드 탭이니까 GM 전용"이 아니다. 탭 버튼은 역할과 무관하게
+    // 항상 보이고 renderGM()도 isGM을 검사하지 않는다(클레임 패널·트래커·
+    // 몬스터 참고자료·타이머 전부 마찬가지 — 이 도구의 원래 동작이다).
+    // 따라서 **여기 들어가는 모듈이 스스로 ctx.isGM을 검사해야 한다.**
+    // ui-scenario.js가 실제로 그렇게 하고 있다.
     const scenarioSlot = document.createElement('div');
     scenarioSlot.id = 'scenario-slot';
     UIScenario.render(scenarioSlot, ctx);
@@ -2728,24 +2794,291 @@ if (typeof module !== 'undefined') module.exports = UINet;
 
 
 // ==== web/src/ui-scenario.js ====
-// web/src/ui-scenario.js — 시나리오 진행 UI 껍데기
-//
-// 내용은 docs/specs/05-scenario-data.md(명세 05) 담당이며, 그 문서가 이
-// 파일과 data/scenarios/** 의 유일한 소유자다.
+// web/src/ui-scenario.js — 시나리오 진행 UI (명세 05)
 //
 // 배선: ui.js 의 renderGM() 이 #scenario-slot 을 만들고 이 render() 를
-// 호출한다. GM 대시보드 탭 안이므로 **플레이어에게는 애초에 안 보인다** —
-// 명세 05 가 따로 GM 여부를 검사할 필요가 없다는 뜻이다.
+// 호출한다.
 //
-// 지금은 아무것도 그리지 않으므로 GM 대시보드는 종전과 똑같이 보인다.
+// 명세 05 원문(docs/specs/05-scenario-data.md)은 "GM 대시보드 탭 안이라
+// 플레이어에게는 애초에 렌더되지 않으므로 GM 여부를 따로 검사할 필요가
+// 없다"고 전제한다. 실제 ui.js를 확인해 보면 그 전제가 틀렸다 —
+// template.html의 "GM 대시보드" 탭 버튼은 역할과 무관하게 항상 보이고,
+// renderGM()도 isGM을 검사하지 않고 무조건 그린다(claimPanel/이니셔티브
+// 트래커/몬스터 참고자료/타이머 전부 마찬가지 — 이건 이 명세 이전부터의
+// 기존 동작이다). 그래서 이 파일이 아무 방어도 안 하면 완료 조건 "플레이어
+// 화면에는 시나리오 탭이 없음"이 깨진다. ui.js를 고치는 대신(소유 파일
+// 아님) 아래 render()에서 ctx.isGM을 직접 검사해 플레이어에게는 그냥
+// 아무것도 그리지 않는다 — 이 파일만으로 완결되는 가장 작은 수정이다.
+//
+// 데이터: data/scenarios/*.json 은 tools/build.mjs 가 id로 인덱싱해
+// `const SCENARIOS = { "station-0": {...}, ... };` 형태로 인라인한다
+// (web/src/data.js 자리와 같은 방식 — RULES/PREGENS/MONSTERS 참고). 이
+// 파일도 그 전역 상수를 그대로 쓴다(app.js 의 buildCtx()가 SCENARIOS를
+// ctx에 얹지는 않는다 — app.js는 이 명세의 소유가 아니라 고치지 않았다.
+// 대신 ui-check.js가 Store/UI를 바깥 스코프 전역으로 그대로 쓰는 것과
+// 같은 패턴이다 — 모든 web/src/*.js는 빌드 시 한 <script> 태그로
+// 이어붙여지므로 앞서 정의된 전역은 뒤 파일에서 바로 보인다).
+//
+// 소유권 경계(docs/specs/README.md, docs/specs/05-scenario-data.md): 이
+// 파일과 data/scenarios/**, tools/build.mjs, tools/audit.mjs만 고친다.
+// app.js·ui.js·store.js는 손대지 않는다. 그래서 "지금 진행 중인 씬"처럼
+// app.js의 room 스키마(meta/claims/log/combat/char:*)에 자리가 없는 값은
+// ui-check.js의 그룹판정 상태와 같은 방식으로 Store에 직접 자체 키
+// (hg:{code}:scenario)로 보관한다. 반대로 "씬의 NPC를 트래커에 투입"은
+// 이미 스키마에 있는 state.initiative에 얹으므로 ctx.actions.withRoom()을
+// 그대로 쓴다(ui.js의 renderGM '전투 참가자 추가'와 같은 모양의 원소).
 const UIScenario = (() => {
-  // ctx: { ROOM, PLAYER_NAME, RULES, PREGENS, MONSTERS, SCENARIOS, isGM, actions }
-  //   actions.withRoom / addLog / render 는 ui.js 가 넘겨주는 것과 동일하다.
-  //   선제권 트래커에 NPC를 투입하려면 state.initiative 에 push 하면 된다
-  //   (형식은 ui.js 의 renderGM 안 '전투 참가자 추가' 참고).
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+  const scenarioTable = (typeof SCENARIOS !== 'undefined') ? SCENARIOS : {};
+
+  function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
+
+  function pickScenario() {
+    if (scenarioTable['station-0']) return scenarioTable['station-0'];
+    const keys = Object.keys(scenarioTable);
+    return keys.length ? scenarioTable[keys[0]] : null;
+  }
+
+  // ---------------- 진행 상태: Store 자체 키로 폴링 (ui-check.js의 그룹판정과 같은 패턴) ----------------
+  let progress = null; // { sceneId, startedAt }
+  let progressRoomCode = null;
+  let progressLoadInFlight = false;
+
+  function progressKey(roomCode) { return `hg:${roomCode}:scenario`; }
+
+  function scheduleProgressLoad(ctx) {
+    if (progressLoadInFlight || !ctx.ROOM_CODE) return;
+    progressLoadInFlight = true;
+    Store.get(progressKey(ctx.ROOM_CODE)).then((data) => {
+      const next = data || null;
+      const changed = JSON.stringify(next) !== JSON.stringify(progress);
+      progress = next;
+      progressRoomCode = ctx.ROOM_CODE;
+      progressLoadInFlight = false;
+      if (changed) ctx.actions.render();
+    }).catch(() => { progressLoadInFlight = false; });
+  }
+
+  async function saveProgress(ctx, next) {
+    progress = next;
+    progressRoomCode = ctx.ROOM_CODE;
+    await Store.set(progressKey(ctx.ROOM_CODE), next);
+    ctx.actions.render();
+  }
+
+  // ---------------- 시간 계산 ----------------
+  // 씬 목록을 순서대로 훑으며 각 씬이 "끝나는 시점"의 누적 분을 매긴다
+  // (문서 2.1의 '누적' 열과 동일한 계산 — 데이터에는 minutes만 있으므로
+  // 여기서 다시 합산한다. 지어내는 수치가 아니라 문서에 있는 값들의 합).
+  function flattenScenes(scenario) {
+    const flat = [];
+    let cumulative = 0;
+    (scenario.acts || []).forEach((act) => {
+      (act.scenes || []).forEach((scene) => {
+        cumulative += scene.minutes || 0;
+        flat.push({ ...scene, actId: act.id, actTitle: act.title, cumulative });
+      });
+    });
+    return flat;
+  }
+
+  function fmtMinutes(min) {
+    const h = Math.floor(min / 60), m = min % 60;
+    return h ? `${h}시간 ${m}분` : `${m}분`;
+  }
+
+  function npcButtonLabel(npcList) {
+    const individuals = npcList.reduce((a, n) => a + (n.count || 1), 0);
+    return npcList.length === individuals
+      ? `NPC 투입 (${individuals}마리)`
+      : `NPC 투입 (${npcList.length}종 · ${individuals}마리)`;
+  }
+
+  // 씬/갈래 목록에서 어떤 NPC가 들어갈지 미리 보여준다 — 버튼을 누르기 전에
+  // GM이 구성을 확인할 수 있어야 "손으로 옮겨 적는" 대신 믿고 누를 수 있다.
+  function npcNamesLine(npcList) {
+    return npcList.map((n) => (n.count && n.count > 1 ? `${n.name}×${n.count}` : n.name)).join(', ');
+  }
+
+  // ---------------- NPC 투입 ----------------
+  // scenario.npcs(이 시나리오의 신규 5종)를 먼저 찾고, 없으면
+  // ctx.MONSTERS(기존 4종, 시스템 공통)에서 찾는다 — 12장의 "표기 항목은
+  // data/monsters.json과 동일" 설명 그대로다.
+  function findNpcStat(scenario, monsters, name) {
+    return (scenario.npcs || []).find((n) => n.name === name) || (monsters || []).find((n) => n.name === name) || null;
+  }
+
+  function injectNpcs(ctx, scenario, npcList, label) {
+    if (!npcList || !npcList.length) return;
+    const summary = [];
+    const missing = [];
+    ctx.actions.withRoom((state) => {
+      state.initiative = state.initiative || [];
+      npcList.forEach((entry) => {
+        const stat = findNpcStat(scenario, ctx.MONSTERS, entry.name);
+        if (!stat) { missing.push(entry.name); return; }
+        const count = entry.count || 1;
+        for (let i = 0; i < count; i++) {
+          const instanceName = (entry.instanceNames && entry.instanceNames[i]) || (count > 1 ? `${stat.name} ${i + 1}` : stat.name);
+          state.initiative.push({
+            id: Date.now() + '-' + Math.random().toString(16).slice(2) + '-' + i,
+            name: instanceName,
+            init: rollD(20),
+            hp: stat.hp,
+            maxHp: stat.hp,
+            isPC: false,
+          });
+        }
+        summary.push(count > 1 ? `${stat.name}×${count}` : stat.name);
+      });
+      ctx.actions.addLog(state, `시나리오 NPC 투입 — ${label}: ${summary.join(', ') || '(없음)'}${missing.length ? ` [찾지 못함: ${missing.join(', ')}]` : ''}`, 'gm');
+    });
+  }
+
+  // ---------------- 잔향 곡선 ----------------
+  function partyAverageResonance(ctx) {
+    const { PREGENS, ROOM } = ctx;
+    if (!PREGENS || !PREGENS.length) return 0;
+    const total = PREGENS.reduce((sum, p) => sum + ((ROOM.characters[p.name] || {}).radiation || 0), 0);
+    return total / PREGENS.length;
+  }
+
+  // ==================================================================
+  function renderHeader(scenario) {
+    return el(`<div class="kv">
+      <b>${escapeHtml(scenario.title)}</b>
+      <div style="color:var(--paper-dim);margin-top:2px">${escapeHtml(scenario.logline || '')}</div>
+      <div class="small-note" style="margin-top:4px">목표 시간 ${fmtMinutes(scenario.targetMinutes || 0)} · <a href="${escapeHtml(scenario.source || '')}" target="_blank" rel="noopener">${escapeHtml(scenario.source || '')}</a></div>
+    </div>`);
+  }
+
+  function renderTimer(ctx, scenario) {
+    scheduleProgressLoad(ctx);
+    const p = progressRoomCode === ctx.ROOM_CODE ? progress : null;
+    const box = el('<div class="kv" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"></div>');
+    if (p && p.startedAt) {
+      const elapsedMin = Math.floor((Date.now() - p.startedAt) / 60000);
+      const target = scenario.targetMinutes || 0;
+      const over = elapsedMin - target;
+      const status = document.createElement('div');
+      status.innerHTML = `<b>경과 ${fmtMinutes(elapsedMin)}</b> / 목표 ${fmtMinutes(target)}`;
+      status.style.color = over > 0 ? 'var(--danger)' : 'var(--good)';
+      box.appendChild(status);
+      if (over > 0) box.appendChild(el(`<span style="color:var(--danger);font-weight:600">⚠ ${over}분 지연 — 11장 '시간이 모자랄 때' 참고</span>`));
+      const resetBtn = el('<button class="ghost">세션 타이머 리셋</button>');
+      resetBtn.onclick = () => saveProgress(ctx, { ...p, startedAt: null });
+      box.appendChild(resetBtn);
+    } else {
+      const startBtn = el('<button class="primary">세션 타이머 시작</button>');
+      startBtn.onclick = () => saveProgress(ctx, { ...(p || {}), startedAt: Date.now() });
+      box.appendChild(startBtn);
+      box.appendChild(el('<span class="small-note">아직 시작 안 함</span>'));
+    }
+    return box;
+  }
+
+  function renderSceneRow(ctx, scenario, scene, p) {
+    const isCurrent = p && p.sceneId === scene.id;
+    const row = el(`<div class="init-item ${isCurrent ? 'current' : ''}" style="grid-template-columns:1fr auto auto"></div>`);
+    const name = document.createElement('div');
+    name.innerHTML = `<b>${escapeHtml(scene.id)}</b> ${escapeHtml(scene.title)} ${scene.optional ? '<span style="color:var(--rust)">⏱</span>' : ''}`
+      + (scene.npcs && scene.npcs.length ? `<div class="small-note">NPC: ${escapeHtml(npcNamesLine(scene.npcs))}</div>` : '');
+    row.appendChild(name);
+    const meta = document.createElement('div');
+    meta.className = 'mono';
+    meta.style.fontSize = '12px';
+    meta.style.color = 'var(--paper-dim)';
+    meta.textContent = `${scene.minutes}분 · 누적 ${scene.cumulative}분${scene.resonance ? ' · 잔향 ' + scene.resonance : ''}`;
+    row.appendChild(meta);
+    const btns = document.createElement('div');
+    btns.style.display = 'flex';
+    btns.style.gap = '6px';
+    const gotoBtn = el(`<button ${isCurrent ? 'class="primary"' : ''}>${isCurrent ? '진행 중' : '이 씬으로'}</button>`);
+    gotoBtn.onclick = () => saveProgress(ctx, { ...(p || {}), sceneId: scene.id });
+    btns.appendChild(gotoBtn);
+    if (scene.npcs && scene.npcs.length) {
+      const npcBtn = el(`<button>${npcButtonLabel(scene.npcs)}</button>`);
+      npcBtn.onclick = () => injectNpcs(ctx, scenario, scene.npcs, `씬 ${scene.id} ${scene.title}`);
+      btns.appendChild(npcBtn);
+    }
+    row.appendChild(btns);
+    return row;
+  }
+
+  function renderBranchRow(ctx, scenario, scene, branch) {
+    const row = el('<div class="init-item" style="grid-template-columns:1fr auto;padding-left:20px;opacity:0.9"></div>');
+    const name = document.createElement('div');
+    name.innerHTML = `└ <b>${escapeHtml(branch.id)}</b> ${escapeHtml(branch.title)}${branch.district ? ` <span class="small-note">(${escapeHtml(branch.district)})</span>` : ''}`
+      + (branch.npcs && branch.npcs.length ? `<div class="small-note">NPC: ${escapeHtml(npcNamesLine(branch.npcs))}</div>` : '');
+    row.appendChild(name);
+    if (branch.npcs && branch.npcs.length) {
+      const npcBtn = el(`<button>${npcButtonLabel(branch.npcs)}</button>`);
+      npcBtn.onclick = () => injectNpcs(ctx, scenario, branch.npcs, `${branch.id} ${branch.title}`);
+      row.appendChild(npcBtn);
+    } else {
+      row.appendChild(document.createElement('div'));
+    }
+    return row;
+  }
+
+  function renderActsPanel(ctx, scenario) {
+    scheduleProgressLoad(ctx);
+    const p = progressRoomCode === ctx.ROOM_CODE ? progress : null;
+    const panel = el('<div class="panel"><h3>Act·씬 진행</h3></div>');
+    panel.appendChild(renderTimer(ctx, scenario));
+    const flat = flattenScenes(scenario);
+    const list = el('<div class="init-list" style="margin-top:8px"></div>');
+    let lastAct = null;
+    flat.forEach((scene) => {
+      if (scene.actId !== lastAct) {
+        lastAct = scene.actId;
+        const actHead = document.createElement('div');
+        actHead.style.cssText = 'margin-top:10px;font-weight:700;color:var(--amber)';
+        actHead.textContent = `${scene.actTitle}`;
+        list.appendChild(actHead);
+      }
+      list.appendChild(renderSceneRow(ctx, scenario, scene, p));
+      if (scene.branches) {
+        scene.branches.forEach((b) => list.appendChild(renderBranchRow(ctx, scenario, scene, b)));
+      }
+    });
+    panel.appendChild(list);
+    return panel;
+  }
+
+  function renderResonancePanel(ctx, scenario) {
+    if (!scenario.resonanceCurve || !scenario.resonanceCurve.length) return null;
+    const avg = partyAverageResonance(ctx);
+    const panel = el(`<div class="panel"><h3>위상잔향 곡선 — 현재 파티 평균 <span class="mono" style="color:var(--rust)">${avg.toFixed(1)}</span></h3></div>`);
+    const list = document.createElement('div');
+    scenario.resonanceCurve.forEach((cp) => {
+      const [lo, hi] = cp.target;
+      const status = avg < lo ? '아직 못 미침' : (avg > hi ? '이미 넘음' : '범위 안');
+      const color = avg < lo ? 'var(--paper-dim)' : (avg > hi ? 'var(--danger)' : 'var(--good)');
+      const row = el(`<div class="kv" style="border-bottom:1px solid var(--border);padding:6px 0">
+        <b>${escapeHtml(cp.label || cp.checkpoint)}</b> — 목표 ${lo}~${hi} (자동 획득 평균 약 ${cp.autoAverage ?? '?'})
+        <span style="color:${color};font-weight:600;margin-left:6px">${status}</span>
+      </div>`);
+      list.appendChild(row);
+    });
+    panel.appendChild(list);
+    return panel;
+  }
+
+  // ==================================================================
   function render(container, ctx) {
     if (!ctx || !ctx.ROOM) return;
-    // 명세 05 가 채운다.
+    if (!ctx.isGM) return; // 플레이어 화면에는 시나리오 탭을 그리지 않는다 — 위 헤더 주석 참고
+    const scenario = pickScenario();
+    if (!scenario) return; // 인라인된 시나리오가 없으면 아무것도 그리지 않는다 (빌드 실패가 아니라 조용히 생략)
+
+    container.appendChild(renderHeader(scenario));
+    container.appendChild(renderActsPanel(ctx, scenario));
+    const resPanel = renderResonancePanel(ctx, scenario);
+    if (resPanel) container.appendChild(resPanel);
   }
 
   return { render };
@@ -2755,22 +3088,307 @@ if (typeof module !== 'undefined') module.exports = UIScenario;
 
 
 // ==== web/src/ui-craft.js ====
-// web/src/ui-craft.js — 즉석 조합 UI 껍데기 (룰북 4.2)
+// web/src/ui-craft.js — 즉석 조합 UI (룰북 4.2, 명세 06)
 //
-// 내용은 docs/specs/06-crafting-and-builder.md(명세 06) 담당.
+// 배선: ui.js 의 renderChar() 가 선택된 캐릭터 시트 **아래**에 #craft-slot을
+// 만들고 이 render(container, { ...ctx, selectedCharDef, selectedCharState })를
+// 호출한다. 조합은 그 캐릭터의 결정편을 쓰는 행동이라 시트 옆에 두는 게 맞다.
 //
-// 배선: ui.js 의 renderChar() 가 선택된 캐릭터 시트 **아래**에
-// #craft-slot 을 만들고 이 render() 를 호출한다. 조합은 그 캐릭터의
-// 결정편을 쓰는 행동이라 시트 옆에 두는 게 맞다 — 별도 탭을 만들면
-// "누구의 결정편인지"를 다시 고르게 된다.
+// 판정은 새로 짜지 않는다 — Rules.resolve()와 Rules.modifiers(char, 'tinker')
+// (명세 02 엔진)를 그대로 재사용한다. 이 파일이 하는 일은:
+//   1) RULES.crafting.recipes 중 하나 고르기 + 결정편 부족 시 버튼 비활성화
+//   2) "실패해도 결정편은 소모된다"를 누르기 전에 경고
+//   3) 판정 → 4단계 결과. crit/success는 아이템 획득, fail은 소모만,
+//      partial은 룰북에 없는 지점이므로 임의로 정하지 않고 GM 판단 UI로 넘김
+//   4) 만든 아이템(특히 위상 필터)을 실제로 "쓰는" 동작까지 제공
 //
-// ctx.selectedCharDef / ctx.selectedCharState 로 대상 캐릭터가 넘어온다.
-// 판정은 새로 짜지 말고 Rules.resolve / Rules.modifiers(char, 'tinker') 를
-// 재사용할 것 (명세 02 가 이미 만들어 둔 엔진).
+// 상태 저장: 캐릭터 한 명에 붙는 값(인벤토리·대기 중인 부분 성공)은
+// ctx.actions.withRoom()으로 state.characters[name]에 얹는다 — ui-check.js와
+// 같은 자리, 같은 원리다(app.js의 persistRoom()이 캐릭터 상태를 통짜
+// 객체로 저장하므로 새 필드를 추가해도 그대로 정상 저장된다).
 const UICraft = (() => {
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+
+  const OUTCOME_COLOR = { crit: 'var(--amber)', success: 'var(--good)', partial: 'var(--rust)', fail: 'var(--danger)' };
+
+  function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
+  function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }
+  function newId() { return Date.now() + '-' + Math.random().toString(16).slice(2); }
+
+  // Rules.modifiers()가 기대하는 캐릭터 스냅샷 — ui-check.js의 snapshot()과
+  // 같은 모양이다(파일 소유권이 달라 여기서 다시 만든다).
+  function snapshot(p, cs) {
+    return { stats: p.stats, skills: p.skills, hp: cs.hp, maxHp: p.maxHp, radiation: cs.radiation, status: cs.status };
+  }
+
+  // ---------------- 조합 탭 세션 상태 (모듈 전역, 렌더마다 유지) ----------------
+  // ctx가 매 렌더 새로 만들어지고 컨테이너 DOM도 매번 새로 그려지므로(ui.js
+  // render()가 tab-content.innerHTML = '' 후 재생성), 선택값을 여기 모듈
+  // 스코프에 붙잡아 둔다 — ui-check.js의 S와 같은 패턴.
+  const S = { recipeId: null, lastResult: null }; // lastResult: { charName, ... }
+
+  // ==================================================================
   function render(container, ctx) {
     if (!ctx || !ctx.selectedCharDef) return;
-    // 명세 06 이 채운다.
+    const { RULES, Rules, actions, PLAYER_NAME } = ctx;
+    const p = ctx.selectedCharDef;
+    const cs = ctx.selectedCharState || {};
+    const recipes = RULES.crafting.recipes || [];
+    if (!recipes.length) return;
+
+    if (!S.recipeId || !recipes.some((r) => r.id === S.recipeId)) S.recipeId = recipes[0].id;
+    const recipe = Rules.craftingRecipe(S.recipeId) || recipes[0];
+
+    const panel = el(`<div class="panel"><h3>즉석 조합 — ${escapeHtml(p.name)} (룰북 4.2)</h3></div>`);
+
+    // ---- 레시피 선택 ----
+    const row = el('<div class="modrow"></div>');
+    const recipeField = el('<div class="field"><label>제작</label></div>');
+    const recipeSel = document.createElement('select');
+    recipes.forEach((r) => {
+      const o = document.createElement('option');
+      o.value = r.id;
+      o.textContent = `${r.name} — 결정편 ${r.cost} · DC ${r.dc}`;
+      if (r.id === S.recipeId) o.selected = true;
+      recipeSel.appendChild(o);
+    });
+    recipeSel.onchange = () => { S.recipeId = recipeSel.value; actions.render(); };
+    recipeField.appendChild(recipeSel);
+    row.appendChild(recipeField);
+    panel.appendChild(row);
+
+    panel.appendChild(el(`<div class="kv"><b>효과</b> ${escapeHtml(recipe.effect)}</div>`));
+
+    // ---- 보유/필요 결정편 ----
+    const parts = typeof cs.parts === 'number' ? cs.parts : 0;
+    const shortfall = recipe.cost - parts;
+    const canAfford = shortfall <= 0;
+    panel.appendChild(el(`<div class="kv">
+      <b>결정편</b> 보유 ${parts} · 필요 ${recipe.cost}
+      ${canAfford ? '' : `<span style="color:var(--danger);font-weight:700">— 부족 ${shortfall}개, 제작할 수 없습니다</span>`}
+    </div>`));
+
+    // ---- 보정 내역 미리보기 (Rules.modifiers 재사용) ----
+    const char = snapshot(p, cs);
+    const mods = Rules.modifiers(char, RULES.crafting.checkSkill);
+    const preview = el('<div class="kv" style="background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px 12px"></div>');
+    const previewTitle = document.createElement('b');
+    previewTitle.textContent = '보정 내역 (마도구 정비 판정 — 자동 계산)';
+    preview.appendChild(previewTitle);
+    if (!mods.length) {
+      preview.appendChild(el('<div style="color:var(--paper-dim)">추가 보정 없음</div>'));
+    } else {
+      mods.forEach((m) => {
+        const line = document.createElement('div');
+        line.textContent = `${fmtSigned(m.value)}  ${m.label}${m.detail ? '  — ' + m.detail : ''}`;
+        line.style.color = m.value < 0 ? 'var(--danger)' : (m.value > 0 ? 'var(--good)' : 'var(--paper-dim)');
+        preview.appendChild(line);
+      });
+    }
+    panel.appendChild(preview);
+
+    // ---- 대기 중인 부분 성공이 있으면 새 제작을 막는다 ----
+    const pending = cs.pendingCraft || null;
+
+    // ---- 실패해도 결정편은 소모된다는 경고 (룰북 4.2 명시) — 누르기 전에 항상 보인다 ----
+    panel.appendChild(el(`<div class="kv" style="border:1px solid var(--rust);border-radius:3px;padding:8px 10px;background:rgba(139,46,107,0.1);color:var(--rust);font-weight:600">
+      ⚠ 실패해도 결정편 ${recipe.cost}개는 그대로 소모됩니다(룰북 4.2). 성공을 확신할 수 없다면 신중히 누르세요.
+    </div>`));
+
+    // ---- 제작 버튼 ----
+    const craftBtn = el('<button class="primary" style="width:100%;margin-top:10px;padding:12px">제작</button>');
+    craftBtn.disabled = !canAfford || !!pending;
+    if (pending) {
+      panel.appendChild(el('<div class="small-note" style="color:var(--amber)">아래 "부분 성공 처리"를 먼저 끝내야 새로 제작할 수 있습니다.</div>'));
+    }
+    craftBtn.onclick = () => {
+      if (!confirm(`${recipe.name} 제작을 시도합니다. 성공 여부와 무관하게 결정편 ${recipe.cost}개가 즉시 소모됩니다. 계속할까요?`)) return;
+
+      const natural = rollD(20);
+      const modSum = mods.reduce((a, m) => a + m.value, 0);
+      const total = natural + modSum;
+      const tier = Rules.resolve({ natural, total, dc: recipe.dc });
+      const tierDef = (RULES.outcomeTiers || []).find((t) => t.id === tier) || {};
+      const expr = `d20[${natural}] ${mods.map((m) => `${fmtSigned(m.value)}${m.label}`).join(' ')} = ${total} (DC ${recipe.dc})`;
+
+      actions.withRoom((state) => {
+        const target = state.characters[p.name] || {};
+        const beforeParts = typeof target.parts === 'number' ? target.parts : 0;
+        const afterParts = Math.max(0, beforeParts - recipe.cost);
+        const inventory = Array.isArray(target.craftedItems) ? target.craftedItems.slice() : [];
+
+        if (tier === 'crit' || tier === 'success') {
+          inventory.push({ id: newId(), recipeId: recipe.id, name: recipe.name, effect: recipe.effect, quality: 'normal', craftedAt: Date.now() });
+          state.characters[p.name] = { ...target, parts: afterParts, craftedItems: inventory };
+          const critNote = tier === 'crit' ? ' [대성공 — 부가 이득 하나는 GM과 상의해 추가하세요]' : '';
+          actions.addLog(state, `${PLAYER_NAME} — ${p.name}의 조합(${recipe.name}): ${expr} → ${tierDef.label}.${critNote} 결정편 ${beforeParts} → ${afterParts}. ${recipe.name} 획득`, 'roll');
+        } else if (tier === 'partial') {
+          // 룰북 4.2는 성공/실패만 정의한다 — 부분 성공의 대가는 임의로
+          // 정하지 않고 캐릭터 상태에 "대기 중" 표시만 남긴 뒤 GM에게 넘긴다.
+          state.characters[p.name] = {
+            ...target,
+            parts: afterParts,
+            pendingCraft: { recipeId: recipe.id, name: recipe.name, effect: recipe.effect, natural, total, dc: recipe.dc, expr, at: Date.now() },
+          };
+          actions.addLog(state, `${PLAYER_NAME} — ${p.name}의 조합(${recipe.name}): ${expr} → 부분 성공. 결정편 ${beforeParts} → ${afterParts}. 대가는 GM 판단 대기 중`, 'gm');
+        } else {
+          state.characters[p.name] = { ...target, parts: afterParts };
+          actions.addLog(state, `${PLAYER_NAME} — ${p.name}의 조합(${recipe.name}): ${expr} → 실패. 결정편만 소모(${beforeParts} → ${afterParts})`, 'roll');
+        }
+      });
+      S.lastResult = { charName: p.name, natural, total, dc: recipe.dc, tier, tierDef, expr, recipeName: recipe.name };
+    };
+    panel.appendChild(craftBtn);
+
+    // ---- 마지막 결과 표시 ----
+    if (S.lastResult && S.lastResult.charName === p.name) {
+      const r = S.lastResult;
+      const color = OUTCOME_COLOR[r.tier] || 'var(--paper)';
+      panel.appendChild(el(`<div style="margin-top:12px;border:2px solid ${color};border-radius:4px;padding:14px;background:#100E0A">
+        <div class="mono" style="font-size:14px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>
+        <div style="font-size:20px;font-weight:700;color:${color};margin-top:6px">${escapeHtml(r.tierDef.label)} — ${escapeHtml(r.recipeName)}</div>
+      </div>`));
+    }
+
+    // ---- 부분 성공 — GM 판단 UI (룰북 1.4: GM이 그 자리에서 정한다) ----
+    if (pending) {
+      const gmPanel = el(`<div class="panel" style="border-color:var(--rust)"><h3 style="color:var(--rust)">부분 성공 — 대가를 정하세요 (GM 판단, 룰북 4.2는 성공/실패만 정의)</h3>
+        <div class="kv"><b>제작 시도</b> ${escapeHtml(pending.name)} — ${escapeHtml(pending.expr)}</div>
+        <div class="small-note">
+          룰북 4.2는 부분 성공을 다루지 않습니다. 이 도구가 임의로 정하지 않고,
+          1.4의 설계대로 GM이 그 자리에서 대가를 고르게 합니다. 원하는 아이템은
+          어느 쪽을 골라도 지급됩니다 — 무엇을 대가로 치를지만 정하면 됩니다.
+        </div>
+      </div>`);
+
+      // 선택지 1: 결정편 추가 소모 (금액은 GM이 조정 가능 — 기본값은 원 레시피 비용)
+      const opt1 = el('<div class="kv" style="border:1px solid var(--border);border-radius:3px;padding:10px;margin-top:8px"><b>결정편 추가 소모</b></div>');
+      const opt1Row = el('<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>');
+      const opt1Input = document.createElement('input');
+      opt1Input.type = 'number'; opt1Input.min = 0; opt1Input.value = recipe.cost; opt1Input.style.width = '80px';
+      const opt1Btn = el('<button class="primary">적용</button>');
+      opt1Btn.onclick = () => {
+        const extra = Math.max(0, parseInt(opt1Input.value, 10) || 0);
+        actions.withRoom((state) => {
+          const target = state.characters[p.name] || {};
+          const before = typeof target.parts === 'number' ? target.parts : 0;
+          const after = Math.max(0, before - extra);
+          const inv = Array.isArray(target.craftedItems) ? target.craftedItems.slice() : [];
+          inv.push({ id: newId(), recipeId: pending.recipeId, name: pending.name, effect: pending.effect, quality: 'normal', craftedAt: Date.now() });
+          const rest = { ...target };
+          delete rest.pendingCraft;
+          state.characters[p.name] = { ...rest, parts: after, craftedItems: inv };
+          actions.addLog(state, `GM 판단 — ${p.name}의 부분 성공(${pending.name}): 결정편 ${extra}개 추가 소모(${before} → ${after})로 정상 품질 획득`, 'gm');
+        });
+        S.lastResult = null;
+      };
+      opt1Row.appendChild(opt1Input); opt1Row.appendChild(document.createTextNode('개 추가 소모')); opt1Row.appendChild(opt1Btn);
+      opt1.appendChild(opt1Row);
+      gmPanel.appendChild(opt1);
+
+      // 선택지 2: 품질 저하
+      const opt2 = el('<div class="kv" style="border:1px solid var(--border);border-radius:3px;padding:10px;margin-top:8px"><b>품질 저하</b></div>');
+      const opt2Btn = el('<button>적용 — 품질 저하 상태로 지급</button>');
+      opt2Btn.onclick = () => {
+        actions.withRoom((state) => {
+          const target = state.characters[p.name] || {};
+          const inv = Array.isArray(target.craftedItems) ? target.craftedItems.slice() : [];
+          inv.push({ id: newId(), recipeId: pending.recipeId, name: pending.name, effect: pending.effect, quality: 'degraded', craftedAt: Date.now() });
+          const rest = { ...target };
+          delete rest.pendingCraft;
+          state.characters[p.name] = { ...rest, craftedItems: inv };
+          actions.addLog(state, `GM 판단 — ${p.name}의 부분 성공(${pending.name}): 품질 저하 상태로 지급(효과가 줄었거나 불안정 — 세부는 GM 서술)`, 'gm');
+        });
+        S.lastResult = null;
+      };
+      opt2.appendChild(opt2Btn);
+      gmPanel.appendChild(opt2);
+
+      // 선택지 3: 잔향 획득 (폭은 룰북에 없음 — 3.1 "장면당 1d6~2d6"의 하한을
+      // 기본값으로 굴려 보여주되, GM이 직접 조정할 수 있게 입력칸을 연다)
+      const opt3Roll = rollD(6);
+      const opt3 = el(`<div class="kv" style="border:1px solid var(--border);border-radius:3px;padding:10px;margin-top:8px">
+        <b>잔향 획득</b>
+        <div class="small-note" style="margin-top:0">룰북에 폭이 명시돼 있지 않습니다 — 3.1 "장면당 1d6~2d6" 기준으로 1d6을 굴린 값(${opt3Roll})을 기본값으로 채워 뒀습니다. 필요하면 직접 고치세요.</div>
+      </div>`);
+      const opt3Row = el('<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>');
+      const opt3Input = document.createElement('input');
+      opt3Input.type = 'number'; opt3Input.min = 0; opt3Input.value = opt3Roll; opt3Input.style.width = '80px';
+      const opt3Btn = el('<button class="primary">적용</button>');
+      opt3Btn.onclick = () => {
+        const gain = Math.max(0, parseInt(opt3Input.value, 10) || 0);
+        actions.withRoom((state) => {
+          const target = state.characters[p.name] || {};
+          const beforeRad = typeof target.radiation === 'number' ? target.radiation : 0;
+          const afterRad = Math.min(100, beforeRad + gain);
+          const inv = Array.isArray(target.craftedItems) ? target.craftedItems.slice() : [];
+          inv.push({ id: newId(), recipeId: pending.recipeId, name: pending.name, effect: pending.effect, quality: 'normal', craftedAt: Date.now() });
+          const rest = { ...target };
+          delete rest.pendingCraft;
+          state.characters[p.name] = { ...rest, radiation: afterRad, craftedItems: inv };
+          actions.addLog(state, `GM 판단 — ${p.name}의 부분 성공(${pending.name}): 잔향 ${gain} 획득(${beforeRad} → ${afterRad})으로 정상 품질 획득`, 'gm');
+        });
+        S.lastResult = null;
+      };
+      opt3Row.appendChild(opt3Input); opt3Row.appendChild(document.createTextNode('잔향 획득')); opt3Row.appendChild(opt3Btn);
+      opt3.appendChild(opt3Row);
+      gmPanel.appendChild(opt3);
+
+      panel.appendChild(gmPanel);
+    }
+
+    container.appendChild(panel);
+
+    // ==================================================================
+    // 인벤토리 — 만든 아이템을 실제로 쓴다. 특히 위상 필터(잔향 -1d10)는
+    // 만들기만 하고 못 쓰면 반쪽이라 명세가 명시적으로 요구한다.
+    // ==================================================================
+    const inventory = Array.isArray(cs.craftedItems) ? cs.craftedItems : [];
+    const invPanel = el(`<div class="panel"><h3>인벤토리 — ${escapeHtml(p.name)}</h3></div>`);
+    if (!inventory.length) {
+      invPanel.appendChild(el('<div class="empty">아직 만든 아이템이 없습니다.</div>'));
+    } else {
+      inventory.forEach((item) => {
+        const row = el(`<div class="kv" style="display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--border);border-radius:3px;padding:8px 10px;margin-bottom:6px">
+          <div>
+            <b style="display:inline;color:${item.quality === 'degraded' ? 'var(--rust)' : 'var(--amber)'}">${escapeHtml(item.name)}${item.quality === 'degraded' ? ' (품질 저하)' : ''}</b><br>
+            <span style="color:var(--paper-dim);font-size:12px">${escapeHtml(item.effect)}</span>
+          </div>
+        </div>`);
+        const useBtn = el(item.recipeId === 'filter'
+          ? '<button>사용 — 잔향 1d10 감소</button>'
+          : (item.recipeId === 'bandage' ? '<button>사용 — HP 1d6 회복</button>' : '<button>사용 완료 처리</button>'));
+        useBtn.onclick = () => {
+          actions.withRoom((state) => {
+            const target = state.characters[p.name] || {};
+            const inv = (Array.isArray(target.craftedItems) ? target.craftedItems : []).filter((it) => it.id !== item.id);
+            if (item.recipeId === 'filter') {
+              const roll = rollD(10);
+              const before = typeof target.radiation === 'number' ? target.radiation : 0;
+              const after = Math.max(0, before - roll);
+              state.characters[p.name] = { ...target, radiation: after, craftedItems: inv };
+              actions.addLog(state, `${PLAYER_NAME} — ${p.name}이(가) 위상 필터 사용: 잔향 1d10[${roll}] 감소 (${before} → ${after})`, 'roll');
+            } else if (item.recipeId === 'bandage') {
+              const maxHp = p.maxHp;
+              const roll = rollD(6);
+              const before = typeof target.hp === 'number' ? target.hp : maxHp;
+              const after = Math.min(maxHp, before + roll);
+              state.characters[p.name] = { ...target, hp: after, craftedItems: inv };
+              actions.addLog(state, `${PLAYER_NAME} — ${p.name}이(가) 즉석 결정 붕대 사용: HP 1d6[${roll}] 회복 (${before} → ${after})`, 'roll');
+            } else {
+              state.characters[p.name] = { ...target, craftedItems: inv };
+              actions.addLog(state, `${PLAYER_NAME} — ${p.name}이(가) ${item.name} 사용: ${item.effect} (효과는 GM이 상황에 맞게 적용)`, 'gm');
+            }
+          });
+        };
+        row.appendChild(useBtn);
+        invPanel.appendChild(row);
+      });
+    }
+    container.appendChild(invPanel);
   }
 
   return { render };
@@ -2780,23 +3398,394 @@ if (typeof module !== 'undefined') module.exports = UICraft;
 
 
 // ==== web/src/ui-builder.js ====
-// web/src/ui-builder.js — 캐릭터 빌더 UI 껍데기 (룰북 부록 A)
+// web/src/ui-builder.js — 캐릭터 빌더 UI (룰북 부록 A, 명세 06)
 //
-// 내용은 docs/specs/06-crafting-and-builder.md(명세 06) 담당.
+// 배선: ui.js 의 renderChar() 가 캐릭터 선택 그리드 **아래**에 #builder-slot을
+// 만들고 이 render(container, ctx)를 호출한다.
 //
-// 배선: ui.js 의 renderChar() 가 캐릭터 선택 그리드 **아래**에
-// #builder-slot 을 만들고 이 render() 를 호출한다. "16명 중에 고르거나,
-// 직접 만들거나"가 한 화면에 있어야 17번째 플레이어가 헤매지 않는다.
+// 규칙 수치는 RULES.characterCreation에서 그대로 읽는다(능력치 배열, HP/AC
+// 공식, 시작 결정편) — 숫자를 이 파일에 하드코딩하지 않는다. 공식 문자열
+// ("10 + CON * 2" 등) 해석은 rules.js가 이번 명세에서 추가한 순수 헬퍼
+// (Rules.parseLinearFormula / computeLinearFormula / parseDiceNotation /
+// isValidAbilityAssignment)를 그대로 쓴다.
 //
-// 규칙 수치는 RULES.characterCreation 에 있다(능력치 배열, HP/AC 공식,
-// 시작 결정편). 하드코딩하지 말 것.
+// 완성된 캐릭터는 사전 제작 16명과 같은 형태(name/title/district/role/
+// color/icon/bg/stats/maxHp/ac/startParts/skills/equip/traits/personality/
+// speech/motive/bond)로 만들어 ctx.PREGENS(전역 배열, data.js가 빌드 시
+// 인라인하는 그 배열과 같은 참조)에 push한다. ui.js의 renderChar()는 매
+// 렌더 PREGENS를 다시 순회하므로, push하는 순간 17번째 카드로 바로 뜬다.
+// 방 상태(hp/parts/status/notes)는 app.js의 defaultCharState()와 동일한
+// 모양으로 ctx.actions.withRoom() 안에서 함께 만든다.
 //
-// 주의: 부록 A 로 만든 캐릭터는 사전 제작 16명보다 HP 가 낮다
-// (docs/errata.md R-2). 데이터를 고쳐 맞추지 말고 화면에 그 사실을 알릴 것.
+// 한계(정직하게 남겨 둔다): PREGENS는 페이지가 그려질 때 인라인 데이터에서
+// 만들어지는 전역 배열이라 새로고침하면 원래 16명으로 되돌아간다 — 이
+// 명세의 완료 조건은 "같은 세션에서 방에 추가"까지이고, 새로고침 후에도
+// 살아남는 영속화는 요구하지 않는다(app.js/store.js는 이 명세의 소유가
+// 아니다).
+//
+// 구역별 숙련 기술 매핑은 룰북에 없다(명세 06 §2). 그래서 "정답"인 척하는
+// 매핑표를 만들지 않고, 이미 존재하는 16명의 실제 숙련 데이터를
+// 구역별로 집계해 빈도 상위 2개를 추천하고 그 집계 자체를 화면에 보여준다
+// — 추천의 근거가 "지어낸 규칙"이 아니라 "실제 사전 제작 캐릭터가 가진
+// 숙련"임을 사용자가 직접 확인할 수 있게 한다. 물론 직접 바꿀 수 있다.
 const UIBuilder = (() => {
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+
+  // ui.js emblemSVG()의 iconPaths() 스위치가 실제로 그릴 수 있는 키 목록을
+  // 그대로 옮겼다(그 함수는 ui.js 소유라 데이터화되어 있지 않다 — 순수히
+  // 화면 장식용 선택지일 뿐 게임 수치가 아니므로 여기 나열해도 "규칙을
+  // 하드코딩"하는 것과는 다르다).
+  const ICON_CHOICES = ['shield', 'sword', 'talisman', 'staff', 'book', 'gear', 'coin', 'scope', 'fist', 'leaf', 'bat', 'flame'];
+  const DEFAULT_COLORS = ['#8B2E6B', '#3E6B8B', '#E8A33D', '#B0453F', '#7C8B5A', '#6B4E8B'];
+
+  function normalizeSkillName(raw) { return String(raw == null ? '' : raw).replace(/\(숙련\)\s*$/, '').trim(); }
+  function findRulesSkillByName(RULES, name) {
+    return (RULES.skills || []).find((s) => s.name === name || (s.aliases || []).includes(name)) || null;
+  }
+  function fmtStat(n) { return n >= 0 ? `+${n}` : String(n); }
+  function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
+
+  // 이 구역 소속 기존 캐릭터들의 실제 숙련을 집계한다 — 룰북에 없는
+  // "구역→기술" 매핑을 지어내지 않고, 있는 데이터에서 빈도만 뽑는다.
+  // 캐릭터당 같은 기술을 두 번 세지 않도록 정규화한다(예: 이든의
+  // "근접전투(숙련)"과 "결투(숙련)"은 rules.json에서 같은 기술 melee의
+  // 이름/별칭이라 한 번만 센다).
+  function districtSkillFrequency(RULES, PREGENS, districtName) {
+    const freq = new Map(); // skillId -> count
+    const members = [];
+    (PREGENS || []).forEach((p) => {
+      if (p.district !== districtName) return;
+      members.push(p.name);
+      const seen = new Set();
+      (p.skills || []).forEach((raw) => {
+        const skill = findRulesSkillByName(RULES, normalizeSkillName(raw));
+        if (skill && !seen.has(skill.id)) { seen.add(skill.id); freq.set(skill.id, (freq.get(skill.id) || 0) + 1); }
+      });
+    });
+    const sorted = [...freq.entries()].sort((a, b) => b[1] - a[1]);
+    return { sorted, members };
+  }
+
+  // ---------------- 빌더 세션 상태 (모듈 전역, 렌더마다 유지) ----------------
+  const S = {
+    open: false,
+    name: '', title: '', role: '', bg: '',
+    district: null,
+    stats: null,        // { STR:3, AGI:2, ... } — null이면 아직 기본값을 안 채운 것
+    skillIds: [null, null],
+    color: DEFAULT_COLORS[0],
+    icon: ICON_CHOICES[0],
+    equip: '', personality: '', speech: '', motive: '', bond: '',
+    shards: null,        // 굴리기 전에는 null
+    error: null,
+    justAdded: null,     // 방금 추가한 캐릭터 이름 (완료 메시지용)
+  };
+
+  function ensureDefaults(ctx) {
+    const { RULES } = ctx;
+    if (!S.stats) {
+      // 기본값: RULES.characterCreation.abilityArray를 RULES.abilities 순서대로
+      // 그대로 배분한 유효한 초기 배열. 사용자가 드롭다운으로 다시 섞을 수 있다.
+      const pool = (RULES.characterCreation.abilityArray || []).slice();
+      const stats = {};
+      RULES.abilities.forEach((a, i) => { stats[a.id] = pool[i] != null ? pool[i] : 0; });
+      S.stats = stats;
+    }
+    if (!S.district && RULES.districts && RULES.districts.length) {
+      S.district = RULES.districts[0].id;
+    }
+  }
+
+  // 현재 구역 선택에 맞춰 추천 숙련 2개로 skillIds를 채운다(사용자가 이미
+  // 직접 고른 상태라면 덮어쓰지 않는다 — district가 바뀔 때만 호출한다).
+  function applyRecommendedSkills(ctx) {
+    const { RULES } = ctx;
+    const district = (RULES.districts || []).find((d) => d.id === S.district);
+    if (!district) return;
+    const { sorted } = districtSkillFrequency(RULES, ctx.PREGENS, district.name);
+    const top2 = sorted.slice(0, 2).map(([id]) => id);
+    S.skillIds = [top2[0] || (RULES.skills[0] || {}).id || null, top2[1] || (RULES.skills[1] || {}).id || null];
+  }
+
+  // ==================================================================
   function render(container, ctx) {
     if (!ctx || !ctx.RULES) return;
-    // 명세 06 이 채운다.
+    const { RULES, Rules, actions, PLAYER_NAME, PREGENS } = ctx;
+    ensureDefaults(ctx);
+
+    const panel = el('<div class="panel"><h3>캐릭터 빌더 (부록 A — 17번째 플레이어용)</h3></div>');
+
+    // ---- HP 격차 경고 — 항상 보인다 (errata R-2, 데이터를 고쳐 맞추지 않는다) ----
+    panel.appendChild(el(`<div class="kv" style="border:1px solid var(--danger);border-radius:3px;padding:10px 12px;background:rgba(176,69,63,0.08);color:var(--danger)">
+      <b style="color:var(--danger)">부록 A 공식으로 만든 캐릭터는 사전 제작 16명보다 HP가 2~8 낮습니다.</b>
+      같은 테이블에서 섞어 쓰려면 GM과 상의해 HP를 보정하세요.
+      (docs/errata.md의 R-2·R-3 참고 — 데이터를 고쳐 맞추지 않고 이 사실만 알립니다)
+    </div>`));
+
+    const toggleBtn = el(`<button class="${S.open ? 'ghost' : 'primary'}" style="margin-top:10px">${S.open ? '빌더 접기' : '+ 새 캐릭터 직접 만들기'}</button>`);
+    toggleBtn.onclick = () => { S.open = !S.open; actions.render(); };
+    panel.appendChild(toggleBtn);
+
+    if (S.justAdded) {
+      panel.appendChild(el(`<div class="kv" style="color:var(--good);margin-top:10px">
+        ✓ '${escapeHtml(S.justAdded)}' 캐릭터가 방에 추가되었습니다. 위 캐릭터 선택 목록에서 바로 고를 수 있습니다.
+      </div>`));
+    }
+
+    if (!S.open) { container.appendChild(panel); return; }
+
+    // ---- 기본 정보 ----
+    const row1 = el('<div class="modrow"></div>');
+    const nameField = el('<div class="field"><label>이름</label></div>');
+    const nameInp = document.createElement('input');
+    nameInp.type = 'text'; nameInp.value = S.name; nameInp.placeholder = '예: 지운';
+    nameInp.onchange = () => { S.name = nameInp.value.trim(); actions.render(); };
+    nameField.appendChild(nameInp); row1.appendChild(nameField);
+
+    const titleField = el('<div class="field"><label>칭호</label></div>');
+    const titleInp = document.createElement('input');
+    titleInp.type = 'text'; titleInp.value = S.title; titleInp.placeholder = '예: 떠돌이 정비공';
+    titleInp.onchange = () => { S.title = titleInp.value; actions.render(); };
+    titleField.appendChild(titleInp); row1.appendChild(titleField);
+
+    const roleField = el('<div class="field"><label>역할</label></div>');
+    const roleInp = document.createElement('input');
+    roleInp.type = 'text'; roleInp.value = S.role; roleInp.placeholder = '예: 지원 · 정비';
+    roleInp.onchange = () => { S.role = roleInp.value; actions.render(); };
+    roleField.appendChild(roleInp); row1.appendChild(roleField);
+    panel.appendChild(row1);
+
+    const bgField = el('<div class="field" style="margin-bottom:14px"><label>배경 (한두 문장)</label></div>');
+    const bgInp = document.createElement('input');
+    bgInp.type = 'text'; bgInp.value = S.bg; bgInp.placeholder = '캐릭터의 짧은 배경 설명';
+    bgInp.onchange = () => { S.bg = bgInp.value; actions.render(); };
+    bgField.appendChild(bgInp);
+    panel.appendChild(bgField);
+
+    // ---- 색상 / 아이콘 (화면 장식용, 게임 수치 아님) ----
+    const row2 = el('<div class="modrow"></div>');
+    const colorField = el('<div class="field"><label>색상</label></div>');
+    const colorInp = document.createElement('input');
+    colorInp.type = 'color'; colorInp.value = S.color;
+    colorInp.onchange = () => { S.color = colorInp.value; actions.render(); };
+    colorField.appendChild(colorInp); row2.appendChild(colorField);
+
+    const iconField = el('<div class="field"><label>문장(紋章) 아이콘</label></div>');
+    const iconSel = document.createElement('select');
+    ICON_CHOICES.forEach((k) => {
+      const o = document.createElement('option'); o.value = k; o.textContent = k;
+      if (k === S.icon) o.selected = true;
+      iconSel.appendChild(o);
+    });
+    iconSel.onchange = () => { S.icon = iconSel.value; actions.render(); };
+    iconField.appendChild(iconSel); row2.appendChild(iconField);
+    panel.appendChild(row2);
+
+    // ==================================================================
+    // 능력치 배열 — [3,2,1,1,0,-1] 순열만 허용
+    // ==================================================================
+    panel.appendChild(el(`<h3 style="color:var(--amber);font-size:14px;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px">
+      능력치 배열 (부록 A: ${escapeHtml((RULES.characterCreation.abilityArray || []).map(fmtStat).join(', '))} 를 원하는 순서로 배분)
+    </h3>`));
+    const statsGrid = el('<div class="stat-row" style="flex-wrap:wrap"></div>');
+    const poolValuesUnique = [...new Set(RULES.characterCreation.abilityArray || [])].sort((a, b) => b - a);
+    RULES.abilities.forEach((a) => {
+      const box = el(`<div class="stat-box" style="min-width:80px"><div class="k">${escapeHtml(a.id)} · ${escapeHtml(a.name)}</div></div>`);
+      const sel = document.createElement('select');
+      poolValuesUnique.forEach((v) => {
+        const o = document.createElement('option'); o.value = String(v); o.textContent = fmtStat(v);
+        if (S.stats[a.id] === v) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.onchange = () => { S.stats[a.id] = parseInt(sel.value, 10); actions.render(); };
+      box.appendChild(sel);
+      statsGrid.appendChild(box);
+    });
+    panel.appendChild(statsGrid);
+
+    const validArray = Rules.isValidAbilityAssignment(S.stats);
+    if (!validArray) {
+      panel.appendChild(el(`<div class="kv" style="color:var(--danger);margin-top:8px">
+        ⚠ 이 배분은 표준 배열 [${escapeHtml((RULES.characterCreation.abilityArray || []).map(fmtStat).join(', '))}]의 순열이 아닙니다.
+        같은 수치를 배열에 있는 횟수보다 더 많이 쓰고 있을 수 있습니다 — 6개 값을 서로 겹치지 않게 다시 배분하세요.
+      </div>`));
+    } else {
+      panel.appendChild(el('<div class="kv" style="color:var(--good);margin-top:8px">✓ 유효한 배열입니다.</div>'));
+    }
+
+    // ==================================================================
+    // 출신 구역 — 숙련 2개 자동 추천 + 직접 변경
+    // ==================================================================
+    panel.appendChild(el(`<h3 style="color:var(--amber);font-size:14px;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px">출신 구역과 숙련 기술</h3>`));
+    const districtField = el('<div class="field"></div>');
+    const districtSel = document.createElement('select');
+    (RULES.districts || []).forEach((d) => {
+      const o = document.createElement('option'); o.value = d.id; o.textContent = `${d.name} — ${d.theme}`;
+      if (d.id === S.district) o.selected = true;
+      districtSel.appendChild(o);
+    });
+    districtSel.onchange = () => { S.district = districtSel.value; applyRecommendedSkills(ctx); actions.render(); };
+    districtField.appendChild(districtSel);
+    panel.appendChild(districtField);
+
+    if (S.skillIds[0] == null && S.skillIds[1] == null) applyRecommendedSkills(ctx);
+
+    const districtDef = (RULES.districts || []).find((d) => d.id === S.district);
+    if (districtDef) {
+      const { sorted, members } = districtSkillFrequency(RULES, PREGENS, districtDef.name);
+      const freqText = sorted.length
+        ? sorted.map(([id, n]) => {
+            const s = (RULES.skills || []).find((x) => x.id === id);
+            return `${s ? s.name : id}×${n}`;
+          }).join(', ')
+        : '(집계 가능한 데이터 없음)';
+      panel.appendChild(el(`<div class="small-note">
+        자동 추천 근거: <b>룰북에 구역→기술 공식 매핑은 없습니다.</b> 대신 이 구역 소속 기존 캐릭터(${escapeHtml(members.join('·') || '없음')})의
+        실제 숙련 빈도를 집계했습니다 — ${escapeHtml(freqText)}. 빈도 상위 2개를 기본값으로 채웠을 뿐이니 이야기에 맞게 자유롭게 바꾸세요.
+      </div>`));
+    }
+
+    const skillsRow = el('<div class="modrow" style="margin-top:8px"></div>');
+    [0, 1].forEach((idx) => {
+      const f = el(`<div class="field"><label>숙련 기술 ${idx + 1} ${idx === 0 ? '(자동 추천)' : '(자동 추천)'}</label></div>`);
+      const sel = document.createElement('select');
+      RULES.skills.forEach((s) => {
+        const o = document.createElement('option'); o.value = s.id; o.textContent = s.name;
+        if (S.skillIds[idx] === s.id) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.onchange = () => { S.skillIds[idx] = sel.value; actions.render(); };
+      f.appendChild(sel);
+      skillsRow.appendChild(f);
+    });
+    panel.appendChild(skillsRow);
+    const sameSkill = S.skillIds[0] && S.skillIds[1] && S.skillIds[0] === S.skillIds[1];
+    if (sameSkill) panel.appendChild(el('<div class="kv" style="color:var(--danger)">⚠ 같은 기술을 두 번 골랐습니다. 서로 다른 기술 2개를 선택하세요.</div>'));
+
+    // ==================================================================
+    // HP / AC / 결정편 자동 계산
+    // ==================================================================
+    panel.appendChild(el(`<h3 style="color:var(--amber);font-size:14px;margin:16px 0 8px;border-bottom:1px solid var(--border);padding-bottom:6px">시작 수치 (자동 계산 — RULES.characterCreation 공식)</h3>`));
+    const conVal = S.stats.CON != null ? S.stats.CON : 0;
+    const agiVal = S.stats.AGI != null ? S.stats.AGI : 0;
+    const computedHp = Rules.computeLinearFormula(RULES.characterCreation.startingHp, conVal);
+    const computedAc = Rules.computeLinearFormula(RULES.characterCreation.startingAc, agiVal);
+    const diceSpec = Rules.parseDiceNotation(RULES.characterCreation.startingShards);
+
+    const calcRow = el('<div class="stat-row"></div>');
+    calcRow.appendChild(el(`<div class="stat-box"><div class="k">HP (${escapeHtml(RULES.characterCreation.startingHp)})</div><div class="v">${computedHp != null ? computedHp : '계산 불가'}</div></div>`));
+    calcRow.appendChild(el(`<div class="stat-box"><div class="k">AC (${escapeHtml(RULES.characterCreation.startingAc)})</div><div class="v">${computedAc != null ? computedAc : '계산 불가'}</div></div>`));
+    const shardsBox = el(`<div class="stat-box"><div class="k">결정편 (${escapeHtml(RULES.characterCreation.startingShards)})</div><div class="v">${S.shards != null ? S.shards : '—'}</div></div>`);
+    calcRow.appendChild(shardsBox);
+    panel.appendChild(calcRow);
+
+    const rollShardsBtn = el(`<button style="margin-top:8px">결정편 ${escapeHtml(RULES.characterCreation.startingShards)} 굴리기</button>`);
+    rollShardsBtn.onclick = () => {
+      if (!diceSpec) { alert('결정편 공식을 해석할 수 없습니다.'); return; }
+      let sum = 0;
+      for (let i = 0; i < diceSpec.count; i++) sum += rollD(diceSpec.sides);
+      S.shards = sum;
+      actions.render();
+    };
+    panel.appendChild(rollShardsBtn);
+
+    const equipField = el('<div class="field" style="margin-top:12px"><label>개인 장비 (GM과 상의해 1~2개, 부록 A 5)</label></div>');
+    const equipInp = document.createElement('input');
+    equipInp.type = 'text'; equipInp.value = S.equip; equipInp.placeholder = '예: 소형 렌치 세트, 즉석 결정 붕대 x1';
+    equipInp.onchange = () => { S.equip = equipInp.value; actions.render(); };
+    equipField.appendChild(equipInp);
+    panel.appendChild(equipField);
+
+    // ---- 선택 RP 필드 ----
+    const rpRow = el('<div class="modrow"></div>');
+    [['personality', '성격', S.personality], ['speech', '말투', S.speech], ['motive', '목표', S.motive], ['bond', '관계', S.bond]].forEach(([key, label, val]) => {
+      const f = el(`<div class="field"><label>${escapeHtml(label)}</label></div>`);
+      const inp = document.createElement('input');
+      inp.type = 'text'; inp.value = val;
+      inp.onchange = () => { S[key] = inp.value; actions.render(); };
+      f.appendChild(inp); rpRow.appendChild(f);
+    });
+    panel.appendChild(rpRow);
+
+    // ==================================================================
+    // 추가 버튼 — 유효성 검사 후 PREGENS + 방 상태에 반영
+    // ==================================================================
+    const nameTaken = S.name && PREGENS.some((p) => p.name === S.name);
+    const errors = [];
+    if (!S.name) errors.push('이름을 입력하세요.');
+    if (nameTaken) errors.push(`'${S.name}'은(는) 이미 있는 캐릭터 이름입니다.`);
+    if (!validArray) errors.push('능력치 배열이 유효하지 않습니다.');
+    if (!S.district) errors.push('출신 구역을 선택하세요.');
+    if (!S.skillIds[0] || !S.skillIds[1]) errors.push('숙련 기술 2개를 모두 선택하세요.');
+    if (sameSkill) errors.push('숙련 기술 2개가 서로 달라야 합니다.');
+    if (computedHp == null || computedAc == null) errors.push('HP/AC 공식을 계산할 수 없습니다(rules.json 형식 확인 필요).');
+    if (S.shards == null) errors.push('결정편을 먼저 굴리세요.');
+
+    if (errors.length) {
+      panel.appendChild(el(`<div class="kv" style="color:var(--danger);margin-top:12px">${errors.map((e) => `⚠ ${escapeHtml(e)}`).join('<br>')}</div>`));
+    }
+
+    const addBtn = el('<button class="primary" style="width:100%;margin-top:12px;padding:12px">이 캐릭터를 방에 추가</button>');
+    addBtn.disabled = errors.length > 0;
+    // actions.withRoom()은 비동기다(loadRoomFromStore → mutator → persistRoom →
+    // render() 순서). await 없이 곧바로 우리 쪽 actions.render()를 또 부르면,
+    // withRoom이 아직 저장소를 다 읽어오기 전(state.characters[built.name]이
+    // 없는) 옛 ROOM으로 먼저 그려버려 ui.js의 renderChar()가 cs.hp를 읽다가
+    // 죽는다(직접 재현해서 확인한 버그) — 그래서 반드시 await한 뒤에 이어간다.
+    addBtn.onclick = async () => {
+      const districtDef2 = (RULES.districts || []).find((d) => d.id === S.district);
+      const skill1 = (RULES.skills || []).find((s) => s.id === S.skillIds[0]);
+      const skill2 = (RULES.skills || []).find((s) => s.id === S.skillIds[1]);
+      const built = {
+        name: S.name,
+        title: S.title || '(무제)',
+        district: districtDef2 ? districtDef2.name : S.district,
+        role: S.role || '',
+        color: S.color,
+        icon: S.icon,
+        bg: S.bg || '',
+        stats: Object.fromEntries(RULES.abilities.map((a) => [a.id, fmtStat(S.stats[a.id])])),
+        maxHp: computedHp,
+        ac: computedAc,
+        startParts: S.shards,
+        skills: [skill1, skill2].filter(Boolean).map((s) => `${s.name}(숙련)`),
+        equip: S.equip || '',
+        traits: [],
+        personality: S.personality || '',
+        speech: S.speech || '',
+        motive: S.motive || '',
+        bond: S.bond || '',
+        // secret은 일부러 없음 — data.js/명세 04의 규약(사전 제작 캐릭터의
+        // secret은 인라인되지 않는다)과 같은 모양을 유지한다. GM이 필요하면
+        // 캐릭터시트의 "메모"에 직접 적어 넣으면 된다.
+      };
+
+      // PREGENS(전역 배열, ctx.PREGENS와 같은 참조)에 push — ui.js가 매 렌더
+      // 다시 순회하므로 바로 17번째 카드로 나타난다. 선택 캐릭터도 미리
+      // 바꿔 둔다 — withRoom()의 마지막 render()가 이 값을 그대로 쓴다.
+      PREGENS.push(built);
+      actions.setSelectedChar(built.name);
+
+      await actions.withRoom((state) => {
+        state.characters[built.name] = { hp: built.maxHp, radiation: 0, parts: built.startParts, status: '경상', notes: '' };
+        actions.addLog(state, `${PLAYER_NAME}님이 '${built.name}' 캐릭터를 부록 A 규칙으로 직접 만들어 방에 추가했습니다 (HP ${built.maxHp}, AC ${built.ac}, 결정편 ${built.startParts}).`, 'sys');
+      });
+
+      S.justAdded = built.name;
+      S.open = false;
+      // 다음에 또 만들 때를 대비해 입력값을 초기화한다(이름 중복 방지 포함).
+      S.name = ''; S.title = ''; S.role = ''; S.bg = '';
+      S.stats = null; S.skillIds = [null, null];
+      S.equip = ''; S.personality = ''; S.speech = ''; S.motive = ''; S.bond = '';
+      S.shards = null;
+      actions.render();
+    };
+    panel.appendChild(addBtn);
+
+    container.appendChild(panel);
   }
 
   return { render };

@@ -187,6 +187,66 @@ const Rules = (() => {
       }
       return matched || null;
     },
+
+    // ==================================================================
+    // 아래는 명세 06(즉석 조합 · 캐릭터 빌더)이 추가한 헬퍼다. 기존 함수는
+    // 한 줄도 고치지 않았다 — 새 판정 로직도 없다. 즉석 조합의 성공/실패는
+    // 여전히 위 resolve()/modifiers()를 그대로 쓴다(ui-craft.js 참고).
+    // 여기 추가되는 건 전부 "rules.json의 문자열 공식을 숫자로 풀어내는
+    // 순수 파서"뿐이다 — 수치 자체는 여전히 코드에 하드코딩하지 않는다
+    // (docs/specs/README.md 공통 규칙 1/3).
+    // ==================================================================
+
+    // RULES.crafting.recipes에서 id로 레시피 하나를 찾는다(없으면 null).
+    craftingRecipe(id) {
+      return (RULES_DATA.crafting.recipes || []).find((r) => r.id === id) || null;
+    },
+
+    // "10 + CON * 2"(부록 A 시작 HP), "10 + AGI (+ 방어구)"(시작 AC) 같은
+    // 선형 공식 문자열에서 { base, ability, multiplier }만 뽑는다.
+    // 위 dcOffset()과 같은 패턴 — 숫자를 코드에 다시 박지 않고 rules.json
+    // 문자열을 그대로 따라간다. "* N"이 없으면 배수는 1(암묵적)로 본다.
+    // 파싱 자체가 실패하면 null — 호출부가 "자동 계산 불가"로 처리해야
+    // 하며, 임의의 수치로 조용히 대체해선 안 된다.
+    parseLinearFormula(str) {
+      const m = /^\s*(-?\d+)\s*\+\s*([A-Z]+)(?:\s*\*\s*(-?\d+))?/.exec(str || '');
+      if (!m) return null;
+      return { base: parseInt(m[1], 10), ability: m[2], multiplier: m[3] != null ? parseInt(m[3], 10) : 1 };
+    },
+
+    // parseLinearFormula() 결과와 실제 능력치 보정값으로 수치를 계산한다.
+    // 공식을 못 읽으면 null(조용히 0을 돌려주지 않는다 — 호출부가 "이 값은
+    // 자동 계산 안 됨"을 사용자에게 보여야 하기 때문).
+    computeLinearFormula(str, abilityValue) {
+      const f = this.parseLinearFormula(str);
+      if (!f) return null;
+      return f.base + f.multiplier * toNum(abilityValue);
+    },
+
+    // "2d6"(부록 A 시작 결정편) 같은 주사위 표기에서 { count, sides }만
+    // 뽑는다. 실제 굴림(Math.random)은 이 함수의 몫이 아니다 — 이 파일은
+    // "부수효과 없는 순수 함수"만 담는다(파일 맨 위 주석). 굴림 자체는
+    // 호출부(ui-builder.js)가 한다.
+    parseDiceNotation(str) {
+      const m = /^\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
+      if (!m) return null;
+      return { count: parseInt(m[1], 10), sides: parseInt(m[2], 10) };
+    },
+
+    // 부록 A 표준 배열(RULES.characterCreation.abilityArray, 보통
+    // [3,2,1,1,0,-1])의 순열인지 검사한다. assigned는 { STR:n, AGI:n, ... }
+    // 형태. 능력치 6개 전부 채워져 있고, 그 값들의 다중집합이 배열과
+    // 정확히 같아야 true — 캐릭터 빌더가 "배열을 벗어난 배분을 막는" 데 쓴다.
+    isValidAbilityAssignment(assigned) {
+      const pool = (RULES_DATA.characterCreation.abilityArray || []).slice().sort((a, b) => a - b);
+      const values = ABILITY_IDS.map((id) => {
+        const v = assigned ? assigned[id] : undefined;
+        return typeof v === 'number' ? v : NaN;
+      });
+      if (values.some((v) => Number.isNaN(v))) return false;
+      const sortedValues = values.slice().sort((a, b) => a - b);
+      return pool.length === sortedValues.length && pool.every((v, i) => v === sortedValues[i]);
+    },
   };
 })();
 

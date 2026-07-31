@@ -316,3 +316,81 @@ describe('Rules.modifiers — 자동 보정 (docs/specs/02-check-engine.md §1)'
     }
   });
 });
+
+// 명세 06(즉석 조합 · 캐릭터 빌더)이 추가한 순수 헬퍼. 새 판정 로직은 없다 —
+// 즉석 조합은 여전히 위 Rules.resolve()/modifiers()를 그대로 재사용한다
+// (ui-craft.js). 여기서 검증하는 건 rules.json의 문자열 공식을 숫자로
+// 풀어내는 파서와, 능력치 배열 검증뿐이다.
+describe('Rules.craftingRecipe — RULES.crafting.recipes 조회 (docs/specs/06)', () => {
+  test('id로 레시피를 찾는다 (위상 필터: 결정편 2, DC 10)', () => {
+    const r = Rules.craftingRecipe('filter');
+    assert.ok(r);
+    assert.equal(r.cost, 2);
+    assert.equal(r.dc, 10);
+  });
+  test('룬폭탄은 결정편 3, DC 13', () => {
+    const r = Rules.craftingRecipe('runebomb');
+    assert.equal(r.cost, 3);
+    assert.equal(r.dc, 13);
+  });
+  test('존재하지 않는 id는 null', () => {
+    assert.equal(Rules.craftingRecipe('없는레시피'), null);
+  });
+});
+
+describe('Rules.parseLinearFormula / computeLinearFormula — 부록 A 공식 파서 (docs/specs/06)', () => {
+  test('"10 + CON * 2" → base 10, ability CON, multiplier 2', () => {
+    const f = Rules.parseLinearFormula(RULES.characterCreation.startingHp);
+    assert.deepEqual(f, { base: 10, ability: 'CON', multiplier: 2 });
+  });
+  test('CON 보정 +2인 캐릭터의 시작 HP는 10 + 2*2 = 14 (완료 조건 항목)', () => {
+    const hp = Rules.computeLinearFormula(RULES.characterCreation.startingHp, 2);
+    assert.equal(hp, 14);
+  });
+  test('"10 + AGI (+ 방어구)" → 배수가 없으면 암묵적으로 1', () => {
+    const f = Rules.parseLinearFormula(RULES.characterCreation.startingAc);
+    assert.deepEqual(f, { base: 10, ability: 'AGI', multiplier: 1 });
+  });
+  test('AGI 보정 +1이면 시작 AC는 10 + 1*1 = 11', () => {
+    assert.equal(Rules.computeLinearFormula(RULES.characterCreation.startingAc, 1), 11);
+  });
+  test('파싱할 수 없는 문자열은 null (조용히 0으로 대체하지 않는다)', () => {
+    assert.equal(Rules.parseLinearFormula('알 수 없는 공식'), null);
+    assert.equal(Rules.computeLinearFormula('알 수 없는 공식', 3), null);
+  });
+});
+
+describe('Rules.parseDiceNotation — "2d6" 같은 주사위 표기 (docs/specs/06)', () => {
+  test('"2d6" → count 2, sides 6 (부록 A 시작 결정편)', () => {
+    assert.deepEqual(Rules.parseDiceNotation(RULES.characterCreation.startingShards), { count: 2, sides: 6 });
+  });
+  test('굴림(Math.random)은 하지 않는다 — 순수 파서일 뿐', () => {
+    assert.equal(typeof Rules.parseDiceNotation('2d6').count, 'number');
+    // 반환값에 굴림 결과 필드가 없어야 한다(예: value/roll/total 등)
+    const r = Rules.parseDiceNotation('2d6');
+    assert.deepEqual(Object.keys(r).sort(), ['count', 'sides']);
+  });
+  test('형식이 다르면 null', () => {
+    assert.equal(Rules.parseDiceNotation('d6'), null);
+    assert.equal(Rules.parseDiceNotation(''), null);
+  });
+});
+
+describe('Rules.isValidAbilityAssignment — 배열 [3,2,1,1,0,-1] 벗어난 배분 차단 (docs/specs/06)', () => {
+  test('표준 배열 그대로면 유효', () => {
+    assert.equal(Rules.isValidAbilityAssignment({ STR: 3, AGI: 2, CON: 1, INT: 1, WIS: 0, CHA: -1 }), true);
+  });
+  test('순서만 바뀐 배분도 유효(배열이지 순서가 아니다)', () => {
+    assert.equal(Rules.isValidAbilityAssignment({ STR: -1, AGI: 0, CON: 1, INT: 1, WIS: 2, CHA: 3 }), true);
+  });
+  test('값 하나를 배열에 없는 수로 바꾸면 무효', () => {
+    assert.equal(Rules.isValidAbilityAssignment({ STR: 3, AGI: 2, CON: 1, INT: 1, WIS: 0, CHA: 0 }), false); // -1 대신 0을 또 씀
+  });
+  test('중복 배분(같은 값을 배열보다 더 많이 씀)도 무효', () => {
+    assert.equal(Rules.isValidAbilityAssignment({ STR: 3, AGI: 3, CON: 1, INT: 1, WIS: 0, CHA: -1 }), false); // +3이 두 개(겨울 케이스, errata R-3과 동일한 위반)
+  });
+  test('능력치가 비어 있으면 무효', () => {
+    assert.equal(Rules.isValidAbilityAssignment({}), false);
+    assert.equal(Rules.isValidAbilityAssignment(null), false);
+  });
+});
