@@ -20,6 +20,7 @@ const require = createRequire(import.meta.url);
 const { createStore, Store } = require(join(root, 'web/src/store.js'));
 const Rules = require(join(root, 'web/src/rules.js'));
 const Net = require(join(root, 'web/src/net.js'));
+const RULES = require(join(root, 'data/rules.json'));
 
 // ---- 테스트용 가짜 백엔드 ----
 function makeFakeLocalStorage({ throwOnKey } = {}) {
@@ -136,16 +137,10 @@ describe('Store — 3단 폴백 (docs/specs/01-foundation.md §2)', () => {
 });
 
 describe('Rules / Net — 껍데기 인터페이스 배선 확인 (명세 01)', () => {
-  // 여기서는 "값이 옳은가"가 아니라 "명세 01이 약속한 모양대로 존재하는가"만
-  // 확인한다. 경계 케이스(자연 20/1, DC 경계, 그룹 판정 등)는 명세 02가
-  // 채운다(docs/specs/02-check-engine.md §3).
   test('Rules가 다섯 개 함수를 전부 노출한다', () => {
     for (const fn of ['resolve', 'modifiers', 'groupResult', 'woundTier', 'resonanceEffect']) {
       assert.equal(typeof Rules[fn], 'function', `Rules.${fn}이 함수가 아님`);
     }
-  });
-  test('Rules.resolve는 지금 항상 무해한 기본값을 돌려준다', () => {
-    assert.equal(Rules.resolve({ natural: 1, total: 3, dc: 20 }), 'success');
   });
 
   test('Net이 명세 01의 인터페이스 모양을 전부 노출한다', () => {
@@ -154,5 +149,170 @@ describe('Rules / Net — 껍데기 인터페이스 배선 확인 (명세 01)', 
       assert.equal(typeof Net[fn], 'function', `Net.${fn}이 함수가 아님`);
     }
     assert.deepEqual(Net.peers(), []);
+  });
+});
+
+describe('Rules.resolve — 4단계 결과 (docs/specs/02-check-engine.md §1/§3)', () => {
+  test('자연 20은 total과 무관하게 대성공', () => {
+    assert.equal(Rules.resolve({ natural: 20, total: 5, dc: 20 }), 'crit');
+  });
+  test('자연 1은 total과 무관하게 실패', () => {
+    assert.equal(Rules.resolve({ natural: 1, total: 30, dc: 12 }), 'fail');
+  });
+  test('자연 1이 부분 성공 조건(dc-1)보다 우선한다 (룰북 모호 지점, 자연 1 우선)', () => {
+    assert.equal(Rules.resolve({ natural: 1, total: 11, dc: 12 }), 'fail');
+  });
+  test('total이 dc+10이면 대성공 (natural 없이도)', () => {
+    assert.equal(Rules.resolve({ natural: null, total: 22, dc: 12 }), 'crit');
+  });
+  test('total이 dc+9면 대성공이 아니라 성공', () => {
+    assert.equal(Rules.resolve({ natural: null, total: 21, dc: 12 }), 'success');
+  });
+  test('total === dc는 성공 (경계)', () => {
+    assert.equal(Rules.resolve({ natural: null, total: 12, dc: 12 }), 'success');
+  });
+  test('total === dc-4는 부분 성공 (경계)', () => {
+    assert.equal(Rules.resolve({ natural: null, total: 8, dc: 12 }), 'partial');
+  });
+  test('total === dc-5는 실패 (경계)', () => {
+    assert.equal(Rules.resolve({ natural: null, total: 7, dc: 12 }), 'fail');
+  });
+  test('natural:null(2d6 등)은 자연 20/1 특례를 적용하지 않는다', () => {
+    // total만으로 판정된다 — natural이 20/1이어도 2d6에는 의미가 없으므로
+    // 호출부는 애초에 natural:null을 넘겨야 한다(이 테스트는 그 계약을 고정한다).
+    assert.equal(Rules.resolve({ natural: null, total: 3, dc: 12 }), 'fail');
+    assert.equal(Rules.resolve({ natural: null, total: 22, dc: 12 }), 'crit');
+  });
+});
+
+describe('Rules.woundTier — 경계값 (50%는 "미만"이 아니다)', () => {
+  test('woundTier(11, 22)는 정확히 50% → light (중상은 "50% 미만"이라 정확히 절반은 포함되지 않음)', () => {
+    assert.equal(Rules.woundTier(11, 22), 'light');
+  });
+  test('50% 미만이면 serious', () => {
+    assert.equal(Rules.woundTier(10, 22), 'serious');
+  });
+  test('hp<=0이면 dying', () => {
+    assert.equal(Rules.woundTier(0, 22), 'dying');
+  });
+});
+
+describe('Rules.resonanceEffect — "25 이상" 경계', () => {
+  test('resonanceEffect(25)는 25 임계치 적용 (-1)', () => {
+    const eff = Rules.resonanceEffect(25);
+    assert.ok(eff, '25는 25 이상 임계치에 걸려야 함');
+    assert.equal(eff.checkModifier, -1);
+  });
+  test('resonanceEffect(24)는 아무 임계치도 없음', () => {
+    assert.equal(Rules.resonanceEffect(24), null);
+  });
+  test('resonanceEffect(60)은 50 임계치(가장 높은 매칭)를 돌려준다', () => {
+    const eff = Rules.resonanceEffect(60);
+    assert.equal(eff.at, 50);
+    assert.equal(eff.checkModifier, -2);
+  });
+});
+
+// 룰북 1.5 원문: "절반 이상이 성공하면 전체가 '성공'으로, 절반 미만이면
+// 전체가 '부분 성공'으로 처리합니다." — 이상(≥)과 미만(<)이 맞물려 빈틈이
+// 없으므로 정확히 절반은 성공 쪽이다. 3/8처럼 절반 미만일 때만 partial.
+describe('Rules.groupResult — 그룹 판정 경계 (룰북 1.5)', () => {
+  test('4/8 성공은 정확히 절반 = "절반 이상"이므로 success', () => {
+    const results = ['success', 'success', 'success', 'success', 'fail', 'fail', 'fail', 'fail'];
+    assert.equal(Rules.groupResult(results), 'success');
+  });
+  test('3/8 성공은 절반 미만이므로 partial', () => {
+    const results = ['success', 'success', 'success', 'fail', 'fail', 'fail', 'fail', 'fail'];
+    assert.equal(Rules.groupResult(results), 'partial');
+  });
+  test('5/8 성공은 success', () => {
+    const results = ['success', 'success', 'success', 'success', 'success', 'fail', 'fail', 'fail'];
+    assert.equal(Rules.groupResult(results), 'success');
+  });
+  test('홀수 인원 3/5는 절반 초과이므로 success', () => {
+    assert.equal(Rules.groupResult(['success', 'success', 'success', 'fail', 'fail']), 'success');
+  });
+  test('홀수 인원 2/5는 절반 미만이므로 partial', () => {
+    assert.equal(Rules.groupResult(['success', 'success', 'fail', 'fail', 'fail']), 'partial');
+  });
+  test('crit도 성공으로 집계된다', () => {
+    const results = ['crit', 'crit', 'crit', 'crit', 'crit', 'fail', 'fail', 'fail'];
+    assert.equal(Rules.groupResult(results), 'success');
+  });
+});
+
+describe('Rules.modifiers — 자동 보정 (docs/specs/02-check-engine.md §1)', () => {
+  const 라비 = {
+    stats: { STR: '+0', AGI: '+3', CON: '+1', INT: '+1', WIS: '+2', CHA: '-1' },
+    skills: ['은신(숙련)', '관찰(숙련)', '손재주(숙련)'],
+    hp: 16, maxHp: 16, radiation: 0,
+  };
+
+  test('숙련 기술은 능력치 + 숙련 +2를 자동 산출한다', () => {
+    const mods = Rules.modifiers(라비, 'stealth'); // 은신 = AGI, 라비는 숙련
+    const ability = mods.find((m) => m.source === 'ability');
+    const prof = mods.find((m) => m.source === 'proficiency');
+    assert.equal(ability.value, 3);
+    assert.ok(prof, '숙련 보너스가 있어야 함');
+    assert.equal(prof.value, 2);
+  });
+
+  test('숙련이 아닌 기술은 숙련 보너스가 붙지 않는다', () => {
+    const mods = Rules.modifiers(라비, 'melee'); // 근접전투 — 라비는 숙련 아님
+    assert.ok(!mods.some((m) => m.source === 'proficiency'));
+  });
+
+  test('능력치가 둘인 기술은 더 높은 쪽을 쓴다', () => {
+    // intimidate(위협) = STR 또는 CHA. 라비는 STR:0, CHA:-1 → STR 선택
+    const mods = Rules.modifiers(라비, 'intimidate');
+    const ability = mods.find((m) => m.source === 'ability');
+    assert.match(ability.label, /STR/);
+    assert.equal(ability.value, 0);
+  });
+
+  test('중상 상태면 -2가 자동으로 붙는다', () => {
+    const 중상라비 = { ...라비, hp: 5 }; // 5/16 < 50%
+    const mods = Rules.modifiers(중상라비, 'stealth');
+    const wound = mods.find((m) => m.source === 'wound');
+    assert.ok(wound, '부상 보정이 있어야 함');
+    assert.equal(wound.value, -2);
+  });
+
+  test('경상(HP 절반 이상)이면 부상 보정이 없다', () => {
+    const mods = Rules.modifiers(라비, 'stealth');
+    assert.ok(!mods.some((m) => m.source === 'wound'));
+  });
+
+  test('잔향 50 이상 + 신체 능력치(AGI) 판정 → -2가 붙는다', () => {
+    const 잔향라비 = { ...라비, radiation: 55 };
+    const mods = Rules.modifiers(잔향라비, 'stealth'); // stealth = AGI(신체)
+    const res = mods.find((m) => m.source === 'resonance');
+    assert.ok(res, '신체 능력치 판정에는 잔향 보정이 있어야 함');
+    assert.equal(res.value, -2);
+  });
+
+  test('잔향 50 이상이어도 비신체 능력치(INT/WIS/CHA) 판정에는 안 붙는다', () => {
+    const 잔향라비 = { ...라비, radiation: 55 };
+    const mods = Rules.modifiers(잔향라비, 'lore'); // lore = INT(비신체)
+    assert.ok(!mods.some((m) => m.source === 'resonance'), 'INT 판정엔 잔향 페널티가 없어야 함');
+  });
+
+  test('기술 표에 없는 스킬id는 빈 배열 — 호출부가 능력치 직접 선택으로 넘겨야 함', () => {
+    assert.deepEqual(Rules.modifiers(라비, 'not-a-real-skill'), []);
+  });
+
+  test('능력치 ID를 직접 넘기면(GM이 직접 고른 경우) 숙련 보너스 없이 능력치만 계산된다', () => {
+    const mods = Rules.modifiers(라비, 'WIS');
+    assert.equal(mods.length, 1);
+    assert.equal(mods[0].source, 'ability');
+    assert.equal(mods[0].value, 2);
+  });
+
+  test('errata R-5: 캐릭터시트 표기(기계정비/추적/관찰/협상)는 기술 표 별칭과 정확히 일치하지 않는다', () => {
+    // 데이터를 고쳐서 맞추지 않는다 — 이 불일치 자체가 R-5의 증거다.
+    const names = RULES.skills.flatMap((s) => [s.name, ...(s.aliases || [])]);
+    for (const raw of ['기계정비', '추적/관찰', '협상']) {
+      assert.ok(!names.includes(raw), `'${raw}'가 기술 표에 있으면 안 됨 (R-5가 해소된 것처럼 보이는 오탐)`);
+    }
   });
 });
