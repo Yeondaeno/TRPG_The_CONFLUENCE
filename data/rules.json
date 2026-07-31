@@ -1,0 +1,126 @@
+{
+  "$comment": "룰북(docs/rulebook.md)의 표를 기계 판독 가능한 형태로 옮긴 것. 원본 규칙을 바꾸지 않았다. 정합성 문제는 docs/errata.md 참고.",
+  "version": "0.1.0",
+  "abilities": [
+    { "id": "STR", "name": "근력", "covers": "근접 공격, 무거운 것 옮기기, 강제로 부수기" },
+    { "id": "AGI", "name": "민첩", "covers": "사격, 회피, 은신, 반응속도, 선제권" },
+    { "id": "CON", "name": "지구력", "covers": "체력, 차원 여파 저항, 피로/저주 저항" },
+    { "id": "INT", "name": "지능", "covers": "마도구 정비, 결계 해석/시스템 해킹, 의식/주술 지식" },
+    { "id": "WIS", "name": "감각", "covers": "관찰, 생존술, 직감, 기척 추적" },
+    { "id": "CHA", "name": "매력", "covers": "설득, 협박, 교역, 리더십, 사교계 처세" }
+  ],
+  "check": {
+    "formula": "d20 + ability + (proficient ? 2 : 0)",
+    "proficiencyBonus": 2,
+    "situationalDcShift": [-4, 4]
+  },
+  "dcTable": [
+    { "label": "쉬움", "dc": 8, "example": "잠기지 않은 문 열기, 뻔한 사실 떠올리기" },
+    { "label": "보통", "dc": 12, "example": "낡은 결계 자물쇠 풀기, 낯선 이 설득하기" },
+    { "label": "어려움", "dc": 15, "example": "움직이는 표적 저격, 폭주하는 술식 해체" },
+    { "label": "매우 어려움", "dc": 18, "example": "무너지는 건물에서 동료 구조, 다중 결계 동시 해킹" },
+    { "label": "거의 불가능", "dc": 22, "example": "맨몸으로 상급 이형체 제압, 폭주하는 역참 코어 즉석 안정화" }
+  ],
+  "outcomeTiers": [
+    { "id": "crit", "label": "대성공", "rule": "natural20 || total >= dc + 10", "effect": "의도한 대로 완벽하게, 부가 이득 하나 추가" },
+    { "id": "success", "label": "성공", "rule": "total >= dc", "effect": "의도한 대로 이루어짐" },
+    { "id": "partial", "label": "부분 성공", "rule": "total >= dc - 4", "effect": "원하는 걸 얻지만 대가가 따름 (소음, 부상, 자원 소모, 여파 획득 등)" },
+    { "id": "fail", "label": "실패", "rule": "natural1 || total <= dc - 5", "effect": "원하는 걸 얻지 못하고 상황이 악화됨" }
+  ],
+  "groupCheck": {
+    "successThreshold": 0.5,
+    "onMajority": "success",
+    "onMinority": "partial",
+    "helperBonus": 2,
+    "helperCheckDc": 12
+  },
+  "skills": [
+    { "id": "melee", "name": "근접전투", "aliases": ["결투"], "abilities": ["STR"], "use": "칼과 주먹이 오가는 정면 승부" },
+    { "id": "ranged", "name": "사격", "abilities": ["AGI"], "use": "총기·석궁 등 원거리 무기" },
+    { "id": "stealth", "name": "은신", "aliases": ["손재주"], "abilities": ["AGI"], "use": "숨기, 잠그기, 몰래 처리하기" },
+    { "id": "intimidate", "name": "위협", "aliases": ["협박"], "abilities": ["STR", "CHA"], "use": "힘 또는 기세로 상대를 굴복시키기" },
+    { "id": "persuade", "name": "설득", "aliases": ["매혹"], "abilities": ["CHA"], "use": "말과 매력으로 마음을 움직이기" },
+    { "id": "trade", "name": "교역", "abilities": ["CHA"], "use": "값을 매기고 흥정하기" },
+    { "id": "heal", "name": "치유술", "abilities": ["INT", "WIS"], "use": "부상과 상태이상을 다스리기" },
+    { "id": "spirit", "name": "정령술", "aliases": ["저주술"], "abilities": ["INT", "WIS"], "use": "정령과의 교감, 금지된 술식 시전" },
+    { "id": "exorcise", "name": "퇴마술", "abilities": ["WIS"], "use": "이형체·요괴를 가려내고 정화하기" },
+    { "id": "tinker", "name": "마도구 정비", "aliases": ["결계 해석"], "abilities": ["INT"], "use": "기계와 마법이 뒤섞인 장치 다루기" },
+    { "id": "survival", "name": "생존술", "aliases": ["추적·관찰", "관찰"], "abilities": ["WIS"], "use": "흔적을 읽고 위험을 먼저 감지하기" },
+    { "id": "beast", "name": "동물 교감", "abilities": ["WIS"], "use": "동물·정령체와 의사소통하기" },
+    { "id": "lore", "name": "지식", "abilities": ["INT"], "use": "역사, 금기, 구역 사정에 대한 앎" }
+  ],
+  "combat": {
+    "initiative": "d20 + AGI",
+    "turn": { "action": 1, "move": 1, "reaction": 1 },
+    "attack": "d20 + ability + (proficient ? 2 : 0) >= target.ac",
+    "dyingCheck": { "die": "d20", "dieOnBelow": 10, "stabilizeSkill": "heal", "stabilizeDc": 12 },
+    "woundTiers": [
+      { "id": "light", "label": "경상", "hpRatioAtLeast": 0.5, "effect": "페널티 없음", "checkModifier": 0 },
+      { "id": "serious", "label": "중상", "hpRatioBelow": 0.5, "effect": "모든 판정에 -2, 이동거리 절반", "checkModifier": -2 },
+      { "id": "dying", "label": "빈사", "hp": 0, "effect": "행동 불가, 매 라운드 사망 판정", "checkModifier": null }
+    ]
+  },
+  "weapons": [
+    { "id": "unarmed", "name": "맨손 / 둔기", "damage": "1d4", "ability": "STR" },
+    { "id": "rune_melee", "name": "룬각인 검·창 등 근접 무기", "damage": "1d6", "ability": "STR" },
+    { "id": "pistol", "name": "권총형 결정탄 무기", "damage": "1d6", "ability": "AGI" },
+    { "id": "railgun", "name": "장거리 결정탄/레일건", "damage": "1d8", "ability": "AGI" },
+    { "id": "scatter", "name": "산탄형 결계포", "damage": "2d6", "ability": "AGI", "note": "근거리 한정" },
+    { "id": "runebomb", "name": "즉석 룬폭탄 / 술식", "damage": "2d8", "ability": "INT", "altAbility": "AGI", "note": "범위" }
+  ],
+  "damageDieLadder": ["1d4", "1d6", "1d8", "2d6", "2d8"],
+  "resonance": {
+    "name": "위상잔향",
+    "range": [0, 100],
+    "gainPerScene": "1d6~2d6",
+    "reduceOnFilterOrRest": "1d10",
+    "thresholds": [
+      { "at": 25, "checkModifier": -1, "scope": "physical", "effect": "모든 신체 능력치 판정에 -1" },
+      { "at": 50, "checkModifier": -2, "scope": "physical", "effect": "-2 페널티, 매 장시간 휴식마다 여파화 판정(d20)", "mutationCheckOnLongRest": true },
+      { "at": 75, "checkModifier": -3, "scope": "physical", "effect": "-3 페널티, 최대 HP -25%", "maxHpMultiplier": 0.75 },
+      { "at": 100, "checkModifier": -3, "scope": "physical", "effect": "즉시 여파화 표를 굴려 강제 변용 또는 위상 붕괴로 행동불능", "forceMutation": true }
+    ],
+    "mutationTable": [
+      { "roll": 1, "name": "재생의 인장", "tone": "긍정", "effect": "장시간 휴식 시 HP 완전 회복" },
+      { "roll": 2, "name": "야조(夜鳥)의 눈", "tone": "긍정", "effect": "어둠 속 판정 페널티 없음" },
+      { "roll": 3, "name": "결정 폐", "tone": "긍정", "effect": "잔향/저주 판정에 +2" },
+      { "roll": 4, "name": "비늘 피부", "tone": "중립", "effect": "근접 피해 1 감소, 매력 판정 -1" },
+      { "roll": 5, "name": "떨리는 손", "tone": "중립", "effect": "사격 판정 -1, 근접 판정 +1" },
+      { "roll": 6, "name": "과민 감각", "tone": "중립", "effect": "선제권 +2, 최대 HP -2" },
+      { "roll": 7, "name": "홍채 변색", "tone": "중립", "effect": "순수 외형 변화, 효과 없음" },
+      { "roll": 8, "name": "환청 발작", "tone": "부정", "effect": "은신 판정에 불리" },
+      { "roll": 9, "name": "근육 위축", "tone": "부정", "effect": "STR 판정 -2" },
+      { "roll": 10, "name": "GM 재량", "tone": "가변", "effect": "캐릭터가 머물던 구역 테마에 맞는 독특한 여파 창작" }
+    ]
+  },
+  "currency": { "id": "shard", "name": "결정편", "note": "융합 현상 당시 응축된 차원의 파편. 교역·수리·제작에 사용" },
+  "crafting": {
+    "checkSkill": "tinker",
+    "onFailure": "결정편만 소모",
+    "recipes": [
+      { "id": "bandage", "name": "즉석 결정 붕대", "cost": 1, "dc": 8, "effect": "HP 1d6 회복" },
+      { "id": "runebomb", "name": "즉석 룬폭탄", "cost": 3, "dc": 13, "effect": "2d8 범위 피해" },
+      { "id": "filter", "name": "위상 필터", "cost": 2, "dc": 10, "effect": "잔향 1d10 감소" },
+      { "id": "engrave", "name": "무기 룬각인", "cost": 3, "dc": 14, "effect": "선택 무기 피해 주사위 1단계 상승" },
+      { "id": "ward", "name": "방어 결계 강화", "cost": 2, "dc": 12, "effect": "AC +1 (다음 전투까지)" }
+    ]
+  },
+  "districts": [
+    { "id": "muyeongga", "name": "무영가", "hanja": "無影街", "theme": "동양 요괴 골목", "mood": "등불, 여우불, 옛 신사, 말수 적은 요괴 상인" },
+    { "id": "gangseon", "name": "강선지구", "hanja": "鋼線地区", "theme": "사이버펑크", "mood": "네온, 기업 보안, 해커, 인공보철" },
+    { "id": "pureunppuri", "name": "푸른뿌리", "theme": "자연 친화", "mood": "건물을 삼킨 숲, 정령, 소리 없는 경고" },
+    { "id": "simyahoerang", "name": "심야회랑", "theme": "오컬트", "mood": "금지 의식, 지하 서점, 대가를 요구하는 거래" },
+    { "id": "jaeuimun", "name": "재의문", "theme": "고딕 (뱀파이어·헌터)", "mood": "안개, 오래된 저택, 밤의 규율" },
+    { "id": "baekgisaryeong", "name": "백기사령", "theme": "기사의 도시", "mood": "성문, 서약, 결투로 해결되는 분쟁" },
+    { "id": "magongdanji", "name": "마공단지", "theme": "마공학 도시", "mood": "마법으로 돌아가는 공장, 폭주 위험, 발명가" }
+  ],
+  "characterCreation": {
+    "$comment": "부록 A 간이 규칙. 사전 제작 캐릭터가 이 규칙을 따르지 않는다 — docs/errata.md R-2/R-3/R-4 참고.",
+    "abilityArray": [3, 2, 1, 1, 0, -1],
+    "districtProficiencies": 2,
+    "startingHp": "10 + CON * 2",
+    "startingAc": "10 + AGI (+ 방어구)",
+    "startingShards": "2d6",
+    "startingGear": "GM과 상의해 1~2개"
+  }
+}

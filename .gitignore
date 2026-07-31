@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.log
+
+# Word/Excel 임시 잠금 파일 (assets/original 편집 시)
+~$*

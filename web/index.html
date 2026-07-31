@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>합경 — 세션 도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #15130E;
+    --panel: #1F1B14;
+    --panel2: #29231A;
+    --rust: #8B2E6B;
+    --amber: #E8A33D;
+    --olive: #3E6B8B;
+    --paper: #E3D8BE;
+    --paper-dim: #A69D86;
+    --danger: #B0453F;
+    --border: #3E3624;
+    --good: #3E6B8B;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--paper);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+  }
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(193,85,45,0.07), transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(124,139,90,0.06), transparent 45%);
+  }
+  h1, h2, h3, .disp { font-family: 'Oswald', sans-serif; letter-spacing: 0.02em; text-transform: uppercase; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  button {
+    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+    background: var(--panel2); color: var(--paper); border: 1px solid var(--border);
+    border-radius: 3px; padding: 9px 16px; font-size: 14px; font-weight: 500;
+    transition: border-color .15s, background .15s;
+  }
+  button:hover { border-color: var(--amber); background: #332C1F; }
+  button.primary { background: var(--rust); border-color: var(--rust); color: #1a0e08; font-weight: 700; }
+  button.primary:hover { background: #D6663D; }
+  button.ghost { background: transparent; }
+  button:disabled { opacity: .35; cursor: not-allowed; }
+  input, textarea, select {
+    font-family: 'Noto Sans KR', sans-serif; background: #100E0A; color: var(--paper);
+    border: 1px solid var(--border); border-radius: 3px; padding: 9px 11px; font-size: 14px;
+    width: 100%;
+  }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--amber); }
+  ::placeholder { color: var(--paper-dim); }
+
+  .scanlines { position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.09) 0px, rgba(0,0,0,0.09) 1px, transparent 1px, transparent 3px);
+    opacity: .35; }
+
+  #join { max-width: 480px; margin: 0 auto; padding: 60px 20px; position: relative; z-index: 1; }
+  .join-title { font-size: 42px; color: var(--rust); text-align: center; margin: 0 0 4px; }
+  .join-sub { text-align: center; color: var(--paper-dim); font-size: 13px; margin: 0 0 36px; letter-spacing: 0.08em; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; color: var(--olive); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700;}
+  .code-row { display: flex; gap: 8px; }
+  .code-row input { text-transform: uppercase; letter-spacing: 0.15em; font-family: 'JetBrains Mono', monospace; font-size: 18px; text-align: center;}
+  .join-note { font-size: 12px; color: var(--paper-dim); margin-top: 30px; line-height: 1.6; border-top: 1px solid var(--border); padding-top: 16px; }
+
+  #app { display: none; position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 0 16px 60px; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 16px 4px; border-bottom: 2px solid var(--rust); margin-bottom: 18px; flex-wrap: wrap; gap: 10px;}
+  .topbar .logo { font-size: 22px; color: var(--rust); margin: 0; }
+  .topbar .meta { font-size: 12px; color: var(--paper-dim); }
+  .topbar .meta b { color: var(--amber); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn { flex: 1; min-width: 130px; text-align: center; }
+  .tab-btn.active { background: var(--rust); border-color: var(--rust); color: #1a0e08; font-weight: 700; }
+
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; padding: 18px; margin-bottom: 16px; }
+  .panel h3 { color: var(--amber); font-size: 16px; margin: 0 0 12px; border-bottom: 1px solid var(--border); padding-bottom: 8px;}
+
+  .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-bottom: 18px;}
+  .char-card { border: 1px solid var(--border); border-radius: 4px; padding: 12px; background: var(--panel2); cursor: pointer; position: relative; }
+  .char-card:hover { border-color: var(--amber); }
+  .char-card.mine { border-color: var(--olive); box-shadow: inset 0 0 0 1px var(--olive); }
+  .char-card.taken { opacity: .55; }
+  .char-card .cname { font-family: 'Oswald', sans-serif; font-size: 17px; font-weight: 600; }
+  .char-card .ctitle { font-size: 11px; color: var(--paper-dim); margin-bottom: 6px; }
+  .char-card .claim { font-size: 11px; color: var(--olive); margin-top: 6px; }
+
+  .sheet { border-top: 3px solid; padding-top: 14px; }
+  .sheet .name { font-size: 26px; font-family: 'Oswald'; margin: 0; }
+  .sheet .title { color: var(--paper-dim); font-size: 13px; margin: 0 0 10px; }
+  .bg-text { font-style: italic; color: var(--paper-dim); font-size: 13px; margin-bottom: 14px; }
+  .stat-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 16px; }
+  .stat-box { text-align: center; background: #100E0A; border: 1px solid var(--border); border-radius: 3px; padding: 8px 2px; }
+  .stat-box .k { font-size: 10px; color: var(--paper-dim); letter-spacing: .1em; }
+  .stat-box .v { font-family: 'JetBrains Mono'; font-size: 20px; font-weight: 700; color: var(--amber); }
+  .track-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .track { background: #100E0A; border: 1px solid var(--border); border-radius: 3px; padding: 10px; }
+  .track label { font-size: 11px; color: var(--olive); text-transform: uppercase; display: block; margin-bottom: 6px; font-weight: 700;}
+  .track .row2 { display: flex; align-items: center; gap: 6px; }
+  .track input[type=number] { width: 100%; font-family: 'JetBrains Mono'; text-align: center; }
+  .bar { height: 6px; border-radius: 3px; background: #3A3324; margin-top: 8px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--olive); }
+  .bar-fill.rad { background: var(--rust); }
+  .kv { font-size: 13px; margin-bottom: 8px; line-height: 1.6; }
+  .kv b { color: var(--amber); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 2px;}
+  .trait-box { border: 1px solid var(--olive); background: rgba(124,139,90,0.08); border-radius: 3px; padding: 10px 12px; font-size: 13px; margin-top: 8px;}
+  select.status { width: auto; }
+
+  .dice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(70px,1fr)); gap: 8px; margin-bottom: 14px;}
+  .roll-result { text-align: center; padding: 22px 10px; background: #100E0A; border-radius: 4px; border: 1px solid var(--border); margin-bottom: 14px; }
+  .roll-result .big { font-family: 'JetBrains Mono'; font-size: 46px; font-weight: 700; color: var(--amber); }
+  .roll-result .expr { font-size: 13px; color: var(--paper-dim); margin-top: 4px; }
+  .modrow { display: flex; gap: 8px; align-items: end; flex-wrap: wrap; margin-bottom: 14px; }
+  .modrow .field { margin: 0; flex: 1; min-width: 120px; }
+
+  .log-list { max-height: 480px; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 6px; }
+  .log-item { font-size: 13px; border-left: 3px solid var(--border); padding: 6px 10px; background: var(--panel2); border-radius: 0 3px 3px 0; }
+  .log-item .t { color: var(--paper-dim); font-size: 11px; font-family: 'JetBrains Mono'; margin-right: 8px;}
+  .log-item.roll { border-left-color: var(--amber); }
+  .log-item.gm { border-left-color: var(--rust); }
+  .log-item.sys { border-left-color: var(--olive); }
+
+  .init-list { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;}
+  .init-item { display: grid; grid-template-columns: 40px 1fr 60px 80px 30px; gap: 8px; align-items: center; padding: 8px 10px; background: var(--panel2); border-radius: 3px; border: 1px solid var(--border); }
+  .init-item.current { border-color: var(--amber); box-shadow: inset 0 0 0 1px var(--amber); }
+  .init-item input { padding: 5px 6px; font-size: 13px; }
+  .init-item .rm { color: var(--danger); cursor: pointer; text-align:center; font-weight:700; }
+  .addrow { display: flex; gap: 6px; }
+  .addrow input { flex: 1; }
+  .mon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 10px; }
+  .mon-card { background: var(--panel2); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; font-size: 13px; }
+  .mon-card .mname { font-family: 'Oswald'; font-size: 15px; color: var(--rust); margin-bottom: 4px; }
+  .mon-card .mstat { color: var(--paper-dim); font-family: 'JetBrains Mono'; font-size: 12px; margin-bottom: 4px;}
+
+  .timer-box { display: flex; align-items: center; gap: 12px; }
+  .timer-display { font-family: 'JetBrains Mono'; font-size: 32px; color: var(--amber); min-width: 110px; }
+  .small-note { font-size: 12px; color: var(--paper-dim); margin-top: 10px; line-height: 1.6; }
+  .gm-flag { display: inline-block; background: var(--rust); color: #1a0e08; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 8px;}
+  .empty { color: var(--paper-dim); font-size: 13px; text-align: center; padding: 20px; }
+  @media (max-width: 640px) {
+    .stat-row { grid-template-columns: repeat(3,1fr); }
+    .track-row { grid-template-columns: 1fr; }
+    .init-item { grid-template-columns: 32px 1fr 50px 60px 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<div id="join">
+  <h1 class="join-title">합경</h1>
+  <p class="join-sub">CONFLUENCE — SESSION TERMINAL</p>
+  <div class="field">
+    <label>당신의 이름</label>
+    <input id="in-name" placeholder="예: 지운" maxlength="20">
+  </div>
+  <div class="field">
+    <label>방 코드 (진행자가 만든 코드를 입력, 또는 새로 생성)</label>
+    <div class="code-row">
+      <input id="in-code" placeholder="ABCD" maxlength="6">
+      <button id="btn-gen" type="button">생성</button>
+    </div>
+  </div>
+  <button class="primary" id="btn-join" style="width:100%; padding:12px; font-size:15px;">세션 입장</button>
+  <p class="join-note">같은 방 코드를 입력한 사람들끼리 캐릭터시트·주사위 기록·세션 로그가 실시간으로 공유됩니다.<br><br>
+  ⚠ 이 페이지가 Claude 아티팩트로 살아있는 상태(claude.ai 링크)일 때만 동기화가 작동합니다. 다운로드한 파일을 그냥 열면 나 혼자 보는 로컬 모드로만 동작해요.</p>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <h1 class="logo">합경</h1>
+    <div class="meta">방 코드 <b id="meta-code" class="mono"></b> · 접속자 <b id="meta-name"></b><span id="gm-flag-holder"></span></div>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn" data-tab="char">캐릭터시트</button>
+    <button class="tab-btn" data-tab="dice">주사위</button>
+    <button class="tab-btn" data-tab="gm">GM 대시보드</button>
+    <button class="tab-btn" data-tab="log">세션 로그</button>
+  </div>
+  <div id="tab-content"></div>
+</div>
+
+<script>
+const PREGENS = [
+  { name:"이든", title:"백기사령 소속 서약 기사", district:"백기사령", role:"전투 · 탱커", color:"#8B2E6B", icon:"shield",
+    bg:"기사령의 서약을 15년째 지켜온 기사. 몸으로 막아내는 것에 익숙하다.",
+    stats:{STR:"+3",AGI:"+1",CON:"+2",INT:"+0",WIS:"+1",CHA:"-1"},
+    maxHp:22, ac:13, startParts:8,
+    skills:["근접전투(숙련)","위협(숙련)","결투(숙련)"],
+    equip:"룬각인 대검(1d6+3), 서약 갑주, 즉석 결정 붕대 x2",
+    traits:[
+      { name:"앞장서기", type:"기계적", text:"파티원을 대신해 공격을 받아낼 때 판정 없이 자동 성공" },
+      { name:"서약의 무게", type:"RP", text:"한번 뱉은 말은 반드시 지키려 한다 — 거짓 서약을 강요받으면 거부한다" },
+    ],
+    personality:"우직함 · 책임감 · 무뚝뚝",
+    speech:"격식체, 짧고 단호하게 말한다",
+    motive:"후배 기사들을 지키는 것",
+    secret:"예전 임무 실패로 동료를 잃은 죄책감이 있다",
+    bond:"세라 — 옛 동료 기사. 파문된 세라를 여전히 신뢰한다" },
+
+  { name:"세라", title:"백기사령 파문기사", district:"백기사령", role:"전투 · 결투가", color:"#B0455A", icon:"sword",
+    bg:"부당한 명령을 거부했다가 파문당한 전 기사. 규율보다 자신의 검을 믿는다.",
+    stats:{STR:"+2",AGI:"+2",CON:"+1",INT:"+0",WIS:"+0",CHA:"+1"},
+    maxHp:19, ac:14, startParts:6,
+    skills:["근접전투(숙련)","결투(숙련)","관찰(숙련)"],
+    equip:"부러진 서약검(1d8, 방어 결계 사용 불가), 사슬 갑옷, 은화 몇 닢",
+    traits:[
+      { name:"일대일 결투", type:"기계적", text:"단독 대상과의 전투에서만 공격 판정에 +2" },
+      { name:"규율에 대한 반발", type:"RP", text:"부당한 명령이나 규칙을 보면 즉시 지적하거나 어긴다" },
+    ],
+    personality:"반항적 · 명예 중시 · 고독",
+    speech:"직설적, 예의는 지키되 권위엔 고분고분하지 않다",
+    motive:"자신을 파문한 기사령의 진짜 부패를 밝히는 것",
+    secret:"파문 사유는 사실 상관의 비리를 고발했기 때문이다",
+    bond:"이든 — 옛 동료. 이든만은 자신을 믿어준다는 걸 안다" },
+
+  { name:"라비", title:"무영가 출신 반요 척후", district:"무영가", role:"정찰 · 은신", color:"#3E6B8B", icon:"talisman",
+    bg:"여우불이 도는 골목에서 자란 반요. 발소리를 내지 않는다.",
+    stats:{STR:"+0",AGI:"+3",CON:"+1",INT:"+1",WIS:"+2",CHA:"-1"},
+    maxHp:16, ac:14, startParts:6,
+    skills:["은신(숙련)","관찰(숙련)","손재주(숙련)"],
+    equip:"부적 석궁(1d6, 원거리 은신 보너스), 경량 장비, 여우불 부적",
+    traits:[
+      { name:"그림자처럼", type:"기계적", text:"은신 판정 시 자연 1이 아니면 실패해도 위치가 노출되지 않는다" },
+      { name:"홀린 기색", type:"RP", text:"낯선 이의 기척에 극도로 예민해 소음에 먼저 반응한다" },
+    ],
+    personality:"새침함 · 독립적 · 은근히 다정함",
+    speech:"짧고 건조한 문장으로 말한다",
+    motive:"반요라는 정체를 숨긴 채 살아갈 곳을 찾는 것",
+    secret:"인간 마을에서 정체가 들켜 쫓겨난 과거가 있다",
+    bond:"준 — 같은 무영가 출신. 준은 라비의 정체를 이미 눈치채고 있다" },
+
+  { name:"준", title:"무영가 요괴 퇴마사", district:"무영가", role:"전투 · 퇴마", color:"#5E4A8B", icon:"talisman",
+    bg:"상급 이형체에게 스승을 잃고 그 뒤를 쫓는 퇴마사. 과묵하지만 원칙에 어긋난 일은 못 참는다.",
+    stats:{STR:"+0",AGI:"+1",CON:"+1",INT:"+2",WIS:"+3",CHA:"-1"},
+    maxHp:17, ac:12, startParts:6,
+    skills:["퇴마술(숙련)","관찰(숙련)","생존술(숙련)"],
+    equip:"축귀 부적 다발, 정화의 방울, 단검(1d6)",
+    traits:[
+      { name:"결계 감지", type:"기계적", text:"위상잔향이나 이형 존재가 근처에 있으면 판정 없이 자동으로 감지한다" },
+      { name:"정결 강박", type:"RP", text:"부정한 것과 접촉하면 반드시 짧게라도 정화 의식을 치르려 한다" },
+    ],
+    personality:"과묵함 · 원칙주의 · 의외로 다정함",
+    speech:"누구에게나 존댓말, '-하십시오'체를 고수한다",
+    motive:"스승을 해친 상급 이형체를 쫓는 것",
+    secret:"사실 그날 스승을 두고 도망친 전적이 있다",
+    bond:"라비 — 같은 무영가 출신. 라비의 정체를 알지만 말하지 않는다" },
+
+  { name:"소민", title:"심야회랑 소속 치유 주술사", district:"심야회랑", role:"지원 · 의료", color:"#5E3E8B", icon:"staff",
+    bg:"금지된 의식서를 읽고도 무사했다는 소문이 있다. 손이 차분하다.",
+    stats:{STR:"-1",AGI:"+0",CON:"+1",INT:"+2",WIS:"+2",CHA:"+1"},
+    maxHp:15, ac:11, startParts:6,
+    skills:["치유술(숙련)","생존술(숙련)","지식(숙련)"],
+    equip:"치유 결정 키트(응급처치 시 +2), 진통 부적 3회분, 소형 결정탄총(1d6)",
+    traits:[
+      { name:"안정화", type:"기계적", text:"빈사 상태 동료를 응급처치하면 자동 성공(굴림 불필요)" },
+      { name:"히포크라테스의 맹세", type:"RP", text:"다친 자는 적이라도 최소한의 치료는 해준다" },
+    ],
+    personality:"차분함 · 원칙 · 속은 여림",
+    speech:"나긋한 존댓말",
+    motive:"실종된 의술 스승의 행방을 찾는 것",
+    secret:"금서를 몰래 필사한 적이 있다",
+    bond:"카일 — 위험한 지식을 주고받는 거래 상대" },
+
+  { name:"카일", title:"심야회랑 금서 수집가", district:"심야회랑", role:"기술 · 저주", color:"#4A2E6B", icon:"book",
+    bg:"금기를 알아야 직성이 풀리는 지식 수집가. 이미 자신에게 저주 하나를 걸어둔 상태다.",
+    stats:{STR:"-1",AGI:"+0",CON:"+1",INT:"+3",WIS:"+1",CHA:"+2"},
+    maxHp:14, ac:11, startParts:8,
+    skills:["저주술(숙련)","지식(숙련)","협상(숙련)"],
+    equip:"금서 파편(주문서), 저주 표식 잉크, 소형 결정탄총(1d6)",
+    traits:[
+      { name:"대가의 거래", type:"기계적", text:"저주술 판정 실패 시, 위상잔향 1d6을 받는 대신 재굴림할 수 있다" },
+      { name:"지식욕", type:"RP", text:"새로운 금기나 비밀을 알게 되면 대화를 멈추고 캐묻는다" },
+    ],
+    personality:"냉소적 · 호기심 과잉 · 계산적",
+    speech:"현학적인 어휘를 즐겨 쓰며 잘난 척한다",
+    motive:"심야회랑 최심부의 금서 완전판을 손에 넣는 것",
+    secret:"자신에게 건 저주에 부작용이 있다는 걸 숨기고 있다",
+    bond:"소민 — 위험한 지식을 주고받는 거래 상대" },
+
+  { name:"파블로", title:"마공단지 출신 마도공학자", district:"마공단지", role:"기술 · 해킹", color:"#8B7A2E", icon:"gear",
+    bg:"고철 더미에서 작동하는 마도구를 찾아내는 데 천재적이다.",
+    stats:{STR:"-1",AGI:"+1",CON:"+0",INT:"+3",WIS:"+1",CHA:"+0"},
+    maxHp:14, ac:11, startParts:10,
+    skills:["마도구 정비(숙련)","결계 해석(숙련)","사격(숙련)"],
+    equip:"휴대용 결계 단말기, 공구세트, 결정편 여분",
+    traits:[
+      { name:"빠른 손", type:"기계적", text:"마도구 정비/결계 해석 판정 실패 시, 하루에 1번 재굴림할 수 있다" },
+      { name:"완벽주의", type:"RP", text:"미완성 상태의 물건을 보면 참지 못하고 손을 댄다" },
+    ],
+    personality:"몰입형 · 서투른 사교성 · 다정한 괴짜",
+    speech:"혼잣말이 많다",
+    motive:"자신만의 걸작 마도구를 완성하는 것",
+    secret:"리타의 발명품 설계를 몰래 베낀 적이 있어 찔린다",
+    bond:"리타 — 같은 구역 출신 라이벌 발명가" },
+
+  { name:"리타", title:"마공단지 마도 포격수", district:"마공단지", role:"전투 · 기술", color:"#B08B2E", icon:"gear",
+    bg:"발명품 오작동으로 동료를 다치게 한 이후, 더 안전한 마도구를 만들겠다고 다짐했다.",
+    stats:{STR:"+0",AGI:"+1",CON:"+1",INT:"+3",WIS:"+0",CHA:"+1"},
+    maxHp:15, ac:12, startParts:11,
+    skills:["마도구 정비(숙련)","사격(숙련)","교역(숙련)"],
+    equip:"휴대용 결계 포탑(설치형, 1d8 자동 공격), 예비 부품, 방염 장갑",
+    traits:[
+      { name:"포탑 설치", type:"기계적", text:"전투 시작 시 1회, 결계 포탑을 설치해 매 라운드 자동으로 1d8 피해를 가한다(행동 소모 없음)" },
+      { name:"발명가 기질", type:"RP", text:"새로운 기계나 마도구를 보면 분해해보고 싶어한다" },
+    ],
+    personality:"낙천적 · 수다스러움 · 실험 정신",
+    speech:"전문 용어를 섞어 빠르게 말한다",
+    motive:"마공단지의 폭주 사고를 자신의 발명품으로 줄이는 것",
+    secret:"과거 발명품 오작동으로 동료를 다치게 한 적이 있다",
+    bond:"파블로 — 같은 구역 출신 라이벌 발명가" },
+
+  { name:"노아", title:"교환장 출신 중개인", district:"교환장", role:"사교 · 교역", color:"#C1552D", icon:"coin",
+    bg:"일곱 구역 사이를 오가며 뭐든 팔고 사는 상인. 말이 곧 무기다.",
+    stats:{STR:"-1",AGI:"+0",CON:"+0",INT:"+1",WIS:"+1",CHA:"+3"},
+    maxHp:13, ac:11, startParts:14,
+    skills:["설득(숙련)","교역(숙련)","관찰(숙련)"],
+    equip:"품질 좋은 이계 술(선물용), 소형 결정탄총(1d6), 흥정용 잡화 다수",
+    traits:[
+      { name:"첫인상", type:"기계적", text:"처음 만나는 NPC와의 첫 설득/교역 판정에 +3" },
+      { name:"손해는 없다", type:"RP", text:"모든 대화를 거래처럼 접근한다 — 파티에게도 장난스럽게 값을 부른다" },
+    ],
+    personality:"사교적 · 계산적 · 은근히 정 많음",
+    speech:"흥정하듯 말끝을 늘인다",
+    motive:"교환장 최고의 중개인이 되는 것",
+    secret:"헌터 길드에도 뒷거래선이 있다",
+    bond:"유나 — 교환장에서 가장 친한 동료" },
+
+  { name:"유나", title:"교환장 서기 / 올라운더", district:"교환장", role:"균형형", color:"#6B6B63", icon:"coin",
+    bg:"특출난 하나보다 여러 구역에서 두루 쓸모 있는 사람이 되기로 했다.",
+    stats:{STR:"+0",AGI:"+1",CON:"+1",INT:"+1",WIS:"+1",CHA:"+1"},
+    maxHp:16, ac:12, startParts:9,
+    skills:["교역(숙련)","관찰(숙련)","지식(숙련)"],
+    equip:"다용도 룬나이프, 소형 결정탄총(1d6), 기록용 수첩",
+    traits:[
+      { name:"만능", type:"기계적", text:"하루 1번, 숙련 없는 기술 판정에 임시로 숙련(+2)을 적용할 수 있다" },
+      { name:"중재자", type:"RP", text:"파티 내 의견이 갈리면 항상 중재를 자처한다" },
+    ],
+    personality:"온화함 · 성실함 · 눈치 빠름",
+    speech:"정중하고 조곤조곤하게 말한다",
+    motive:"모든 구역의 기록을 정리해 도시의 역사책을 만드는 것",
+    secret:"사실 이 사건도 몰래 기록해 책으로 낼 속셈이다",
+    bond:"노아 — 교환장에서 가장 친한 동료" },
+
+  { name:"하윤", title:"강선지구 출신 저격수", district:"강선지구", role:"전투 · 원거리", color:"#2E6B6B", icon:"scope",
+    bg:"네온 사이 옥상에서 상황을 읽는 눈을 가졌다. 말수가 적다.",
+    stats:{STR:"+0",AGI:"+2",CON:"+0",INT:"+0",WIS:"+3",CHA:"-1"},
+    maxHp:15, ac:12, startParts:6,
+    skills:["사격(숙련)","관찰(숙련)","은신(숙련)"],
+    equip:"레일건형 저격총(1d8, 첫 공격 시 +3), 열감지 고글, 위장 망토",
+    traits:[
+      { name:"조준", type:"기계적", text:"같은 전투에서 두 번째 공격부터 판정에 -2" },
+      { name:"거리 두기", type:"RP", text:"완전히 신뢰하기 전까진 누구에게도 등을 보이지 않는다" },
+    ],
+    personality:"과묵함 · 신중함 · 예리한 관찰력",
+    speech:"필요한 말만 한다",
+    motive:"강선지구 기업에게 빼앗긴 것을 되찾는 것",
+    secret:"도경과 같은 기업에게 쫓기는 처지다",
+    bond:"도경 — 같은 이유로 쫓기는 동료" },
+
+  { name:"도경", title:"강선지구 의체 격투가", district:"강선지구", role:"전투 · 근접", color:"#2E8B7A", icon:"fist",
+    bg:"지하 격투장에서 이름을 날렸지만, 의체 수술비를 갚기 위해 위험한 일을 자처한다.",
+    stats:{STR:"+2",AGI:"+2",CON:"+1",INT:"+0",WIS:"+0",CHA:"+1"},
+    maxHp:18, ac:13, startParts:7,
+    skills:["근접전투(숙련)","위협(숙련)","기계정비(숙련)"],
+    equip:"의수 건틀릿(1d6+2), 충격 흡수 코트, 즉석 결정 붕대",
+    traits:[
+      { name:"과부하 일격", type:"기계적", text:"라운드에 1회, 결정편 1개를 태워 공격 피해를 +1d6 할 수 있다" },
+      { name:"전적 자랑", type:"RP", text:"지하 격투장 우승 경력을 툭하면 언급한다" },
+    ],
+    personality:"허세 · 의리파 · 은근히 계산적",
+    speech:"반말 섞인 거친 말투, 상대를 별명으로 부른다",
+    motive:"의체 수술비를 갚고 자유로워지는 것",
+    secret:"강선지구 기업 빚쟁이에게 감시당하는 중이다",
+    bond:"하윤 — 같은 구역 출신, 데면데면하지만 서로 신뢰한다" },
+
+  { name:"겨울", title:"푸른뿌리 출신 드루이드 추적자", district:"푸른뿌리", role:"생존 · 탐지", color:"#4A6B4A", icon:"leaf",
+    bg:"건물을 삼킨 숲에서 나고 자라 도심보다 정령의 언어를 더 잘 안다.",
+    stats:{STR:"+0",AGI:"+1",CON:"+3",WIS:"+3",INT:"-1",CHA:"+0"},
+    maxHp:19, ac:12, startParts:5,
+    skills:["생존술(숙련)","추적/관찰(숙련)","동물 교감(숙련)"],
+    equip:"위상 필터 x3, 정령의 활(1d6), 나뭇잎 방독 마스크",
+    traits:[
+      { name:"익숙함", type:"기계적", text:"위상잔향 획득량을 항상 1 감소시킨다" },
+      { name:"침묵 우선", type:"RP", text:"꼭 필요한 말이 아니면 손짓으로 대화한다" },
+    ],
+    personality:"과묵함 · 인내심 · 자연 존중",
+    speech:"짧고 은유적으로 말한다",
+    motive:"잠식당하는 푸른뿌리의 경계를 지키는 것",
+    secret:"아이린의 스승을 대신해 몰래 그녀를 지켜보고 있다",
+    bond:"아이린 — 사제 관계에 가까운 후배" },
+
+  { name:"아이린", title:"푸른뿌리 정령 샤먼", district:"푸른뿌리", role:"지원 · 정령술", color:"#6B8B4A", icon:"flame",
+    bg:"정령과의 계약으로 힘을 얻은 대가로 수명의 일부를 내주었다. 온화하지만 고집이 세다.",
+    stats:{STR:"-1",AGI:"+0",CON:"+1",INT:"+1",WIS:"+3",CHA:"+2"},
+    maxHp:14, ac:11, startParts:5,
+    skills:["정령술(숙련)","치유술(숙련)","설득(숙련)"],
+    equip:"정령 지팡이(원거리 1d6 정령탄), 씨앗 주머니(치유 물약 대용), 나뭇잎 로브",
+    traits:[
+      { name:"작은 정령의 가호", type:"기계적", text:"하루 1번, 파티원 1명의 판정 실패를 성공으로 바꿀 수 있다" },
+      { name:"자연의 대변인", type:"RP", text:"자연을 해치는 선택지 앞에서 반드시 반대 의견을 낸다" },
+    ],
+    personality:"온화함 · 고집 · 생명 존중",
+    speech:"자연의 이미지를 섞어 비유적으로 말한다",
+    motive:"푸른뿌리가 다른 구역에 잠식당하지 않도록 지키는 것",
+    secret:"정령과의 계약 대가로 수명 일부를 내주었다",
+    bond:"겨울 — 자신을 지켜보는 든든한 선배" },
+
+  { name:"레오", title:"재의문 헌터 길드 출신 사냥꾼", district:"재의문", role:"전투 · 위협", color:"#6B2E4A", icon:"bat",
+    bg:"헌터 길드를 떠나 새 삶을 택했지만, 그 시절 말투는 남아있다.",
+    stats:{STR:"+1",AGI:"+1",CON:"+2",CHA:"+2",INT:"-1",WIS:"+0"},
+    maxHp:20, ac:13, startParts:9,
+    skills:["협박(숙련)","근접전투(숙련)","결투(숙련)"],
+    equip:"은각인 쇠파이프(1d6+1), 헌터 길드 표식, 결계 산탄포(2d6, 탄약 4발)",
+    traits:[
+      { name:"악명", type:"기계적", text:"헌터 길드 관련 NPC 상대로 협박 판정에 +3, 대신 설득 판정에 -2" },
+      { name:"과거 청산", type:"RP", text:"옛 헌터 길드 동료를 마주치면 시선을 피하지 않고 정면으로 마주한다" },
+    ],
+    personality:"거침 · 의리 · 죄책감",
+    speech:"거친 말투, 가끔 옛 길드 은어가 튀어나온다",
+    motive:"헌터 길드 시절의 실수를 갚는 것",
+    secret:"릴리스의 가문을 몰락시킨 사냥에 가담했었다",
+    bond:"릴리스 — 과거의 악연" },
+
+  { name:"릴리스", title:"재의문 뱀파이어 혈족", district:"재의문", role:"전투 · 매혹", color:"#8B2E4A", icon:"bat",
+    bg:"몰락한 가문의 마지막 혈족. 우아함 뒤에 은근한 외로움을 감춘다.",
+    stats:{STR:"+1",AGI:"+2",CON:"+0",INT:"+0",WIS:"+0",CHA:"+3"},
+    maxHp:16, ac:13, startParts:10,
+    skills:["매혹(숙련)","근접전투(숙련)","은신(숙련)"],
+    equip:"혈검(1d6+1, 명중 시 소량 흡혈), 벨벳 망토, 회중시계(가문 유품)",
+    traits:[
+      { name:"피의 갈증", type:"기계적", text:"전투에서 적에게 피해를 입힐 때마다 라운드당 최대 1회 HP 1을 회복한다" },
+      { name:"가문의 자존심", type:"RP", text:"헌터나 하급자 취급을 받으면 반드시 되받아친다" },
+    ],
+    personality:"오만함 · 우아함 · 은근한 외로움",
+    speech:"고풍스러운 존댓말, 상대를 '그대'라 칭한다",
+    motive:"몰락한 가문의 명예를 되찾는 것",
+    secret:"레오와 과거 악연이 있다는 걸 숨기고 있다",
+    bond:"레오 — 과거의 악연" },
+];
+
+const MONSTERS = [
+  { name:"결함 드론 (다수)", hp:6, ac:11, atk:"d20+2, 1d4 피해", note:"3기 이하면 위협적이지 않음, 대군일 때 위험" },
+  { name:"여파에 물든 시민", hp:18, ac:12, atk:"d20+3, 1d6 피해", note:"설득으로 전투 회피 가능, 회피 시 아군화" },
+  { name:"헌터 길드 정찰병", hp:14, ac:13, atk:"d20+4, 1d8 피해(레일건)", note:"2인 1조 행동, 협상 여지 있음" },
+  { name:"역참 인격체 코어 '길잡이'", hp:40, ac:15, atk:"d20+5, 2d6 (위상충격)", note:"물리 피해 절반 저항, 결계 해석/설득이 더 효과적" },
+];
+
+const DC_TABLE = [["쉬움","8"],["보통","12"],["어려움","15"],["매우 어려움","18"],["거의 불가능","22"]];
+
+function iconPaths(key){
+  switch(key){
+    case "shield": return `<path d="M50 14 L82 26 V54 C82 74 68 88 50 96 C32 88 18 74 18 54 V26 Z" fill="none" stroke="#fff" stroke-width="4"/><line x1="50" y1="30" x2="50" y2="76" stroke="#fff" stroke-width="4"/>`;
+    case "sword": return `<line x1="50" y1="16" x2="50" y2="70" stroke="#fff" stroke-width="5"/><line x1="34" y1="34" x2="66" y2="34" stroke="#fff" stroke-width="5"/><polygon points="50,70 58,82 50,90 42,82" fill="#fff"/>`;
+    case "talisman": return `<rect x="36" y="18" width="28" height="58" rx="2" fill="none" stroke="#fff" stroke-width="4"/><line x1="43" y1="30" x2="57" y2="30" stroke="#fff" stroke-width="3"/><line x1="43" y1="42" x2="57" y2="48" stroke="#fff" stroke-width="3"/><line x1="57" y1="42" x2="43" y2="48" stroke="#fff" stroke-width="3"/><line x1="43" y1="60" x2="57" y2="60" stroke="#fff" stroke-width="3"/>`;
+    case "staff": return `<line x1="50" y1="20" x2="50" y2="86" stroke="#fff" stroke-width="4"/><circle cx="50" cy="20" r="10" fill="none" stroke="#fff" stroke-width="4"/><line x1="36" y1="52" x2="64" y2="52" stroke="#fff" stroke-width="4"/>`;
+    case "book": return `<path d="M22 26 C34 20 44 20 50 26 C56 20 66 20 78 26 V72 C66 66 56 66 50 72 C44 66 34 66 22 72 Z" fill="none" stroke="#fff" stroke-width="4"/><line x1="50" y1="26" x2="50" y2="72" stroke="#fff" stroke-width="3"/>`;
+    case "gear": {
+      let teeth = "";
+      [0,45,90,135,180,225,270,315].forEach(a => {
+        const r1=26,r2=36, rad=a*Math.PI/180;
+        const x1=50+r1*Math.cos(rad), y1=50+r1*Math.sin(rad);
+        const x2=50+r2*Math.cos(rad), y2=50+r2*Math.sin(rad);
+        teeth += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#fff" stroke-width="6"/>`;
+      });
+      return `<circle cx="50" cy="50" r="16" fill="none" stroke="#fff" stroke-width="4"/><circle cx="50" cy="50" r="5" fill="#fff"/>${teeth}`;
+    }
+    case "coin": return `<circle cx="50" cy="50" r="28" fill="none" stroke="#fff" stroke-width="4"/><circle cx="50" cy="50" r="18" fill="none" stroke="#fff" stroke-width="2"/><line x1="50" y1="32" x2="50" y2="68" stroke="#fff" stroke-width="3"/>`;
+    case "scope": return `<circle cx="50" cy="50" r="24" fill="none" stroke="#fff" stroke-width="4"/><line x1="50" y1="14" x2="50" y2="30" stroke="#fff" stroke-width="4"/><line x1="50" y1="70" x2="50" y2="86" stroke="#fff" stroke-width="4"/><line x1="14" y1="50" x2="30" y2="50" stroke="#fff" stroke-width="4"/><line x1="70" y1="50" x2="86" y2="50" stroke="#fff" stroke-width="4"/>`;
+    case "fist": return `<rect x="32" y="40" width="36" height="30" rx="8" fill="none" stroke="#fff" stroke-width="4"/><line x1="42" y1="40" x2="42" y2="24" stroke="#fff" stroke-width="4"/><line x1="50" y1="40" x2="50" y2="20" stroke="#fff" stroke-width="4"/><line x1="58" y1="40" x2="58" y2="24" stroke="#fff" stroke-width="4"/><rect x="24" y="48" width="12" height="16" rx="4" fill="none" stroke="#fff" stroke-width="4"/>`;
+    case "leaf": return `<path d="M50 18 C72 28 76 56 50 84 C24 56 28 28 50 18 Z" fill="none" stroke="#fff" stroke-width="4"/><line x1="50" y1="30" x2="50" y2="76" stroke="#fff" stroke-width="3"/>`;
+    case "bat": return `<path d="M50 42 C42 24 20 26 14 40 C24 40 32 44 38 52 C30 52 20 56 16 64 C28 62 38 58 46 50 L50 58 L54 50 C62 58 72 62 84 64 C80 56 70 52 62 52 C68 44 76 40 86 40 C80 26 58 24 50 42 Z" fill="none" stroke="#fff" stroke-width="3.5"/>`;
+    case "flame": return `<path d="M50 18 C58 34 70 40 66 56 C64 66 56 72 50 72 C44 72 36 66 34 56 C30 40 42 34 50 18 Z" fill="none" stroke="#fff" stroke-width="4"/><path d="M50 40 C54 48 58 52 56 60 C55 65 52 68 50 68" fill="none" stroke="#fff" stroke-width="2.5"/>`;
+    default: return `<circle cx="50" cy="50" r="20" fill="none" stroke="#fff" stroke-width="4"/>`;
+  }
+}
+function emblemSVG(color, iconKey, size){
+  size = size || 60;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="display:block">
+    <circle cx="50" cy="50" r="48" fill="${color}"/>
+    <circle cx="50" cy="50" r="48" fill="none" stroke="#00000030" stroke-width="1.5"/>
+    ${iconPaths(iconKey)}
+  </svg>`;
+}
+
+
+let ROOM_CODE = "", PLAYER_NAME = "", IS_GM = false;
+let activeTab = "char";
+let selectedChar = null;
+
+function genCode(){ const s="ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let c=""; for(let i=0;i<4;i++) c+=s[Math.floor(Math.random()*s.length)]; return c; }
+
+function defaultRoom(){
+  const characters = {};
+  PREGENS.forEach(p => { characters[p.name] = { claimedBy:null, hp:p.maxHp, radiation:0, parts:p.startParts, status:"경상", notes:"" }; });
+  return { characters, log:[], initiative:[], round:1, turnIndex:0, gm:null, timer:null };
+}
+
+async function loadRoom(){
+  try {
+    const r = await window.storage.get("room_"+ROOM_CODE, true);
+    if (r && r.value) return JSON.parse(r.value);
+  } catch(e) {}
+  return defaultRoom();
+}
+async function saveRoom(state){
+  try { await window.storage.set("room_"+ROOM_CODE, JSON.stringify(state), true); } catch(e) { console.error("storage save failed", e); }
+}
+
+let ROOM = defaultRoom();
+let saveTimer = null;
+async function withRoom(mutator){
+  ROOM = await loadRoom();
+  mutator(ROOM);
+  await saveRoom(ROOM);
+  render();
+}
+function addLog(state, text, type){
+  state.log = state.log || [];
+  state.log.push({ id: Date.now()+Math.random().toString(16).slice(2), time: new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}), text, type: type||"sys" });
+  if (state.log.length > 300) state.log = state.log.slice(-300);
+}
+
+function el(html){ const d=document.createElement('div'); d.innerHTML=html.trim(); return d.firstChild; }
+
+// ---------- JOIN ----------
+document.getElementById('btn-gen').onclick = () => { document.getElementById('in-code').value = genCode(); };
+document.getElementById('btn-join').onclick = async () => {
+  const name = document.getElementById('in-name').value.trim();
+  let code = document.getElementById('in-code').value.trim().toUpperCase();
+  if (!name) { alert("이름을 입력해 주세요."); return; }
+  if (!code) { code = genCode(); }
+  PLAYER_NAME = name; ROOM_CODE = code;
+  document.getElementById('join').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('meta-code').textContent = ROOM_CODE;
+  document.getElementById('meta-name').textContent = PLAYER_NAME;
+  ROOM = await loadRoom();
+  if (!ROOM.characters) ROOM = defaultRoom();
+  addLog(ROOM, `${PLAYER_NAME}님이 접속했습니다.`, "sys");
+  await saveRoom(ROOM);
+  switchTab('char');
+  startPolling();
+};
+
+// ---------- TABS ----------
+document.querySelectorAll('.tab-btn').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+function switchTab(t){
+  activeTab = t;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===t));
+  render();
+}
+
+function startPolling(){
+  setInterval(async () => {
+    const ae = document.activeElement;
+    const typing = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.tagName === 'SELECT');
+    if (typing) return;
+    ROOM = await loadRoom();
+    render();
+  }, 4000);
+}
+
+// ---------- RENDER ----------
+function render(){
+  const gmHolder = document.getElementById('gm-flag-holder');
+  gmHolder.innerHTML = ROOM.gm ? `<span class="gm-flag">GM: ${ROOM.gm}</span>` : '';
+  const c = document.getElementById('tab-content');
+  c.innerHTML = '';
+  if (activeTab === 'char') renderChar(c);
+  else if (activeTab === 'dice') renderDice(c);
+  else if (activeTab === 'gm') renderGM(c);
+  else if (activeTab === 'log') renderLog(c);
+}
+
+function renderChar(c){
+  const grid = el(`<div class="char-grid"></div>`);
+  PREGENS.forEach(p => {
+    const cs = ROOM.characters[p.name] || {};
+    const mine = cs.claimedBy === PLAYER_NAME;
+    const taken = cs.claimedBy && !mine;
+    const card = el(`<div class="char-card ${mine?'mine':''} ${taken?'taken':''}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div style="width:34px;height:34px;flex-shrink:0">${emblemSVG(p.color,p.icon,34)}</div>
+        <div>
+          <div class="cname" style="color:${p.color}">${p.name}</div>
+          <div style="font-size:10px;color:var(--paper-dim)">${p.district}</div>
+        </div>
+      </div>
+      <div class="ctitle">${p.title}</div>
+      <div style="font-size:11px;color:var(--paper-dim)">${p.role}</div>
+      <div class="claim">${cs.claimedBy ? (mine?'✓ 내 캐릭터':'선택됨: '+cs.claimedBy) : '선택 가능'}</div>
+    </div>`);
+    card.onclick = async () => {
+      if (taken) { if(!confirm(cs.claimedBy+"님이 이미 선택한 캐릭터입니다. 그래도 볼까요?")) return; selectedChar = p.name; render(); return; }
+      await withRoom(state => {
+        Object.keys(state.characters).forEach(n => { if (state.characters[n].claimedBy === PLAYER_NAME) state.characters[n].claimedBy = null; });
+        state.characters[p.name].claimedBy = PLAYER_NAME;
+        addLog(state, `${PLAYER_NAME}님이 ${p.name}(을)를 선택했습니다.`, "sys");
+      });
+      selectedChar = p.name;
+    };
+    grid.appendChild(card);
+  });
+  const panel1 = el(`<div class="panel"><h3>캐릭터 선택 (16종 · 구역별 2명씩, 서로 연결됨)</h3></div>`);
+  panel1.appendChild(grid);
+  c.appendChild(panel1);
+
+  if (!selectedChar) {
+    const mineChar = Object.keys(ROOM.characters).find(n => ROOM.characters[n].claimedBy === PLAYER_NAME);
+    selectedChar = mineChar || PREGENS[0].name;
+  }
+  const p = PREGENS.find(x => x.name === selectedChar);
+  const cs = ROOM.characters[selectedChar];
+  const panel2 = el(`<div class="panel"></div>`);
+  const hpPct = Math.max(0, Math.round(100*cs.hp/p.maxHp));
+  const radPct = Math.max(0, Math.min(100, cs.radiation));
+  const traitsHtml = p.traits.map(t => `<div class="trait-box" style="margin-top:8px">
+      <b style="color:${t.type==='RP'?'var(--olive)':'var(--rust)'}">[${t.type}] ${t.name}</b><br>${t.text}
+    </div>`).join('');
+  panel2.innerHTML = `
+    <div class="sheet" style="border-color:${p.color}">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px">
+        <div style="width:56px;height:56px;flex-shrink:0">${emblemSVG(p.color,p.icon,56)}</div>
+        <div>
+          <p class="name" style="color:${p.color};margin:0">${p.name}</p>
+          <p class="title" style="margin:2px 0 0">${p.title} · ${p.role}</p>
+        </div>
+      </div>
+      <p class="bg-text">${p.bg}</p>
+      <div class="stat-row">
+        ${Object.entries(p.stats).map(([k,v])=>`<div class="stat-box"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+      </div>
+      <div class="track-row">
+        <div class="track">
+          <label>HP</label>
+          <div class="row2"><input type="number" id="f-hp" value="${cs.hp}" min="0" max="${p.maxHp}"><span class="mono" style="color:var(--paper-dim)">/ ${p.maxHp}</span></div>
+          <div class="bar"><div class="bar-fill" style="width:${hpPct}%"></div></div>
+        </div>
+        <div class="track">
+          <label>위상잔향</label>
+          <div class="row2"><input type="number" id="f-rad" value="${cs.radiation}" min="0" max="100"><span class="mono" style="color:var(--paper-dim)">/ 100</span></div>
+          <div class="bar"><div class="bar-fill rad" style="width:${radPct}%"></div></div>
+        </div>
+        <div class="track">
+          <label>결정편</label>
+          <div class="row2"><input type="number" id="f-parts" value="${cs.parts}" min="0"></div>
+        </div>
+      </div>
+      <div class="kv"><b>상태</b>
+        <select id="f-status" class="status">
+          <option ${cs.status==='경상'?'selected':''}>경상</option>
+          <option ${cs.status==='중상'?'selected':''}>중상</option>
+          <option ${cs.status==='빈사'?'selected':''}>빈사</option>
+        </select>
+      </div>
+      <div class="kv"><b>AC (방어치)</b> ${p.ac}</div>
+      <div class="kv"><b>숙련 기술</b> ${p.skills.join(', ')}</div>
+      <div class="kv"><b>장비</b> ${p.equip}</div>
+      ${traitsHtml}
+      <div class="kv" style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px"><b>성격</b> ${p.personality}</div>
+      <div class="kv"><b>말투</b> ${p.speech}</div>
+      <div class="kv"><b>목표</b> ${p.motive}</div>
+      <div class="kv"><b>관계</b> ${p.bond}</div>
+      <div class="kv" style="color:var(--paper-dim)"><b style="color:var(--paper-dim)">비밀 (GM 전용, 본인 플레이어에게만 살짝 알려주세요)</b> ${p.secret}</div>
+      <div class="kv" style="margin-top:10px"><b>메모</b>
+        <textarea id="f-notes" rows="2" placeholder="퀘스트 단서, 인벤토리 메모 등">${cs.notes||''}</textarea>
+      </div>
+    </div>
+  `;
+  c.appendChild(panel2);
+  const save = async () => {
+    const hp = Math.max(0, Math.min(p.maxHp, parseInt(document.getElementById('f-hp').value)||0));
+    const rad = Math.max(0, Math.min(100, parseInt(document.getElementById('f-rad').value)||0));
+    const parts = Math.max(0, parseInt(document.getElementById('f-parts').value)||0);
+    const status = document.getElementById('f-status').value;
+    const notes = document.getElementById('f-notes').value;
+    await withRoom(state => { state.characters[p.name] = { ...state.characters[p.name], hp, radiation:rad, parts, status, notes }; });
+  };
+  ['f-hp','f-rad','f-parts'].forEach(id => panel2.querySelector('#'+id).onchange = save);
+  panel2.querySelector('#f-status').onchange = save;
+  panel2.querySelector('#f-notes').onchange = save;
+}
+
+
+let lastRoll = null;
+function renderDice(c){
+  const panel = el(`<div class="panel"><h3>주사위 굴리기</h3></div>`);
+  const resultBox = el(`<div class="roll-result"><div class="big">-</div><div class="expr">아래에서 주사위를 선택하세요</div></div>`);
+  if (lastRoll) {
+    resultBox.querySelector('.big').textContent = lastRoll.total;
+    resultBox.querySelector('.expr').textContent = lastRoll.expr;
+  }
+  panel.appendChild(resultBox);
+
+  const modrow = el(`<div class="modrow">
+    <div class="field"><label>수정치 (능력치 보정 + 숙련 등)</label><input type="number" id="mod-input" value="0"></div>
+    <div class="field"><label>이 굴림의 이름</label><input type="text" id="mod-label" placeholder="예: 라비의 은신 판정"></div>
+  </div>`);
+  panel.appendChild(modrow);
+
+  const grid = el(`<div class="dice-grid"></div>`);
+  [4,6,8,10,12,20].forEach(sides => {
+    const b = el(`<button>d${sides}</button>`);
+    b.onclick = () => rollDice(1, sides);
+    grid.appendChild(b);
+  });
+  const b2d6 = el(`<button>2d6</button>`); b2d6.onclick = () => rollDice(2,6); grid.appendChild(b2d6);
+  const b2d8 = el(`<button>2d8</button>`); b2d8.onclick = () => rollDice(2,8); grid.appendChild(b2d8);
+  panel.appendChild(grid);
+
+  const dcPanel = el(`<div style="font-size:12px;color:var(--paper-dim);margin-top:6px">
+    DC 참고: ${DC_TABLE.map(([n,d])=>`${n} ${d}`).join(' · ')}
+  </div>`);
+  panel.appendChild(dcPanel);
+  c.appendChild(panel);
+
+  function rollDice(count, sides){
+    let rolls = [];
+    for (let i=0;i<count;i++) rolls.push(1+Math.floor(Math.random()*sides));
+    const mod = parseInt(document.getElementById('mod-input').value)||0;
+    const sum = rolls.reduce((a,b)=>a+b,0);
+    const total = sum + mod;
+    const label = document.getElementById('mod-label').value.trim();
+    const expr = `${count}d${sides} [${rolls.join(', ')}] ${mod>=0?'+':''}${mod} = ${total}`;
+    lastRoll = { total, expr };
+    render();
+    withRoom(state => {
+      addLog(state, `${PLAYER_NAME}${label?' — '+label:''}: ${expr}`, "roll");
+    });
+  }
+}
+
+function renderGM(c){
+  const claimPanel = el(`<div class="panel"><h3>GM 지정</h3></div>`);
+  if (!ROOM.gm) {
+    const btn = el(`<button class="primary">내가 이 세션의 GM입니다</button>`);
+    btn.onclick = () => withRoom(state => { state.gm = PLAYER_NAME; addLog(state, `${PLAYER_NAME}님이 GM으로 지정되었습니다.`, "gm"); });
+    claimPanel.appendChild(btn);
+  } else {
+    claimPanel.appendChild(el(`<div class="kv">현재 GM: <b style="color:var(--rust)">${ROOM.gm}</b></div>`));
+    if (ROOM.gm === PLAYER_NAME) {
+      const btn = el(`<button class="ghost">GM 해제</button>`);
+      btn.onclick = () => withRoom(state => { state.gm = null; });
+      claimPanel.appendChild(btn);
+    }
+  }
+  c.appendChild(claimPanel);
+
+  // Initiative tracker
+  const initPanel = el(`<div class="panel"><h3>이니셔티브 트래커 — 라운드 <span class="mono" id="round-num">${ROOM.round||1}</span></h3></div>`);
+  const list = el(`<div class="init-list"></div>`);
+  const sorted = [...(ROOM.initiative||[])].sort((a,b)=>b.init-a.init);
+  sorted.forEach((it, idx) => {
+    const isCurrent = idx === (ROOM.turnIndex||0);
+    const row = el(`<div class="init-item ${isCurrent?'current':''}">
+      <input type="number" class="mono" value="${it.init}" data-id="${it.id}" data-field="init">
+      <div style="font-weight:600">${it.name} ${it.isPC?'':'<span style=\"color:var(--danger);font-size:11px\">(적)</span>'}</div>
+      <input type="number" class="mono" value="${it.hp}" data-id="${it.id}" data-field="hp">
+      <span class="mono" style="color:var(--paper-dim);font-size:12px">/ ${it.maxHp}</span>
+      <div class="rm" data-id="${it.id}">✕</div>
+    </div>`);
+    list.appendChild(row);
+  });
+  initPanel.appendChild(list);
+  const addrow = el(`<div class="addrow">
+    <input id="new-combatant" placeholder="이름">
+    <input id="new-init" type="number" placeholder="선제권" style="max-width:90px">
+    <input id="new-hp" type="number" placeholder="HP" style="max-width:80px">
+    <button id="add-combatant">추가</button>
+  </div>`);
+  initPanel.appendChild(addrow);
+  const ctrlrow = el(`<div style="display:flex;gap:8px;margin-top:12px">
+    <button id="next-turn" class="primary">다음 턴 ▶</button>
+    <button id="reset-init" class="ghost">전투 초기화</button>
+  </div>`);
+  initPanel.appendChild(ctrlrow);
+  c.appendChild(initPanel);
+
+  list.querySelectorAll('input').forEach(inp => inp.onchange = () => {
+    const id = inp.dataset.id, field = inp.dataset.field, val = parseInt(inp.value)||0;
+    withRoom(state => { const it = state.initiative.find(x=>x.id===id); if(it) it[field]=val; });
+  });
+  list.querySelectorAll('.rm').forEach(rm => rm.onclick = () => {
+    withRoom(state => { state.initiative = state.initiative.filter(x=>x.id!==rm.dataset.id); });
+  });
+  addrow.querySelector('#add-combatant').onclick = () => {
+    const name = document.getElementById('new-combatant').value.trim();
+    const init = parseInt(document.getElementById('new-init').value)||0;
+    const hp = parseInt(document.getElementById('new-hp').value)||10;
+    if (!name) return;
+    withRoom(state => {
+      state.initiative = state.initiative || [];
+      state.initiative.push({ id: Date.now()+Math.random().toString(16).slice(2), name, init, hp, maxHp:hp, isPC:!!PREGENS.find(p=>p.name===name) });
+      addLog(state, `전투 참가자 추가: ${name} (선제권 ${init})`, "gm");
+    });
+  };
+  ctrlrow.querySelector('#next-turn').onclick = () => withRoom(state => {
+    const n = (state.initiative||[]).length;
+    if (!n) return;
+    state.turnIndex = ((state.turnIndex||0)+1) % n;
+    if (state.turnIndex === 0) state.round = (state.round||1)+1;
+  });
+  ctrlrow.querySelector('#reset-init').onclick = () => { if(confirm("전투 참가자 전원을 지울까요?")) withRoom(state => { state.initiative = []; state.round = 1; state.turnIndex = 0; }); };
+
+  // Monster reference
+  const monPanel = el(`<div class="panel"><h3>몬스터/NPC 참고자료</h3></div>`);
+  const mgrid = el(`<div class="mon-grid"></div>`);
+  MONSTERS.forEach(m => {
+    mgrid.appendChild(el(`<div class="mon-card">
+      <div class="mname">${m.name}</div>
+      <div class="mstat">HP ${m.hp} · AC ${m.ac}</div>
+      <div class="mstat">공격 ${m.atk}</div>
+      <div style="color:var(--paper-dim)">${m.note}</div>
+    </div>`));
+  });
+  monPanel.appendChild(mgrid);
+  c.appendChild(monPanel);
+
+  // Timer
+  const timerPanel = el(`<div class="panel"><h3>세션 타이머</h3></div>`);
+  const tbox = el(`<div class="timer-box"></div>`);
+  const display = el(`<div class="timer-display mono" id="timer-disp">--:--</div>`);
+  tbox.appendChild(display);
+  const startBtn = el(`<button id="timer-start">15분 타이머 시작</button>`);
+  const clearBtn = el(`<button class="ghost" id="timer-clear">해제</button>`);
+  tbox.appendChild(startBtn); tbox.appendChild(clearBtn);
+  timerPanel.appendChild(tbox);
+  c.appendChild(timerPanel);
+  function tick(){
+    if (!ROOM.timer) { display.textContent = "--:--"; return; }
+    const remain = Math.max(0, Math.floor((ROOM.timer.endsAt - Date.now())/1000));
+    const m = String(Math.floor(remain/60)).padStart(2,'0'), s = String(remain%60).padStart(2,'0');
+    display.textContent = `${m}:${s}`;
+  }
+  tick();
+  const iv = setInterval(() => { if (document.getElementById('timer-disp')) tick(); else clearInterval(iv); }, 1000);
+  startBtn.onclick = () => withRoom(state => { state.timer = { endsAt: Date.now()+15*60*1000 }; addLog(state, "GM이 15분 타이머를 시작했습니다.", "gm"); });
+  clearBtn.onclick = () => withRoom(state => { state.timer = null; });
+}
+
+function renderLog(c){
+  const panel = el(`<div class="panel"><h3>세션 로그</h3></div>`);
+  const list = el(`<div class="log-list"></div>`);
+  const log = ROOM.log || [];
+  if (!log.length) list.appendChild(el(`<div class="empty">아직 기록이 없습니다.</div>`));
+  [...log].reverse().forEach(it => {
+    list.appendChild(el(`<div class="log-item ${it.type}"><span class="t">${it.time}</span>${it.text}</div>`));
+  });
+  panel.appendChild(list);
+  const addrow = el(`<div class="addrow" style="margin-top:12px">
+    <input id="new-log" placeholder="세션 기록 추가 (장면 전환, GM 판정 등)">
+    <button id="add-log">기록</button>
+  </div>`);
+  panel.appendChild(addrow);
+  addrow.querySelector('#add-log').onclick = () => {
+    const t = document.getElementById('new-log').value.trim();
+    if (!t) return;
+    withRoom(state => addLog(state, `${PLAYER_NAME}: ${t}`, ROOM.gm===PLAYER_NAME?"gm":"sys"));
+    document.getElementById('new-log').value = '';
+  };
+  c.appendChild(panel);
+}
+</script>
+</body>
+</html>
