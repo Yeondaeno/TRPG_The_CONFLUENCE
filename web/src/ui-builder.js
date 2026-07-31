@@ -17,11 +17,11 @@
 // 방 상태(hp/parts/status/notes)는 app.js의 defaultCharState()와 동일한
 // 모양으로 ctx.actions.withRoom() 안에서 함께 만든다.
 //
-// 한계(정직하게 남겨 둔다): PREGENS는 페이지가 그려질 때 인라인 데이터에서
-// 만들어지는 전역 배열이라 새로고침하면 원래 16명으로 되돌아간다 — 이
-// 명세의 완료 조건은 "같은 세션에서 방에 추가"까지이고, 새로고침 후에도
-// 살아남는 영속화는 요구하지 않는다(app.js/store.js는 이 명세의 소유가
-// 아니다).
+// 영속화: PREGENS는 빌드가 인라인한 전역 배열이라 새로고침하면 원래 16명으로
+// 되돌아간다. 그래서 push만 하지 않고 app.js의 actions.addCustomChar()를
+// 호출한다 — 정의를 Store의 hg:{code}:custom 에 남겨 두었다가 입장할 때
+// 다시 붙인다. 방 단위 저장이다(캐릭터는 그 세션에 속하지 이 브라우저에
+// 속하지 않는다).
 //
 // 구역별 숙련 기술 매핑은 룰북에 없다(명세 06 §2). 그래서 "정답"인 척하는
 // 매핑표를 만들지 않고, 이미 존재하는 16명의 실제 숙련 데이터를
@@ -363,10 +363,11 @@ const UIBuilder = (() => {
         // 캐릭터시트의 "메모"에 직접 적어 넣으면 된다.
       };
 
-      // PREGENS(전역 배열, ctx.PREGENS와 같은 참조)에 push — ui.js가 매 렌더
-      // 다시 순회하므로 바로 17번째 카드로 나타난다. 선택 캐릭터도 미리
-      // 바꿔 둔다 — withRoom()의 마지막 render()가 이 값을 그대로 쓴다.
-      PREGENS.push(built);
+      // app.js의 addCustomChar()가 PREGENS에 push하면서 정의를 Store에도
+      // 남긴다 — push만 하면 새로고침에 사라진다(PREGENS는 빌드가 인라인한
+      // 전역 배열이라 매 로드마다 원래 16명으로 되돌아간다).
+      // 선택 캐릭터도 미리 바꿔 둔다 — withRoom()의 마지막 render()가 이 값을 쓴다.
+      await actions.addCustomChar(built);
       actions.setSelectedChar(built.name);
 
       await actions.withRoom((state) => {

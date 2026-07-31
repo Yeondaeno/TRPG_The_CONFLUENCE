@@ -3417,11 +3417,11 @@ if (typeof module !== 'undefined') module.exports = UICraft;
 // 방 상태(hp/parts/status/notes)는 app.js의 defaultCharState()와 동일한
 // 모양으로 ctx.actions.withRoom() 안에서 함께 만든다.
 //
-// 한계(정직하게 남겨 둔다): PREGENS는 페이지가 그려질 때 인라인 데이터에서
-// 만들어지는 전역 배열이라 새로고침하면 원래 16명으로 되돌아간다 — 이
-// 명세의 완료 조건은 "같은 세션에서 방에 추가"까지이고, 새로고침 후에도
-// 살아남는 영속화는 요구하지 않는다(app.js/store.js는 이 명세의 소유가
-// 아니다).
+// 영속화: PREGENS는 빌드가 인라인한 전역 배열이라 새로고침하면 원래 16명으로
+// 되돌아간다. 그래서 push만 하지 않고 app.js의 actions.addCustomChar()를
+// 호출한다 — 정의를 Store의 hg:{code}:custom 에 남겨 두었다가 입장할 때
+// 다시 붙인다. 방 단위 저장이다(캐릭터는 그 세션에 속하지 이 브라우저에
+// 속하지 않는다).
 //
 // 구역별 숙련 기술 매핑은 룰북에 없다(명세 06 §2). 그래서 "정답"인 척하는
 // 매핑표를 만들지 않고, 이미 존재하는 16명의 실제 숙련 데이터를
@@ -3763,10 +3763,11 @@ const UIBuilder = (() => {
         // 캐릭터시트의 "메모"에 직접 적어 넣으면 된다.
       };
 
-      // PREGENS(전역 배열, ctx.PREGENS와 같은 참조)에 push — ui.js가 매 렌더
-      // 다시 순회하므로 바로 17번째 카드로 나타난다. 선택 캐릭터도 미리
-      // 바꿔 둔다 — withRoom()의 마지막 render()가 이 값을 그대로 쓴다.
-      PREGENS.push(built);
+      // app.js의 addCustomChar()가 PREGENS에 push하면서 정의를 Store에도
+      // 남긴다 — push만 하면 새로고침에 사라진다(PREGENS는 빌드가 인라인한
+      // 전역 배열이라 매 로드마다 원래 16명으로 되돌아간다).
+      // 선택 캐릭터도 미리 바꿔 둔다 — withRoom()의 마지막 render()가 이 값을 쓴다.
+      await actions.addCustomChar(built);
       actions.setSelectedChar(built.name);
 
       await actions.withRoom((state) => {
@@ -3830,6 +3831,35 @@ function defaultCharState(p) {
 
 // ---------- 스토리지: 키 분리 (docs/specs/01-foundation.md §2) ----------
 function roomKey(suffix) { return `hg:${ROOM_CODE}:${suffix}`; }
+
+// ---------- 사용자 제작 캐릭터 (부록 A 빌더) ----------
+// PREGENS 는 빌드가 인라인한 전역 배열이라 새로고침하면 원래 16명으로
+// 되돌아간다. 빌더로 만든 캐릭터를 세션이 끝날 때까지 살리려면 정의 자체를
+// Store 에 남겨 두었다가 입장할 때 다시 붙여야 한다.
+//
+// 방 단위로 저장한다 — 캐릭터는 그 세션에 속하지, 이 브라우저에 속하지 않는다.
+// 다른 방에 들어가면 그 방의 것만 붙는다.
+const BASE_PREGEN_COUNT = PREGENS.length;
+
+async function loadCustomChars() {
+  // 이전 방에서 붙인 것을 먼저 떼어낸다 — 같은 탭에서 방을 옮기면
+  // 남의 방 캐릭터가 섞인 채로 남는다.
+  PREGENS.length = BASE_PREGEN_COUNT;
+  const saved = await Store.get(roomKey('custom'));
+  if (Array.isArray(saved)) {
+    saved.forEach((def) => {
+      if (def && def.name && !PREGENS.some((p) => p.name === def.name)) PREGENS.push(def);
+    });
+  }
+}
+
+async function addCustomChar(def) {
+  const saved = (await Store.get(roomKey('custom'))) || [];
+  const list = Array.isArray(saved) ? saved.filter((d) => d && d.name !== def.name) : [];
+  list.push(def);
+  await Store.set(roomKey('custom'), list);
+  if (!PREGENS.some((p) => p.name === def.name)) PREGENS.push(def);
+}
 
 async function loadRoomFromStore() {
   const [meta, claims, log, initiative] = await Promise.all([
@@ -3973,6 +4003,9 @@ document.getElementById('btn-join').onclick = async () => {
     console.warn('Net 연결 실패 — 로컬 모드로 계속 진행합니다.', e);
   }
 
+  // 방 상태를 읽기 **전에** 붙여야 한다 — loadRoomFromStore()가 PREGENS를
+  // 순회하며 캐릭터 상태를 채우므로, 늦게 붙이면 그 캐릭터만 상태가 빈다.
+  await loadCustomChars();
   ROOM = await loadRoomFromStore();
   addLog(ROOM, `${PLAYER_NAME}님이 접속했습니다.`, 'sys');
   await persistRoom(ROOM);
@@ -4005,6 +4038,9 @@ function buildCtx() {
       genCode,
       switchTab,
       render,
+      // 빌더(ui-builder.js)가 쓴다. PREGENS에 push만 하면 새로고침에
+      // 사라지므로, 정의를 Store에도 남긴다.
+      addCustomChar,
       setSelectedChar(name) { selectedChar = name; },
       setLastRoll(r) { lastRoll = r; },
     },

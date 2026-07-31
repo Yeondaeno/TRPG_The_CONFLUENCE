@@ -292,6 +292,67 @@ check('페이지 에러 없음(조합 단계)', consoleErrors.length === 0, cons
 
 check('페이지 에러 없음(빌더 단계)', consoleErrors.length === 0, consoleErrors.slice(0, 2).join(' | '));
 
+
+// ══════════════════════════════════════════════════════════════════════
+// 빌더 캐릭터의 영속화 — 새로고침 후에도 살아남는가
+// (실제 세션에서 나온 한계. app.js가 hg:{code}:custom 에 정의를 남기고
+//  입장할 때 다시 PREGENS에 붙인다.)
+// ══════════════════════════════════════════════════════════════════════
+{
+  const bp = await browser.newPage();
+  bp.on('dialog', (d) => d.accept());
+  const ROOM = 'PERS';
+  await bp.goto(URL);
+  await bp.fill('#in-name', '영속검증'); await bp.fill('#in-code', ROOM);
+  await bp.click('#btn-join'); await bp.waitForTimeout(700);
+  await bp.click('.tab-btn[data-tab="char"]'); await bp.waitForTimeout(400);
+
+  const before = await bp.locator('.char-card').count();
+  await bp.locator('#builder-slot button', { hasText: '새 캐릭터 직접 만들기' }).click();
+  await bp.waitForTimeout(300);
+  const nameInp = bp.locator('#builder-slot input').first();
+  await nameInp.fill('영속이');
+  await nameInp.dispatchEvent('change');
+  await bp.waitForTimeout(400);
+  await bp.locator('#builder-slot button', { hasText: '결정편' }).first().click().catch(() => {});
+  await bp.waitForTimeout(300);
+  const addBtn = bp.locator('#builder-slot button', { hasText: '방에 추가' });
+  await addBtn.click();
+  await bp.waitForTimeout(900);
+
+  const after = await bp.locator('.char-card').count();
+  check('빌더로 만든 캐릭터가 즉시 카드로 나타남', after === before + 1, `${before} → ${after}`);
+
+  const storedDefs = await bp.evaluate((r) => localStorage.getItem(`hg:${r}:custom`), ROOM);
+  check('캐릭터 정의가 Store(hg:{code}:custom)에 저장됨',
+    !!storedDefs && storedDefs.includes('영속이'), storedDefs ? `${storedDefs.length}바이트` : '없음');
+
+  // 폼 복원이 없는 새 탐색으로 재입장
+  await bp.goto('about:blank');
+  await bp.goto(URL);
+  await bp.fill('#in-name', '영속검증2'); await bp.fill('#in-code', ROOM);
+  await bp.click('#btn-join'); await bp.waitForTimeout(900);
+  await bp.click('.tab-btn[data-tab="char"]'); await bp.waitForTimeout(500);
+
+  const afterReload = await bp.locator('.char-card').count();
+  check('새로고침(재입장) 후에도 캐릭터가 남아 있음', afterReload === before + 1, `${afterReload}장`);
+  check('재입장 후 이름으로 카드를 찾을 수 있음',
+    (await bp.locator('.char-card', { hasText: '영속이' }).count()) === 1);
+
+  // 다른 방에는 안 붙는다 — 캐릭터는 세션에 속하지 브라우저에 속하지 않는다
+  await bp.goto('about:blank');
+  await bp.goto(URL);
+  await bp.fill('#in-name', '다른방'); await bp.fill('#in-code', 'OTHR');
+  await bp.click('#btn-join'); await bp.waitForTimeout(900);
+  await bp.click('.tab-btn[data-tab="char"]'); await bp.waitForTimeout(500);
+  check('다른 방에는 그 캐릭터가 붙지 않음(방 단위 저장)',
+    (await bp.locator('.char-card', { hasText: '영속이' }).count()) === 0 &&
+    (await bp.locator('.char-card').count()) === before,
+    `${await bp.locator('.char-card').count()}장`);
+
+  await bp.close();
+}
+
 await browser.close();
 
 // ── 출력 ─────────────────────────────────────────────────────────────
