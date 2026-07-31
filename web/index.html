@@ -208,6 +208,17 @@ const RULES = {"$comment":"룰북(docs/rulebook.md)의 표를 기계 판독 가�
 const PREGENS = [{"name":"이든","title":"백기사령 소속 서약 기사","district":"백기사령","role":"전투 · 탱커","color":"#8B2E6B","icon":"shield","bg":"기사령의 서약을 15년째 지켜온 기사. 몸으로 막아내는 것에 익숙하다.","stats":{"STR":"+3","AGI":"+1","CON":"+2","INT":"+0","WIS":"+1","CHA":"-1"},"maxHp":22,"ac":13,"startParts":8,"skills":["근접전투(숙련)","위협(숙련)","결투(숙련)"],"equip":"룬각인 대검(1d6+3), 서약 갑주, 즉석 결정 붕대 x2","traits":[{"name":"앞장서기","type":"기계적","text":"파티원을 대신해 공격을 받아낼 때 판정 없이 자동 성공"},{"name":"서약의 무게","type":"RP","text":"한번 뱉은 말은 반드시 지키려 한다 — 거짓 서약을 강요받으면 거부한다"}],"personality":"우직함 · 책임감 · 무뚝뚝","speech":"격식체, 짧고 단호하게 말한다","motive":"후배 기사들을 지키는 것","secret":"예전 임무 실패로 동료를 잃은 죄책감이 있다","bond":"세라 — 옛 동료 기사. 파문된 세라를 여전히 신뢰한다"},{"name":"세라","title":"백기사령 파문기사","district":"백기사령","role":"전투 · 결투가","color":"#B0455A","icon":"sword","bg":"부당한 명령을 거부했다가 파문당한 전 기사. 규율보다 자신의 검을 믿는다.","stats":{"STR":"+2","AGI":"+2","CON":"+1","INT":"+0","WIS":"+0","CHA":"+1"},"maxHp":19,"ac":14,"startParts":6,"skills":["근접전투(숙련)","결투(숙련)","관찰(숙련)"],"equip":"부러진 서약검(1d8, 방어 결계 사용 불가), 사슬 갑옷, 은화 몇 닢","traits":[{"name":"일대일 결투","type":"기계적","text":"단독 대상과의 전투에서만 공격 판정에 +2"},{"name":"규율에 대한 반발","type":"RP","text":"부당한 명령이나 규칙을 보면 즉시 지적하거나 어긴다"}],"personality":"반항적 · 명예 중시 · 고독","speech":"직설적, 예의는 지키되 권위엔 고분고분하지 않다","motive":"자신을 파문한 기사령의 진짜 부패를 밝히는 것","secret":"파문 사유는 사실 상관의 비리를 고발했기 때문이다","bond":"이든 — 옛 동료. 이든만은 자신을 믿어준다는 걸 안다"},{"name":"라비","title":"무영가 출신 반요 척후","district":"무영가","role":"정찰 · 은신","color":"#3E6B8B","icon":"talisman","bg":"여우불이 도는 골목에서 자란 반요. 발소리를 내지 않는다.","stats":{"STR":"+0","AGI":"+3","CON":"+1","INT":"+1","WIS":"+2","CHA":"-1"},"maxHp":16,"ac":14,"startParts":6,"skills":["은신(숙련)","관찰(숙련)","손재주(숙련)"],"equip":"부적 석궁(1d6, 원거리 은신 보너스), 경량 장비, 여우불 부적","traits":[{"name":"그림자처럼","type":"기계적","text":"은신 판정 시 자연 1이 아니면 실패해도 위치가 노출되지 않는다"},{"name":"홀린 기색","type":"RP","text":"낯선 이의 기척에 극도로 예민해 소음에 먼저 반응한다"}],"personality":"새침함 · 독립적 · 은근히 다정함","speech":"짧고 건조한 문장으로 말한다","motive":"반요라는 정체를 숨긴 채 살아갈 곳을 찾는 것","secret":"인간 마을에서 정체가 들켜 쫓겨난 과거가 있다","bond":"준 — 같은 무영가 출신. 준은 라비의 정체를 이미 눈치채고 있다"},{"name":"준","title":"무영가 요괴 퇴마사","district":"무영가","role":"전투 · 퇴마","color":"#5E4A8B","icon":"talisman","bg":"상급 이형체에게 스승을 잃고 그 뒤를 쫓는 퇴마사. 과묵하지만 원칙에 어긋난 일은 못 참는다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+2","WIS":"+3","CHA":"-1"},"maxHp":17,"ac":12,"startParts":6,"skills":["퇴마술(숙련)","관찰(숙련)","생존술(숙련)"],"equip":"축귀 부적 다발, 정화의 방울, 단검(1d6)","traits":[{"name":"결계 감지","type":"기계적","text":"위상잔향이나 이형 존재가 근처에 있으면 판정 없이 자동으로 감지한다"},{"name":"정결 강박","type":"RP","text":"부정한 것과 접촉하면 반드시 짧게라도 정화 의식을 치르려 한다"}],"personality":"과묵함 · 원칙주의 · 의외로 다정함","speech":"누구에게나 존댓말, '-하십시오'체를 고수한다","motive":"스승을 해친 상급 이형체를 쫓는 것","secret":"사실 그날 스승을 두고 도망친 전적이 있다","bond":"라비 — 같은 무영가 출신. 라비의 정체를 알지만 말하지 않는다"},{"name":"소민","title":"심야회랑 소속 치유 주술사","district":"심야회랑","role":"지원 · 의료","color":"#5E3E8B","icon":"staff","bg":"금지된 의식서를 읽고도 무사했다는 소문이 있다. 손이 차분하다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+2","WIS":"+2","CHA":"+1"},"maxHp":15,"ac":11,"startParts":6,"skills":["치유술(숙련)","생존술(숙련)","지식(숙련)"],"equip":"치유 결정 키트(응급처치 시 +2), 진통 부적 3회분, 소형 결정탄총(1d6)","traits":[{"name":"안정화","type":"기계적","text":"빈사 상태 동료를 응급처치하면 자동 성공(굴림 불필요)"},{"name":"히포크라테스의 맹세","type":"RP","text":"다친 자는 적이라도 최소한의 치료는 해준다"}],"personality":"차분함 · 원칙 · 속은 여림","speech":"나긋한 존댓말","motive":"실종된 의술 스승의 행방을 찾는 것","secret":"금서를 몰래 필사한 적이 있다","bond":"카일 — 위험한 지식을 주고받는 거래 상대"},{"name":"카일","title":"심야회랑 금서 수집가","district":"심야회랑","role":"기술 · 저주","color":"#4A2E6B","icon":"book","bg":"금기를 알아야 직성이 풀리는 지식 수집가. 이미 자신에게 저주 하나를 걸어둔 상태다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+3","WIS":"+1","CHA":"+2"},"maxHp":14,"ac":11,"startParts":8,"skills":["저주술(숙련)","지식(숙련)","협상(숙련)"],"equip":"금서 파편(주문서), 저주 표식 잉크, 소형 결정탄총(1d6)","traits":[{"name":"대가의 거래","type":"기계적","text":"저주술 판정 실패 시, 위상잔향 1d6을 받는 대신 재굴림할 수 있다"},{"name":"지식욕","type":"RP","text":"새로운 금기나 비밀을 알게 되면 대화를 멈추고 캐묻는다"}],"personality":"냉소적 · 호기심 과잉 · 계산적","speech":"현학적인 어휘를 즐겨 쓰며 잘난 척한다","motive":"심야회랑 최심부의 금서 완전판을 손에 넣는 것","secret":"자신에게 건 저주에 부작용이 있다는 걸 숨기고 있다","bond":"소민 — 위험한 지식을 주고받는 거래 상대"},{"name":"파블로","title":"마공단지 출신 마도공학자","district":"마공단지","role":"기술 · 해킹","color":"#8B7A2E","icon":"gear","bg":"고철 더미에서 작동하는 마도구를 찾아내는 데 천재적이다.","stats":{"STR":"-1","AGI":"+1","CON":"+0","INT":"+3","WIS":"+1","CHA":"+0"},"maxHp":14,"ac":11,"startParts":10,"skills":["마도구 정비(숙련)","결계 해석(숙련)","사격(숙련)"],"equip":"휴대용 결계 단말기, 공구세트, 결정편 여분","traits":[{"name":"빠른 손","type":"기계적","text":"마도구 정비/결계 해석 판정 실패 시, 하루에 1번 재굴림할 수 있다"},{"name":"완벽주의","type":"RP","text":"미완성 상태의 물건을 보면 참지 못하고 손을 댄다"}],"personality":"몰입형 · 서투른 사교성 · 다정한 괴짜","speech":"혼잣말이 많다","motive":"자신만의 걸작 마도구를 완성하는 것","secret":"리타의 발명품 설계를 몰래 베낀 적이 있어 찔린다","bond":"리타 — 같은 구역 출신 라이벌 발명가"},{"name":"리타","title":"마공단지 마도 포격수","district":"마공단지","role":"전투 · 기술","color":"#B08B2E","icon":"gear","bg":"발명품 오작동으로 동료를 다치게 한 이후, 더 안전한 마도구를 만들겠다고 다짐했다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+3","WIS":"+0","CHA":"+1"},"maxHp":15,"ac":12,"startParts":11,"skills":["마도구 정비(숙련)","사격(숙련)","교역(숙련)"],"equip":"휴대용 결계 포탑(설치형, 1d8 자동 공격), 예비 부품, 방염 장갑","traits":[{"name":"포탑 설치","type":"기계적","text":"전투 시작 시 1회, 결계 포탑을 설치해 매 라운드 자동으로 1d8 피해를 가한다(행동 소모 없음)"},{"name":"발명가 기질","type":"RP","text":"새로운 기계나 마도구를 보면 분해해보고 싶어한다"}],"personality":"낙천적 · 수다스러움 · 실험 정신","speech":"전문 용어를 섞어 빠르게 말한다","motive":"마공단지의 폭주 사고를 자신의 발명품으로 줄이는 것","secret":"과거 발명품 오작동으로 동료를 다치게 한 적이 있다","bond":"파블로 — 같은 구역 출신 라이벌 발명가"},{"name":"노아","title":"교환장 출신 중개인","district":"교환장","role":"사교 · 교역","color":"#C1552D","icon":"coin","bg":"일곱 구역 사이를 오가며 뭐든 팔고 사는 상인. 말이 곧 무기다.","stats":{"STR":"-1","AGI":"+0","CON":"+0","INT":"+1","WIS":"+1","CHA":"+3"},"maxHp":13,"ac":11,"startParts":14,"skills":["설득(숙련)","교역(숙련)","관찰(숙련)"],"equip":"품질 좋은 이계 술(선물용), 소형 결정탄총(1d6), 흥정용 잡화 다수","traits":[{"name":"첫인상","type":"기계적","text":"처음 만나는 NPC와의 첫 설득/교역 판정에 +3"},{"name":"손해는 없다","type":"RP","text":"모든 대화를 거래처럼 접근한다 — 파티에게도 장난스럽게 값을 부른다"}],"personality":"사교적 · 계산적 · 은근히 정 많음","speech":"흥정하듯 말끝을 늘인다","motive":"교환장 최고의 중개인이 되는 것","secret":"헌터 길드에도 뒷거래선이 있다","bond":"유나 — 교환장에서 가장 친한 동료"},{"name":"유나","title":"교환장 서기 / 올라운더","district":"교환장","role":"균형형","color":"#6B6B63","icon":"coin","bg":"특출난 하나보다 여러 구역에서 두루 쓸모 있는 사람이 되기로 했다.","stats":{"STR":"+0","AGI":"+1","CON":"+1","INT":"+1","WIS":"+1","CHA":"+1"},"maxHp":16,"ac":12,"startParts":9,"skills":["교역(숙련)","관찰(숙련)","지식(숙련)"],"equip":"다용도 룬나이프, 소형 결정탄총(1d6), 기록용 수첩","traits":[{"name":"만능","type":"기계적","text":"하루 1번, 숙련 없는 기술 판정에 임시로 숙련(+2)을 적용할 수 있다"},{"name":"중재자","type":"RP","text":"파티 내 의견이 갈리면 항상 중재를 자처한다"}],"personality":"온화함 · 성실함 · 눈치 빠름","speech":"정중하고 조곤조곤하게 말한다","motive":"모든 구역의 기록을 정리해 도시의 역사책을 만드는 것","secret":"사실 이 사건도 몰래 기록해 책으로 낼 속셈이다","bond":"노아 — 교환장에서 가장 친한 동료"},{"name":"하윤","title":"강선지구 출신 저격수","district":"강선지구","role":"전투 · 원거리","color":"#2E6B6B","icon":"scope","bg":"네온 사이 옥상에서 상황을 읽는 눈을 가졌다. 말수가 적다.","stats":{"STR":"+0","AGI":"+2","CON":"+0","INT":"+0","WIS":"+3","CHA":"-1"},"maxHp":15,"ac":12,"startParts":6,"skills":["사격(숙련)","관찰(숙련)","은신(숙련)"],"equip":"레일건형 저격총(1d8, 첫 공격 시 +3), 열감지 고글, 위장 망토","traits":[{"name":"조준","type":"기계적","text":"같은 전투에서 두 번째 공격부터 판정에 -2"},{"name":"거리 두기","type":"RP","text":"완전히 신뢰하기 전까진 누구에게도 등을 보이지 않는다"}],"personality":"과묵함 · 신중함 · 예리한 관찰력","speech":"필요한 말만 한다","motive":"강선지구 기업에게 빼앗긴 것을 되찾는 것","secret":"도경과 같은 기업에게 쫓기는 처지다","bond":"도경 — 같은 이유로 쫓기는 동료"},{"name":"도경","title":"강선지구 의체 격투가","district":"강선지구","role":"전투 · 근접","color":"#2E8B7A","icon":"fist","bg":"지하 격투장에서 이름을 날렸지만, 의체 수술비를 갚기 위해 위험한 일을 자처한다.","stats":{"STR":"+2","AGI":"+2","CON":"+1","INT":"+0","WIS":"+0","CHA":"+1"},"maxHp":18,"ac":13,"startParts":7,"skills":["근접전투(숙련)","위협(숙련)","기계정비(숙련)"],"equip":"의수 건틀릿(1d6+2), 충격 흡수 코트, 즉석 결정 붕대","traits":[{"name":"과부하 일격","type":"기계적","text":"라운드에 1회, 결정편 1개를 태워 공격 피해를 +1d6 할 수 있다"},{"name":"전적 자랑","type":"RP","text":"지하 격투장 우승 경력을 툭하면 언급한다"}],"personality":"허세 · 의리파 · 은근히 계산적","speech":"반말 섞인 거친 말투, 상대를 별명으로 부른다","motive":"의체 수술비를 갚고 자유로워지는 것","secret":"강선지구 기업 빚쟁이에게 감시당하는 중이다","bond":"하윤 — 같은 구역 출신, 데면데면하지만 서로 신뢰한다"},{"name":"겨울","title":"푸른뿌리 출신 드루이드 추적자","district":"푸른뿌리","role":"생존 · 탐지","color":"#4A6B4A","icon":"leaf","bg":"건물을 삼킨 숲에서 나고 자라 도심보다 정령의 언어를 더 잘 안다.","stats":{"STR":"+0","AGI":"+1","CON":"+3","WIS":"+3","INT":"-1","CHA":"+0"},"maxHp":19,"ac":12,"startParts":5,"skills":["생존술(숙련)","추적/관찰(숙련)","동물 교감(숙련)"],"equip":"위상 필터 x3, 정령의 활(1d6), 나뭇잎 방독 마스크","traits":[{"name":"익숙함","type":"기계적","text":"위상잔향 획득량을 항상 1 감소시킨다"},{"name":"침묵 우선","type":"RP","text":"꼭 필요한 말이 아니면 손짓으로 대화한다"}],"personality":"과묵함 · 인내심 · 자연 존중","speech":"짧고 은유적으로 말한다","motive":"잠식당하는 푸른뿌리의 경계를 지키는 것","secret":"아이린의 스승을 대신해 몰래 그녀를 지켜보고 있다","bond":"아이린 — 사제 관계에 가까운 후배"},{"name":"아이린","title":"푸른뿌리 정령 샤먼","district":"푸른뿌리","role":"지원 · 정령술","color":"#6B8B4A","icon":"flame","bg":"정령과의 계약으로 힘을 얻은 대가로 수명의 일부를 내주었다. 온화하지만 고집이 세다.","stats":{"STR":"-1","AGI":"+0","CON":"+1","INT":"+1","WIS":"+3","CHA":"+2"},"maxHp":14,"ac":11,"startParts":5,"skills":["정령술(숙련)","치유술(숙련)","설득(숙련)"],"equip":"정령 지팡이(원거리 1d6 정령탄), 씨앗 주머니(치유 물약 대용), 나뭇잎 로브","traits":[{"name":"작은 정령의 가호","type":"기계적","text":"하루 1번, 파티원 1명의 판정 실패를 성공으로 바꿀 수 있다"},{"name":"자연의 대변인","type":"RP","text":"자연을 해치는 선택지 앞에서 반드시 반대 의견을 낸다"}],"personality":"온화함 · 고집 · 생명 존중","speech":"자연의 이미지를 섞어 비유적으로 말한다","motive":"푸른뿌리가 다른 구역에 잠식당하지 않도록 지키는 것","secret":"정령과의 계약 대가로 수명 일부를 내주었다","bond":"겨울 — 자신을 지켜보는 든든한 선배"},{"name":"레오","title":"재의문 헌터 길드 출신 사냥꾼","district":"재의문","role":"전투 · 위협","color":"#6B2E4A","icon":"bat","bg":"헌터 길드를 떠나 새 삶을 택했지만, 그 시절 말투는 남아있다.","stats":{"STR":"+1","AGI":"+1","CON":"+2","CHA":"+2","INT":"-1","WIS":"+0"},"maxHp":20,"ac":13,"startParts":9,"skills":["협박(숙련)","근접전투(숙련)","결투(숙련)"],"equip":"은각인 쇠파이프(1d6+1), 헌터 길드 표식, 결계 산탄포(2d6, 탄약 4발)","traits":[{"name":"악명","type":"기계적","text":"헌터 길드 관련 NPC 상대로 협박 판정에 +3, 대신 설득 판정에 -2"},{"name":"과거 청산","type":"RP","text":"옛 헌터 길드 동료를 마주치면 시선을 피하지 않고 정면으로 마주한다"}],"personality":"거침 · 의리 · 죄책감","speech":"거친 말투, 가끔 옛 길드 은어가 튀어나온다","motive":"헌터 길드 시절의 실수를 갚는 것","secret":"릴리스의 가문을 몰락시킨 사냥에 가담했었다","bond":"릴리스 — 과거의 악연"},{"name":"릴리스","title":"재의문 뱀파이어 혈족","district":"재의문","role":"전투 · 매혹","color":"#8B2E4A","icon":"bat","bg":"몰락한 가문의 마지막 혈족. 우아함 뒤에 은근한 외로움을 감춘다.","stats":{"STR":"+1","AGI":"+2","CON":"+0","INT":"+0","WIS":"+0","CHA":"+3"},"maxHp":16,"ac":13,"startParts":10,"skills":["매혹(숙련)","근접전투(숙련)","은신(숙련)"],"equip":"혈검(1d6+1, 명중 시 소량 흡혈), 벨벳 망토, 회중시계(가문 유품)","traits":[{"name":"피의 갈증","type":"기계적","text":"전투에서 적에게 피해를 입힐 때마다 라운드당 최대 1회 HP 1을 회복한다"},{"name":"가문의 자존심","type":"RP","text":"헌터나 하급자 취급을 받으면 반드시 되받아친다"}],"personality":"오만함 · 우아함 · 은근한 외로움","speech":"고풍스러운 존댓말, 상대를 '그대'라 칭한다","motive":"몰락한 가문의 명예를 되찾는 것","secret":"레오와 과거 악연이 있다는 걸 숨기고 있다","bond":"레오 — 과거의 악연"}];
 const MONSTERS = [{"name":"결함 드론 (다수)","hp":6,"ac":11,"atk":"d20+2, 1d4 피해","note":"3기 이하면 위협적이지 않음, 대군일 때 위험"},{"name":"여파에 물든 시민","hp":18,"ac":12,"atk":"d20+3, 1d6 피해","note":"설득으로 전투 회피 가능, 회피 시 아군화"},{"name":"헌터 길드 정찰병","hp":14,"ac":13,"atk":"d20+4, 1d8 피해(레일건)","note":"2인 1조 행동, 협상 여지 있음"},{"name":"역참 인격체 코어 '길잡이'","hp":40,"ac":15,"atk":"d20+5, 2d6 (위상충격)","note":"물리 피해 절반 저항, 결계 해석/설득이 더 효과적"}];
 
+// ==== web/vendor/peerjs.min.js ====
+// web/vendor/peerjs.min.js — vendored PeerJS 1.5.5 (MIT License, https://peerjs.com)
+// Copyright (c) 2015 Michelle Bu and Eric Zhang. Bundled offline for docs/specs/03-p2p-sync.md.
+// Source: npm 'peerjs'@1.5.5, dist/peerjs.min.js — vendored, not fetched from a CDN at runtime.
+(()=>{function e(e,t,n,r){Object.defineProperty(e,t,{get:n,set:r,enumerable:!0,configurable:!0})}function t(e){return e&&e.__esModule?e.default:e}class n{constructor(){this.chunkedMTU=16300,this._dataCount=1,this.chunk=e=>{let t=[],n=e.byteLength,r=Math.ceil(n/this.chunkedMTU),i=0,s=0;for(;s<n;){let o=Math.min(n,s+this.chunkedMTU),a=e.slice(s,o),c={__peerData:this._dataCount,n:i,data:a,total:r};t.push(c),s=o,i++}return this._dataCount++,t}}}class r{append_buffer(e){this.flush(),this._parts.push(e)}append(e){this._pieces.push(e)}flush(){if(this._pieces.length>0){let e=new Uint8Array(this._pieces);this._parts.push(e),this._pieces=[]}}toArrayBuffer(){let e=[];for(let t of this._parts)e.push(t);return function(e){let t=0;for(let n of e)t+=n.byteLength;let n=new Uint8Array(t),r=0;for(let t of e){let e=new Uint8Array(t.buffer,t.byteOffset,t.byteLength);n.set(e,r),r+=t.byteLength}return n}(e).buffer}constructor(){this.encoder=new TextEncoder,this._pieces=[],this._parts=[]}}function i(e){return new o(e).unpack()}function s(e){let t=new a,n=t.pack(e);return n instanceof Promise?n.then(()=>t.getBuffer()):t.getBuffer()}class o{unpack(){let e,t=this.unpack_uint8();if(t<128)return t;if((224^t)<32)return(224^t)-32;if((e=160^t)<=15)return this.unpack_raw(e);if((e=176^t)<=15)return this.unpack_string(e);if((e=144^t)<=15)return this.unpack_array(e);if((e=128^t)<=15)return this.unpack_map(e);switch(t){case 192:return null;case 193:case 212:case 213:case 214:case 215:return;case 194:return!1;case 195:return!0;case 202:return this.unpack_float();case 203:return this.unpack_double();case 204:return this.unpack_uint8();case 205:return this.unpack_uint16();case 206:return this.unpack_uint32();case 207:return this.unpack_uint64();case 208:return this.unpack_int8();case 209:return this.unpack_int16();case 210:return this.unpack_int32();case 211:return this.unpack_int64();case 216:return e=this.unpack_uint16(),this.unpack_string(e);case 217:return e=this.unpack_uint32(),this.unpack_string(e);case 218:return e=this.unpack_uint16(),this.unpack_raw(e);case 219:return e=this.unpack_uint32(),this.unpack_raw(e);case 220:return e=this.unpack_uint16(),this.unpack_array(e);case 221:return e=this.unpack_uint32(),this.unpack_array(e);case 222:return e=this.unpack_uint16(),this.unpack_map(e);case 223:return e=this.unpack_uint32(),this.unpack_map(e)}}unpack_uint8(){let e=255&this.dataView[this.index];return this.index++,e}unpack_uint16(){let e=this.read(2),t=(255&e[0])*256+(255&e[1]);return this.index+=2,t}unpack_uint32(){let e=this.read(4),t=((256*e[0]+e[1])*256+e[2])*256+e[3];return this.index+=4,t}unpack_uint64(){let e=this.read(8),t=((((((256*e[0]+e[1])*256+e[2])*256+e[3])*256+e[4])*256+e[5])*256+e[6])*256+e[7];return this.index+=8,t}unpack_int8(){let e=this.unpack_uint8();return e<128?e:e-256}unpack_int16(){let e=this.unpack_uint16();return e<32768?e:e-65536}unpack_int32(){let e=this.unpack_uint32();return e<0x80000000?e:e-0x100000000}unpack_int64(){let e=this.unpack_uint64();return e<0x8000000000000000?e:e-0xffffffffffffffff}unpack_raw(e){if(this.length<this.index+e)throw Error(`BinaryPackFailure: index is out of range ${this.index} ${e} ${this.length}`);let t=this.dataBuffer.slice(this.index,this.index+e);return this.index+=e,t}unpack_string(e){let t,n,r=this.read(e),i=0,s="";for(;i<e;)(t=r[i])<160?(n=t,i++):(192^t)<32?(n=(31&t)<<6|63&r[i+1],i+=2):(224^t)<16?(n=(15&t)<<12|(63&r[i+1])<<6|63&r[i+2],i+=3):(n=(7&t)<<18|(63&r[i+1])<<12|(63&r[i+2])<<6|63&r[i+3],i+=4),s+=String.fromCodePoint(n);return this.index+=e,s}unpack_array(e){let t=Array(e);for(let n=0;n<e;n++)t[n]=this.unpack();return t}unpack_map(e){let t={};for(let n=0;n<e;n++)t[this.unpack()]=this.unpack();return t}unpack_float(){let e=this.unpack_uint32();return(0==e>>31?1:-1)*(8388607&e|8388608)*2**((e>>23&255)-127-23)}unpack_double(){let e=this.unpack_uint32(),t=this.unpack_uint32(),n=(e>>20&2047)-1023;return(0==e>>31?1:-1)*((1048575&e|1048576)*2**(n-20)+t*2**(n-52))}read(e){let t=this.index;if(t+e<=this.length)return this.dataView.subarray(t,t+e);throw Error("BinaryPackFailure: read index out of range")}constructor(e){this.index=0,this.dataBuffer=e,this.dataView=new Uint8Array(this.dataBuffer),this.length=this.dataBuffer.byteLength}}class a{getBuffer(){return this._bufferBuilder.toArrayBuffer()}pack(e){if("string"==typeof e)this.pack_string(e);else if("number"==typeof e)Math.floor(e)===e?this.pack_integer(e):this.pack_double(e);else if("boolean"==typeof e)!0===e?this._bufferBuilder.append(195):!1===e&&this._bufferBuilder.append(194);else if(void 0===e)this._bufferBuilder.append(192);else if("object"==typeof e)if(null===e)this._bufferBuilder.append(192);else{let t=e.constructor;if(e instanceof Array){let t=this.pack_array(e);if(t instanceof Promise)return t.then(()=>this._bufferBuilder.flush())}else if(e instanceof ArrayBuffer)this.pack_bin(new Uint8Array(e));else if("BYTES_PER_ELEMENT"in e)this.pack_bin(new Uint8Array(e.buffer,e.byteOffset,e.byteLength));else if(e instanceof Date)this.pack_string(e.toString());else if(e instanceof Blob)return e.arrayBuffer().then(e=>{this.pack_bin(new Uint8Array(e)),this._bufferBuilder.flush()});else if(t==Object||t.toString().startsWith("class")){let t=this.pack_object(e);if(t instanceof Promise)return t.then(()=>this._bufferBuilder.flush())}else throw Error(`Type "${t.toString()}" not yet supported`)}else throw Error(`Type "${typeof e}" not yet supported`);this._bufferBuilder.flush()}pack_bin(e){let t=e.length;if(t<=15)this.pack_uint8(160+t);else if(t<=65535)this._bufferBuilder.append(218),this.pack_uint16(t);else if(t<=0xffffffff)this._bufferBuilder.append(219),this.pack_uint32(t);else throw Error("Invalid length");this._bufferBuilder.append_buffer(e)}pack_string(e){let t=this._textEncoder.encode(e),n=t.length;if(n<=15)this.pack_uint8(176+n);else if(n<=65535)this._bufferBuilder.append(216),this.pack_uint16(n);else if(n<=0xffffffff)this._bufferBuilder.append(217),this.pack_uint32(n);else throw Error("Invalid length");this._bufferBuilder.append_buffer(t)}pack_array(e){let t=e.length;if(t<=15)this.pack_uint8(144+t);else if(t<=65535)this._bufferBuilder.append(220),this.pack_uint16(t);else if(t<=0xffffffff)this._bufferBuilder.append(221),this.pack_uint32(t);else throw Error("Invalid length");let n=r=>{if(r<t){let t=this.pack(e[r]);return t instanceof Promise?t.then(()=>n(r+1)):n(r+1)}};return n(0)}pack_integer(e){if(e>=-32&&e<=127)this._bufferBuilder.append(255&e);else if(e>=0&&e<=255)this._bufferBuilder.append(204),this.pack_uint8(e);else if(e>=-128&&e<=127)this._bufferBuilder.append(208),this.pack_int8(e);else if(e>=0&&e<=65535)this._bufferBuilder.append(205),this.pack_uint16(e);else if(e>=-32768&&e<=32767)this._bufferBuilder.append(209),this.pack_int16(e);else if(e>=0&&e<=0xffffffff)this._bufferBuilder.append(206),this.pack_uint32(e);else if(e>=-0x80000000&&e<=0x7fffffff)this._bufferBuilder.append(210),this.pack_int32(e);else if(e>=-0x8000000000000000&&e<=0x8000000000000000)this._bufferBuilder.append(211),this.pack_int64(e);else if(e>=0&&e<=0xffffffffffffffff)this._bufferBuilder.append(207),this.pack_uint64(e);else throw Error("Invalid integer")}pack_double(e){let t=0;e<0&&(t=1,e=-e);let n=Math.floor(Math.log(e)/Math.LN2),r=Math.floor((e/2**n-1)*0x10000000000000),i=t<<31|n+1023<<20|r/0x100000000&1048575;this._bufferBuilder.append(203),this.pack_int32(i),this.pack_int32(r%0x100000000)}pack_object(e){let t=Object.keys(e),n=t.length;if(n<=15)this.pack_uint8(128+n);else if(n<=65535)this._bufferBuilder.append(222),this.pack_uint16(n);else if(n<=0xffffffff)this._bufferBuilder.append(223),this.pack_uint32(n);else throw Error("Invalid length");let r=n=>{if(n<t.length){let i=t[n];if(e.hasOwnProperty(i)){this.pack(i);let t=this.pack(e[i]);if(t instanceof Promise)return t.then(()=>r(n+1))}return r(n+1)}};return r(0)}pack_uint8(e){this._bufferBuilder.append(e)}pack_uint16(e){this._bufferBuilder.append(e>>8),this._bufferBuilder.append(255&e)}pack_uint32(e){let t=0|e;this._bufferBuilder.append((0xff000000&t)>>>24),this._bufferBuilder.append((0xff0000&t)>>>16),this._bufferBuilder.append((65280&t)>>>8),this._bufferBuilder.append(255&t)}pack_uint64(e){let t=e/0x100000000,n=e%0x100000000;this._bufferBuilder.append((0xff000000&t)>>>24),this._bufferBuilder.append((0xff0000&t)>>>16),this._bufferBuilder.append((65280&t)>>>8),this._bufferBuilder.append(255&t),this._bufferBuilder.append((0xff000000&n)>>>24),this._bufferBuilder.append((0xff0000&n)>>>16),this._bufferBuilder.append((65280&n)>>>8),this._bufferBuilder.append(255&n)}pack_int8(e){this._bufferBuilder.append(255&e)}pack_int16(e){this._bufferBuilder.append((65280&e)>>8),this._bufferBuilder.append(255&e)}pack_int32(e){this._bufferBuilder.append(e>>>24&255),this._bufferBuilder.append((0xff0000&e)>>>16),this._bufferBuilder.append((65280&e)>>>8),this._bufferBuilder.append(255&e)}pack_int64(e){let t=Math.floor(e/0x100000000),n=e%0x100000000;this._bufferBuilder.append((0xff000000&t)>>>24),this._bufferBuilder.append((0xff0000&t)>>>16),this._bufferBuilder.append((65280&t)>>>8),this._bufferBuilder.append(255&t),this._bufferBuilder.append((0xff000000&n)>>>24),this._bufferBuilder.append((0xff0000&n)>>>16),this._bufferBuilder.append((65280&n)>>>8),this._bufferBuilder.append(255&n)}constructor(){this._bufferBuilder=new r,this._textEncoder=new TextEncoder}}"use strict";let c=!0,p=!0;function d(e,t,n){let r=e.match(t);return r&&r.length>=n&&parseInt(r[n],10)}function l(e,t,n){if(!e.RTCPeerConnection)return;let r=e.RTCPeerConnection.prototype,i=r.addEventListener;r.addEventListener=function(e,r){if(e!==t)return i.apply(this,arguments);let s=e=>{let t=n(e);t&&(r.handleEvent?r.handleEvent(t):r(t))};return this._eventMap=this._eventMap||{},this._eventMap[t]||(this._eventMap[t]=new Map),this._eventMap[t].set(r,s),i.apply(this,[e,s])};let s=r.removeEventListener;r.removeEventListener=function(e,n){if(e!==t||!this._eventMap||!this._eventMap[t]||!this._eventMap[t].has(n))return s.apply(this,arguments);let r=this._eventMap[t].get(n);return this._eventMap[t].delete(n),0===this._eventMap[t].size&&delete this._eventMap[t],0===Object.keys(this._eventMap).length&&delete this._eventMap,s.apply(this,[e,r])},Object.defineProperty(r,"on"+t,{get(){return this["_on"+t]},set(e){this["_on"+t]&&(this.removeEventListener(t,this["_on"+t]),delete this["_on"+t]),e&&this.addEventListener(t,this["_on"+t]=e)},enumerable:!0,configurable:!0})}function h(e){return"boolean"!=typeof e?Error("Argument type: "+typeof e+". Please use a boolean."):(c=e,e?"adapter.js logging disabled":"adapter.js logging enabled")}function u(e){return"boolean"!=typeof e?Error("Argument type: "+typeof e+". Please use a boolean."):(p=!e,"adapter.js deprecation warnings "+(e?"disabled":"enabled"))}function f(){"object"==typeof window&&(c||"undefined"!=typeof console&&"function"==typeof console.log&&console.log.apply(console,arguments))}function m(e,t){p&&console.warn(e+" is deprecated, please use "+t+" instead.")}function _(e){return"[object Object]"===Object.prototype.toString.call(e)}function g(e,t,n){let r=n?"outbound-rtp":"inbound-rtp",i=new Map;if(null===t)return i;let s=[];return e.forEach(e=>{"track"===e.type&&e.trackIdentifier===t.id&&s.push(e)}),s.forEach(t=>{e.forEach(n=>{n.type===r&&n.trackId===t.id&&function e(t,n,r){!n||r.has(n.id)||(r.set(n.id,n),Object.keys(n).forEach(i=>{i.endsWith("Id")?e(t,t.get(n[i]),r):i.endsWith("Ids")&&n[i].forEach(n=>{e(t,t.get(n),r)})}))}(e,n,i)})}),i}"use strict";var y={};function C(e,t){let n=e&&e.navigator;if(!n.mediaDevices)return;let r=function(e){if("object"!=typeof e||e.mandatory||e.optional)return e;let t={};return Object.keys(e).forEach(n=>{if("require"===n||"advanced"===n||"mediaSource"===n)return;let r="object"==typeof e[n]?e[n]:{ideal:e[n]};void 0!==r.exact&&"number"==typeof r.exact&&(r.min=r.max=r.exact);let i=function(e,t){return e?e+t.charAt(0).toUpperCase()+t.slice(1):"deviceId"===t?"sourceId":t};if(void 0!==r.ideal){t.optional=t.optional||[];let e={};"number"==typeof r.ideal?(e[i("min",n)]=r.ideal,t.optional.push(e),(e={})[i("max",n)]=r.ideal):e[i("",n)]=r.ideal,t.optional.push(e)}void 0!==r.exact&&"number"!=typeof r.exact?(t.mandatory=t.mandatory||{},t.mandatory[i("",n)]=r.exact):["min","max"].forEach(e=>{void 0!==r[e]&&(t.mandatory=t.mandatory||{},t.mandatory[i(e,n)]=r[e])})}),e.advanced&&(t.optional=(t.optional||[]).concat(e.advanced)),t},i=function(e,i){if(t.version>=61)return i(e);if((e=JSON.parse(JSON.stringify(e)))&&"object"==typeof e.audio){let t=function(e,t,n){t in e&&!(n in e)&&(e[n]=e[t],delete e[t])};t((e=JSON.parse(JSON.stringify(e))).audio,"autoGainControl","googAutoGainControl"),t(e.audio,"noiseSuppression","googNoiseSuppression"),e.audio=r(e.audio)}if(e&&"object"==typeof e.video){let s=e.video.facingMode;s=s&&("object"==typeof s?s:{ideal:s});let o=t.version<66;if(s&&("user"===s.exact||"environment"===s.exact||"user"===s.ideal||"environment"===s.ideal)&&!(n.mediaDevices.getSupportedConstraints&&n.mediaDevices.getSupportedConstraints().facingMode&&!o)){let t;if(delete e.video.facingMode,"environment"===s.exact||"environment"===s.ideal?t=["back","rear"]:("user"===s.exact||"user"===s.ideal)&&(t=["front"]),t)return n.mediaDevices.enumerateDevices().then(n=>{let o=(n=n.filter(e=>"videoinput"===e.kind)).find(e=>t.some(t=>e.label.toLowerCase().includes(t)));return!o&&n.length&&t.includes("back")&&(o=n[n.length-1]),o&&(e.video.deviceId=s.exact?{exact:o.deviceId}:{ideal:o.deviceId}),e.video=r(e.video),f("chrome: "+JSON.stringify(e)),i(e)})}e.video=r(e.video)}return f("chrome: "+JSON.stringify(e)),i(e)},s=function(e){return t.version>=64?e:{name:({PermissionDeniedError:"NotAllowedError",PermissionDismissedError:"NotAllowedError",InvalidStateError:"NotAllowedError",DevicesNotFoundError:"NotFoundError",ConstraintNotSatisfiedError:"OverconstrainedError",TrackStartError:"NotReadableError",MediaDeviceFailedDueToShutdown:"NotAllowedError",MediaDeviceKillSwitchOn:"NotAllowedError",TabCaptureError:"AbortError",ScreenCaptureError:"AbortError",DeviceCaptureError:"AbortError"})[e.name]||e.name,message:e.message,constraint:e.constraint||e.constraintName,toString(){return this.name+(this.message&&": ")+this.message}}};if(n.getUserMedia=(function(e,t,r){i(e,e=>{n.webkitGetUserMedia(e,t,e=>{r&&r(s(e))})})}).bind(n),n.mediaDevices.getUserMedia){let e=n.mediaDevices.getUserMedia.bind(n.mediaDevices);n.mediaDevices.getUserMedia=function(t){return i(t,t=>e(t).then(e=>{if(t.audio&&!e.getAudioTracks().length||t.video&&!e.getVideoTracks().length)throw e.getTracks().forEach(e=>{e.stop()}),new DOMException("","NotFoundError");return e},e=>Promise.reject(s(e))))}}}"use strict";function v(e){e.MediaStream=e.MediaStream||e.webkitMediaStream}function b(e){if("object"!=typeof e||!e.RTCPeerConnection||"ontrack"in e.RTCPeerConnection.prototype)l(e,"track",e=>(e.transceiver||Object.defineProperty(e,"transceiver",{value:{receiver:e.receiver}}),e));else{Object.defineProperty(e.RTCPeerConnection.prototype,"ontrack",{get(){return this._ontrack},set(e){this._ontrack&&this.removeEventListener("track",this._ontrack),this.addEventListener("track",this._ontrack=e)},enumerable:!0,configurable:!0});let t=e.RTCPeerConnection.prototype.setRemoteDescription;e.RTCPeerConnection.prototype.setRemoteDescription=function(){return this._ontrackpoly||(this._ontrackpoly=t=>{t.stream.addEventListener("addtrack",n=>{let r;r=e.RTCPeerConnection.prototype.getReceivers?this.getReceivers().find(e=>e.track&&e.track.id===n.track.id):{track:n.track};let i=new Event("track");i.track=n.track,i.receiver=r,i.transceiver={receiver:r},i.streams=[t.stream],this.dispatchEvent(i)}),t.stream.getTracks().forEach(n=>{let r;r=e.RTCPeerConnection.prototype.getReceivers?this.getReceivers().find(e=>e.track&&e.track.id===n.id):{track:n};let i=new Event("track");i.track=n,i.receiver=r,i.transceiver={receiver:r},i.streams=[t.stream],this.dispatchEvent(i)})},this.addEventListener("addstream",this._ontrackpoly)),t.apply(this,arguments)}}}function T(e){if("object"==typeof e&&e.RTCPeerConnection&&!("getSenders"in e.RTCPeerConnection.prototype)&&"createDTMFSender"in e.RTCPeerConnection.prototype){let t=function(e,t){return{track:t,get dtmf(){return void 0===this._dtmf&&("audio"===t.kind?this._dtmf=e.createDTMFSender(t):this._dtmf=null),this._dtmf},_pc:e}};if(!e.RTCPeerConnection.prototype.getSenders){e.RTCPeerConnection.prototype.getSenders=function(){return this._senders=this._senders||[],this._senders.slice()};let n=e.RTCPeerConnection.prototype.addTrack;e.RTCPeerConnection.prototype.addTrack=function(e,r){let i=n.apply(this,arguments);return i||(i=t(this,e),this._senders.push(i)),i};let r=e.RTCPeerConnection.prototype.removeTrack;e.RTCPeerConnection.prototype.removeTrack=function(e){r.apply(this,arguments);let t=this._senders.indexOf(e);-1!==t&&this._senders.splice(t,1)}}let n=e.RTCPeerConnection.prototype.addStream;e.RTCPeerConnection.prototype.addStream=function(e){this._senders=this._senders||[],n.apply(this,[e]),e.getTracks().forEach(e=>{this._senders.push(t(this,e))})};let r=e.RTCPeerConnection.prototype.removeStream;e.RTCPeerConnection.prototype.removeStream=function(e){this._senders=this._senders||[],r.apply(this,[e]),e.getTracks().forEach(e=>{let t=this._senders.find(t=>t.track===e);t&&this._senders.splice(this._senders.indexOf(t),1)})}}else if("object"==typeof e&&e.RTCPeerConnection&&"getSenders"in e.RTCPeerConnection.prototype&&"createDTMFSender"in e.RTCPeerConnection.prototype&&e.RTCRtpSender&&!("dtmf"in e.RTCRtpSender.prototype)){let t=e.RTCPeerConnection.prototype.getSenders;e.RTCPeerConnection.prototype.getSenders=function(){let e=t.apply(this,[]);return e.forEach(e=>e._pc=this),e},Object.defineProperty(e.RTCRtpSender.prototype,"dtmf",{get(){return void 0===this._dtmf&&("audio"===this.track.kind?this._dtmf=this._pc.createDTMFSender(this.track):this._dtmf=null),this._dtmf}})}}function S(e){if(!("object"==typeof e&&e.RTCPeerConnection&&e.RTCRtpSender&&e.RTCRtpReceiver))return;if(!("getStats"in e.RTCRtpSender.prototype)){let t=e.RTCPeerConnection.prototype.getSenders;t&&(e.RTCPeerConnection.prototype.getSenders=function(){let e=t.apply(this,[]);return e.forEach(e=>e._pc=this),e});let n=e.RTCPeerConnection.prototype.addTrack;n&&(e.RTCPeerConnection.prototype.addTrack=function(){let e=n.apply(this,arguments);return e._pc=this,e}),e.RTCRtpSender.prototype.getStats=function(){let e=this;return this._pc.getStats().then(t=>g(t,e.track,!0))}}if(!("getStats"in e.RTCRtpReceiver.prototype)){let t=e.RTCPeerConnection.prototype.getReceivers;t&&(e.RTCPeerConnection.prototype.getReceivers=function(){let e=t.apply(this,[]);return e.forEach(e=>e._pc=this),e}),l(e,"track",e=>(e.receiver._pc=e.srcElement,e)),e.RTCRtpReceiver.prototype.getStats=function(){let e=this;return this._pc.getStats().then(t=>g(t,e.track,!1))}}if(!("getStats"in e.RTCRtpSender.prototype&&"getStats"in e.RTCRtpReceiver.prototype))return;let t=e.RTCPeerConnection.prototype.getStats;e.RTCPeerConnection.prototype.getStats=function(){if(arguments.length>0&&arguments[0]instanceof e.MediaStreamTrack){let e,t,n,r=arguments[0];return(this.getSenders().forEach(t=>{t.track===r&&(e?n=!0:e=t)}),this.getReceivers().forEach(e=>(e.track===r&&(t?n=!0:t=e),e.track===r)),n||e&&t)?Promise.reject(new DOMException("There are more than one sender or receiver for the track.","InvalidAccessError")):e?e.getStats():t?t.getStats():Promise.reject(new DOMException("There is no sender or receiver for the track.","InvalidAccessError"))}return t.apply(this,arguments)}}function k(e){e.RTCPeerConnection.prototype.getLocalStreams=function(){return this._shimmedLocalStreams=this._shimmedLocalStreams||{},Object.keys(this._shimmedLocalStreams).map(e=>this._shimmedLocalStreams[e][0])};let t=e.RTCPeerConnection.prototype.addTrack;e.RTCPeerConnection.prototype.addTrack=function(e,n){if(!n)return t.apply(this,arguments);this._shimmedLocalStreams=this._shimmedLocalStreams||{};let r=t.apply(this,arguments);return this._shimmedLocalStreams[n.id]?-1===this._shimmedLocalStreams[n.id].indexOf(r)&&this._shimmedLocalStreams[n.id].push(r):this._shimmedLocalStreams[n.id]=[n,r],r};let n=e.RTCPeerConnection.prototype.addStream;e.RTCPeerConnection.prototype.addStream=function(e){this._shimmedLocalStreams=this._shimmedLocalStreams||{},e.getTracks().forEach(e=>{if(this.getSenders().find(t=>t.track===e))throw new DOMException("Track already exists.","InvalidAccessError")});let t=this.getSenders();n.apply(this,arguments);let r=this.getSenders().filter(e=>-1===t.indexOf(e));this._shimmedLocalStreams[e.id]=[e].concat(r)};let r=e.RTCPeerConnection.prototype.removeStream;e.RTCPeerConnection.prototype.removeStream=function(e){return this._shimmedLocalStreams=this._shimmedLocalStreams||{},delete this._shimmedLocalStreams[e.id],r.apply(this,arguments)};let i=e.RTCPeerConnection.prototype.removeTrack;e.RTCPeerConnection.prototype.removeTrack=function(e){return this._shimmedLocalStreams=this._shimmedLocalStreams||{},e&&Object.keys(this._shimmedLocalStreams).forEach(t=>{let n=this._shimmedLocalStreams[t].indexOf(e);-1!==n&&this._shimmedLocalStreams[t].splice(n,1),1===this._shimmedLocalStreams[t].length&&delete this._shimmedLocalStreams[t]}),i.apply(this,arguments)}}function R(e,t){if(!e.RTCPeerConnection)return;if(e.RTCPeerConnection.prototype.addTrack&&t.version>=65)return k(e);let n=e.RTCPeerConnection.prototype.getLocalStreams;e.RTCPeerConnection.prototype.getLocalStreams=function(){let e=n.apply(this);return this._reverseStreams=this._reverseStreams||{},e.map(e=>this._reverseStreams[e.id])};let r=e.RTCPeerConnection.prototype.addStream;e.RTCPeerConnection.prototype.addStream=function(t){if(this._streams=this._streams||{},this._reverseStreams=this._reverseStreams||{},t.getTracks().forEach(e=>{if(this.getSenders().find(t=>t.track===e))throw new DOMException("Track already exists.","InvalidAccessError")}),!this._reverseStreams[t.id]){let n=new e.MediaStream(t.getTracks());this._streams[t.id]=n,this._reverseStreams[n.id]=t,t=n}r.apply(this,[t])};let i=e.RTCPeerConnection.prototype.removeStream;function s(e,t){let n=t.sdp;return Object.keys(e._reverseStreams||[]).forEach(t=>{let r=e._reverseStreams[t],i=e._streams[r.id];n=n.replace(RegExp(i.id,"g"),r.id)}),new RTCSessionDescription({type:t.type,sdp:n})}e.RTCPeerConnection.prototype.removeStream=function(e){this._streams=this._streams||{},this._reverseStreams=this._reverseStreams||{},i.apply(this,[this._streams[e.id]||e]),delete this._reverseStreams[this._streams[e.id]?this._streams[e.id].id:e.id],delete this._streams[e.id]},e.RTCPeerConnection.prototype.addTrack=function(t,n){if("closed"===this.signalingState)throw new DOMException("The RTCPeerConnection's signalingState is 'closed'.","InvalidStateError");let r=[].slice.call(arguments,1);if(1!==r.length||!r[0].getTracks().find(e=>e===t))throw new DOMException("The adapter.js addTrack polyfill only supports a single  stream which is associated with the specified track.","NotSupportedError");if(this.getSenders().find(e=>e.track===t))throw new DOMException("Track already exists.","InvalidAccessError");this._streams=this._streams||{},this._reverseStreams=this._reverseStreams||{};let i=this._streams[n.id];if(i)i.addTrack(t),Promise.resolve().then(()=>{this.dispatchEvent(new Event("negotiationneeded"))});else{let r=new e.MediaStream([t]);this._streams[n.id]=r,this._reverseStreams[r.id]=n,this.addStream(r)}return this.getSenders().find(e=>e.track===t)},["createOffer","createAnswer"].forEach(function(t){let n=e.RTCPeerConnection.prototype[t];e.RTCPeerConnection.prototype[t]=({[t](){let e=arguments,t=arguments.length&&"function"==typeof arguments[0];return t?n.apply(this,[t=>{let n=s(this,t);e[0].apply(null,[n])},t=>{e[1]&&e[1].apply(null,t)},arguments[2]]):n.apply(this,arguments).then(e=>s(this,e))}})[t]});let o=e.RTCPeerConnection.prototype.setLocalDescription;e.RTCPeerConnection.prototype.setLocalDescription=function(){var e,t;let n;return arguments.length&&arguments[0].type?(arguments[0]=(e=this,t=arguments[0],n=t.sdp,Object.keys(e._reverseStreams||[]).forEach(t=>{let r=e._reverseStreams[t],i=e._streams[r.id];n=n.replace(RegExp(r.id,"g"),i.id)}),new RTCSessionDescription({type:t.type,sdp:n})),o.apply(this,arguments)):o.apply(this,arguments)};let a=Object.getOwnPropertyDescriptor(e.RTCPeerConnection.prototype,"localDescription");Object.defineProperty(e.RTCPeerConnection.prototype,"localDescription",{get(){let e=a.get.apply(this);return""===e.type?e:s(this,e)}}),e.RTCPeerConnection.prototype.removeTrack=function(e){let t;if("closed"===this.signalingState)throw new DOMException("The RTCPeerConnection's signalingState is 'closed'.","InvalidStateError");if(!e._pc)throw new DOMException("Argument 1 of RTCPeerConnection.removeTrack does not implement interface RTCRtpSender.","TypeError");if(e._pc!==this)throw new DOMException("Sender was not created by this connection.","InvalidAccessError");this._streams=this._streams||{},Object.keys(this._streams).forEach(n=>{this._streams[n].getTracks().find(t=>e.track===t)&&(t=this._streams[n])}),t&&(1===t.getTracks().length?this.removeStream(this._reverseStreams[t.id]):t.removeTrack(e.track),this.dispatchEvent(new Event("negotiationneeded")))}}function P(e,t){!e.RTCPeerConnection&&e.webkitRTCPeerConnection&&(e.RTCPeerConnection=e.webkitRTCPeerConnection),e.RTCPeerConnection&&t.version<53&&["setLocalDescription","setRemoteDescription","addIceCandidate"].forEach(function(t){let n=e.RTCPeerConnection.prototype[t];e.RTCPeerConnection.prototype[t]=({[t](){return arguments[0]=new("addIceCandidate"===t?e.RTCIceCandidate:e.RTCSessionDescription)(arguments[0]),n.apply(this,arguments)}})[t]})}function w(e,t){l(e,"negotiationneeded",e=>{let n=e.target;if(!(t.version<72)&&(!n.getConfiguration||"plan-b"!==n.getConfiguration().sdpSemantics)||"stable"===n.signalingState)return e})}"use strict";e(y,"shimMediaStream",()=>v),e(y,"shimOnTrack",()=>b),e(y,"shimGetSendersWithDtmf",()=>T),e(y,"shimSenderReceiverGetStats",()=>S),e(y,"shimAddTrackRemoveTrackWithNative",()=>k),e(y,"shimAddTrackRemoveTrack",()=>R),e(y,"shimPeerConnection",()=>P),e(y,"fixNegotiationNeeded",()=>w),e(y,"shimGetUserMedia",()=>C);var E={};function x(e,t){let n=e&&e.navigator,r=e&&e.MediaStreamTrack;if(n.getUserMedia=function(e,t,r){m("navigator.getUserMedia","navigator.mediaDevices.getUserMedia"),n.mediaDevices.getUserMedia(e).then(t,r)},!(t.version>55&&"autoGainControl"in n.mediaDevices.getSupportedConstraints())){let e=function(e,t,n){t in e&&!(n in e)&&(e[n]=e[t],delete e[t])},t=n.mediaDevices.getUserMedia.bind(n.mediaDevices);if(n.mediaDevices.getUserMedia=function(n){return"object"==typeof n&&"object"==typeof n.audio&&(e((n=JSON.parse(JSON.stringify(n))).audio,"autoGainControl","mozAutoGainControl"),e(n.audio,"noiseSuppression","mozNoiseSuppression")),t(n)},r&&r.prototype.getSettings){let t=r.prototype.getSettings;r.prototype.getSettings=function(){let n=t.apply(this,arguments);return e(n,"mozAutoGainControl","autoGainControl"),e(n,"mozNoiseSuppression","noiseSuppression"),n}}if(r&&r.prototype.applyConstraints){let t=r.prototype.applyConstraints;r.prototype.applyConstraints=function(n){return"audio"===this.kind&&"object"==typeof n&&(e(n=JSON.parse(JSON.stringify(n)),"autoGainControl","mozAutoGainControl"),e(n,"noiseSuppression","mozNoiseSuppression")),t.apply(this,[n])}}}}"use strict";function D(e,t){e.navigator.mediaDevices&&"getDisplayMedia"in e.navigator.mediaDevices||e.navigator.mediaDevices&&(e.navigator.mediaDevices.getDisplayMedia=function(n){if(!(n&&n.video)){let e=new DOMException("getDisplayMedia without video constraints is undefined");return e.name="NotFoundError",e.code=8,Promise.reject(e)}return!0===n.video?n.video={mediaSource:t}:n.video.mediaSource=t,e.navigator.mediaDevices.getUserMedia(n)})}"use strict";function I(e){"object"==typeof e&&e.RTCTrackEvent&&"receiver"in e.RTCTrackEvent.prototype&&!("transceiver"in e.RTCTrackEvent.prototype)&&Object.defineProperty(e.RTCTrackEvent.prototype,"transceiver",{get(){return{receiver:this.receiver}}})}function M(e,t){if("object"!=typeof e||!(e.RTCPeerConnection||e.mozRTCPeerConnection))return;!e.RTCPeerConnection&&e.mozRTCPeerConnection&&(e.RTCPeerConnection=e.mozRTCPeerConnection),t.version<53&&["setLocalDescription","setRemoteDescription","addIceCandidate"].forEach(function(t){let n=e.RTCPeerConnection.prototype[t];e.RTCPeerConnection.prototype[t]=({[t](){return arguments[0]=new("addIceCandidate"===t?e.RTCIceCandidate:e.RTCSessionDescription)(arguments[0]),n.apply(this,arguments)}})[t]});let n={inboundrtp:"inbound-rtp",outboundrtp:"outbound-rtp",candidatepair:"candidate-pair",localcandidate:"local-candidate",remotecandidate:"remote-candidate"},r=e.RTCPeerConnection.prototype.getStats;e.RTCPeerConnection.prototype.getStats=function(){let[e,i,s]=arguments;return r.apply(this,[e||null]).then(e=>{if(t.version<53&&!i)try{e.forEach(e=>{e.type=n[e.type]||e.type})}catch(t){if("TypeError"!==t.name)throw t;e.forEach((t,r)=>{e.set(r,Object.assign({},t,{type:n[t.type]||t.type}))})}return e}).then(i,s)}}function O(e){if(!("object"==typeof e&&e.RTCPeerConnection&&e.RTCRtpSender)||e.RTCRtpSender&&"getStats"in e.RTCRtpSender.prototype)return;let t=e.RTCPeerConnection.prototype.getSenders;t&&(e.RTCPeerConnection.prototype.getSenders=function(){let e=t.apply(this,[]);return e.forEach(e=>e._pc=this),e});let n=e.RTCPeerConnection.prototype.addTrack;n&&(e.RTCPeerConnection.prototype.addTrack=function(){let e=n.apply(this,arguments);return e._pc=this,e}),e.RTCRtpSender.prototype.getStats=function(){return this.track?this._pc.getStats(this.track):Promise.resolve(new Map)}}function L(e){if(!("object"==typeof e&&e.RTCPeerConnection&&e.RTCRtpSender)||e.RTCRtpSender&&"getStats"in e.RTCRtpReceiver.prototype)return;let t=e.RTCPeerConnection.prototype.getReceivers;t&&(e.RTCPeerConnection.prototype.getReceivers=function(){let e=t.apply(this,[]);return e.forEach(e=>e._pc=this),e}),l(e,"track",e=>(e.receiver._pc=e.srcElement,e)),e.RTCRtpReceiver.prototype.getStats=function(){return this._pc.getStats(this.track)}}function A(e){!e.RTCPeerConnection||"removeStream"in e.RTCPeerConnection.prototype||(e.RTCPeerConnection.prototype.removeStream=function(e){m("removeStream","removeTrack"),this.getSenders().forEach(t=>{t.track&&e.getTracks().includes(t.track)&&this.removeTrack(t)})})}function j(e){e.DataChannel&&!e.RTCDataChannel&&(e.RTCDataChannel=e.DataChannel)}function B(e){if(!("object"==typeof e&&e.RTCPeerConnection))return;let t=e.RTCPeerConnection.prototype.addTransceiver;t&&(e.RTCPeerConnection.prototype.addTransceiver=function(){this.setParametersPromises=[];let e=arguments[1]&&arguments[1].sendEncodings;void 0===e&&(e=[]);let n=(e=[...e]).length>0;n&&e.forEach(e=>{if("rid"in e&&!/^[a-z0-9]{0,16}$/i.test(e.rid))throw TypeError("Invalid RID value provided.");if("scaleResolutionDownBy"in e&&!(parseFloat(e.scaleResolutionDownBy)>=1))throw RangeError("scale_resolution_down_by must be >= 1.0");if("maxFramerate"in e&&!(parseFloat(e.maxFramerate)>=0))throw RangeError("max_framerate must be >= 0.0")});let r=t.apply(this,arguments);if(n){let{sender:t}=r,n=t.getParameters();"encodings"in n&&(1!==n.encodings.length||0!==Object.keys(n.encodings[0]).length)||(n.encodings=e,t.sendEncodings=e,this.setParametersPromises.push(t.setParameters(n).then(()=>{delete t.sendEncodings}).catch(()=>{delete t.sendEncodings})))}return r})}function U(e){if(!("object"==typeof e&&e.RTCRtpSender))return;let t=e.RTCRtpSender.prototype.getParameters;t&&(e.RTCRtpSender.prototype.getParameters=function(){let e=t.apply(this,arguments);return"encodings"in e||(e.encodings=[].concat(this.sendEncodings||[{}])),e})}function F(e){if(!("object"==typeof e&&e.RTCPeerConnection))return;let t=e.RTCPeerConnection.prototype.createOffer;e.RTCPeerConnection.prototype.createOffer=function(){return this.setParametersPromises&&this.setParametersPromises.length?Promise.all(this.setParametersPromises).then(()=>t.apply(this,arguments)).finally(()=>{this.setParametersPromises=[]}):t.apply(this,arguments)}}function N(e){if(!("object"==typeof e&&e.RTCPeerConnection))return;let t=e.RTCPeerConnection.prototype.createAnswer;e.RTCPeerConnection.prototype.createAnswer=function(){return this.setParametersPromises&&this.setParametersPromises.length?Promise.all(this.setParametersPromises).then(()=>t.apply(this,arguments)).finally(()=>{this.setParametersPromises=[]}):t.apply(this,arguments)}}"use strict";e(E,"shimOnTrack",()=>I),e(E,"shimPeerConnection",()=>M),e(E,"shimSenderGetStats",()=>O),e(E,"shimReceiverGetStats",()=>L),e(E,"shimRemoveStream",()=>A),e(E,"shimRTCDataChannel",()=>j),e(E,"shimAddTransceiver",()=>B),e(E,"shimGetParameters",()=>U),e(E,"shimCreateOffer",()=>F),e(E,"shimCreateAnswer",()=>N),e(E,"shimGetUserMedia",()=>x),e(E,"shimGetDisplayMedia",()=>D);var z={};function $(e){if("object"==typeof e&&e.RTCPeerConnection){if("getLocalStreams"in e.RTCPeerConnection.prototype||(e.RTCPeerConnection.prototype.getLocalStreams=function(){return this._localStreams||(this._localStreams=[]),this._localStreams}),!("addStream"in e.RTCPeerConnection.prototype)){let t=e.RTCPeerConnection.prototype.addTrack;e.RTCPeerConnection.prototype.addStream=function(e){this._localStreams||(this._localStreams=[]),this._localStreams.includes(e)||this._localStreams.push(e),e.getAudioTracks().forEach(n=>t.call(this,n,e)),e.getVideoTracks().forEach(n=>t.call(this,n,e))},e.RTCPeerConnection.prototype.addTrack=function(e,...n){return n&&n.forEach(e=>{this._localStreams?this._localStreams.includes(e)||this._localStreams.push(e):this._localStreams=[e]}),t.apply(this,arguments)}}"removeStream"in e.RTCPeerConnection.prototype||(e.RTCPeerConnection.prototype.removeStream=function(e){this._localStreams||(this._localStreams=[]);let t=this._localStreams.indexOf(e);if(-1===t)return;this._localStreams.splice(t,1);let n=e.getTracks();this.getSenders().forEach(e=>{n.includes(e.track)&&this.removeTrack(e)})})}}function V(e){if("object"==typeof e&&e.RTCPeerConnection&&("getRemoteStreams"in e.RTCPeerConnection.prototype||(e.RTCPeerConnection.prototype.getRemoteStreams=function(){return this._remoteStreams?this._remoteStreams:[]}),!("onaddstream"in e.RTCPeerConnection.prototype))){Object.defineProperty(e.RTCPeerConnection.prototype,"onaddstream",{get(){return this._onaddstream},set(e){this._onaddstream&&(this.removeEventListener("addstream",this._onaddstream),this.removeEventListener("track",this._onaddstreampoly)),this.addEventListener("addstream",this._onaddstream=e),this.addEventListener("track",this._onaddstreampoly=e=>{e.streams.forEach(e=>{if(this._remoteStreams||(this._remoteStreams=[]),this._remoteStreams.includes(e))return;this._remoteStreams.push(e);let t=new Event("addstream");t.stream=e,this.dispatchEvent(t)})})}});let t=e.RTCPeerConnection.prototype.setRemoteDescription;e.RTCPeerConnection.prototype.setRemoteDescription=function(){let e=this;return this._onaddstreampoly||this.addEventListener("track",this._onaddstreampoly=function(t){t.streams.forEach(t=>{if(e._remoteStreams||(e._remoteStreams=[]),e._remoteStreams.indexOf(t)>=0)return;e._remoteStreams.push(t);let n=new Event("addstream");n.stream=t,e.dispatchEvent(n)})}),t.apply(e,arguments)}}}function G(e){if("object"!=typeof e||!e.RTCPeerConnection)return;let t=e.RTCPeerConnection.prototype,n=t.createOffer,r=t.createAnswer,i=t.setLocalDescription,s=t.setRemoteDescription,o=t.addIceCandidate;t.createOffer=function(e,t){let r=arguments.length>=2?arguments[2]:arguments[0],i=n.apply(this,[r]);return t?(i.then(e,t),Promise.resolve()):i},t.createAnswer=function(e,t){let n=arguments.length>=2?arguments[2]:arguments[0],i=r.apply(this,[n]);return t?(i.then(e,t),Promise.resolve()):i};let a=function(e,t,n){let r=i.apply(this,[e]);return n?(r.then(t,n),Promise.resolve()):r};t.setLocalDescription=a,t.setRemoteDescription=a=function(e,t,n){let r=s.apply(this,[e]);return n?(r.then(t,n),Promise.resolve()):r},t.addIceCandidate=function(e,t,n){let r=o.apply(this,[e]);return n?(r.then(t,n),Promise.resolve()):r}}function J(e){let t=e&&e.navigator;if(t.mediaDevices&&t.mediaDevices.getUserMedia){let e=t.mediaDevices,n=e.getUserMedia.bind(e);t.mediaDevices.getUserMedia=e=>n(W(e))}!t.getUserMedia&&t.mediaDevices&&t.mediaDevices.getUserMedia&&(t.getUserMedia=(function(e,n,r){t.mediaDevices.getUserMedia(e).then(n,r)}).bind(t))}function W(e){return e&&void 0!==e.video?Object.assign({},e,{video:function e(t){return _(t)?Object.keys(t).reduce(function(n,r){let i=_(t[r]),s=i?e(t[r]):t[r],o=i&&!Object.keys(s).length;return void 0===s||o?n:Object.assign(n,{[r]:s})},{}):t}(e.video)}):e}function Y(e){if(!e.RTCPeerConnection)return;let t=e.RTCPeerConnection;e.RTCPeerConnection=function(e,n){if(e&&e.iceServers){let t=[];for(let n=0;n<e.iceServers.length;n++){let r=e.iceServers[n];void 0===r.urls&&r.url?(m("RTCIceServer.url","RTCIceServer.urls"),(r=JSON.parse(JSON.stringify(r))).urls=r.url,delete r.url,t.push(r)):t.push(e.iceServers[n])}e.iceServers=t}return new t(e,n)},e.RTCPeerConnection.prototype=t.prototype,"generateCertificate"in t&&Object.defineProperty(e.RTCPeerConnection,"generateCertificate",{get:()=>t.generateCertificate})}function H(e){"object"==typeof e&&e.RTCTrackEvent&&"receiver"in e.RTCTrackEvent.prototype&&!("transceiver"in e.RTCTrackEvent.prototype)&&Object.defineProperty(e.RTCTrackEvent.prototype,"transceiver",{get(){return{receiver:this.receiver}}})}function K(e){let t=e.RTCPeerConnection.prototype.createOffer;e.RTCPeerConnection.prototype.createOffer=function(e){if(e){void 0!==e.offerToReceiveAudio&&(e.offerToReceiveAudio=!!e.offerToReceiveAudio);let t=this.getTransceivers().find(e=>"audio"===e.receiver.track.kind);!1===e.offerToReceiveAudio&&t?"sendrecv"===t.direction?t.setDirection?t.setDirection("sendonly"):t.direction="sendonly":"recvonly"===t.direction&&(t.setDirection?t.setDirection("inactive"):t.direction="inactive"):!0!==e.offerToReceiveAudio||t||this.addTransceiver("audio",{direction:"recvonly"}),void 0!==e.offerToReceiveVideo&&(e.offerToReceiveVideo=!!e.offerToReceiveVideo);let n=this.getTransceivers().find(e=>"video"===e.receiver.track.kind);!1===e.offerToReceiveVideo&&n?"sendrecv"===n.direction?n.setDirection?n.setDirection("sendonly"):n.direction="sendonly":"recvonly"===n.direction&&(n.setDirection?n.setDirection("inactive"):n.direction="inactive"):!0!==e.offerToReceiveVideo||n||this.addTransceiver("video",{direction:"recvonly"})}return t.apply(this,arguments)}}function X(e){"object"!=typeof e||e.AudioContext||(e.AudioContext=e.webkitAudioContext)}e(z,"shimLocalStreamsAPI",()=>$),e(z,"shimRemoteStreamsAPI",()=>V),e(z,"shimCallbacksAPI",()=>G),e(z,"shimGetUserMedia",()=>J),e(z,"shimConstraints",()=>W),e(z,"shimRTCIceServerUrls",()=>Y),e(z,"shimTrackEventTransceiver",()=>H),e(z,"shimCreateOfferLegacy",()=>K),e(z,"shimAudioContext",()=>X);var Q={};"use strict";e(Q,"shimRTCIceCandidate",()=>ee),e(Q,"shimRTCIceCandidateRelayProtocol",()=>et),e(Q,"shimMaxMessageSize",()=>en),e(Q,"shimSendThrowTypeError",()=>er),e(Q,"shimConnectionState",()=>ei),e(Q,"removeExtmapAllowMixed",()=>es),e(Q,"shimAddIceCandidateNullOrEmpty",()=>eo),e(Q,"shimParameterlessSetLocalDescription",()=>ea);var q={};"use strict";let Z={};function ee(e){if(!e.RTCIceCandidate||e.RTCIceCandidate&&"foundation"in e.RTCIceCandidate.prototype)return;let n=e.RTCIceCandidate;e.RTCIceCandidate=function(e){if("object"==typeof e&&e.candidate&&0===e.candidate.indexOf("a=")&&((e=JSON.parse(JSON.stringify(e))).candidate=e.candidate.substring(2)),e.candidate&&e.candidate.length){let r=new n(e),i=t(q).parseCandidate(e.candidate);for(let e in i)e in r||Object.defineProperty(r,e,{value:i[e]});return r.toJSON=function(){return{candidate:r.candidate,sdpMid:r.sdpMid,sdpMLineIndex:r.sdpMLineIndex,usernameFragment:r.usernameFragment}},r}return new n(e)},e.RTCIceCandidate.prototype=n.prototype,l(e,"icecandidate",t=>(t.candidate&&Object.defineProperty(t,"candidate",{value:new e.RTCIceCandidate(t.candidate),writable:"false"}),t))}function et(e){!e.RTCIceCandidate||e.RTCIceCandidate&&"relayProtocol"in e.RTCIceCandidate.prototype||l(e,"icecandidate",e=>{if(e.candidate){let n=t(q).parseCandidate(e.candidate.candidate);"relay"===n.type&&(e.candidate.relayProtocol=({0:"tls",1:"tcp",2:"udp"})[n.priority>>24])}return e})}function en(e,n){if(!e.RTCPeerConnection)return;"sctp"in e.RTCPeerConnection.prototype||Object.defineProperty(e.RTCPeerConnection.prototype,"sctp",{get(){return void 0===this._sctp?null:this._sctp}});let r=function(e){if(!e||!e.sdp)return!1;let n=t(q).splitSections(e.sdp);return n.shift(),n.some(e=>{let n=t(q).parseMLine(e);return n&&"application"===n.kind&&-1!==n.protocol.indexOf("SCTP")})},i=function(e){let t=e.sdp.match(/mozilla...THIS_IS_SDPARTA-(\d+)/);if(null===t||t.length<2)return -1;let n=parseInt(t[1],10);return n!=n?-1:n},s=function(e){let t=65536;return"firefox"===n.browser&&(t=n.version<57?-1===e?16384:0x7ffffff5:n.version<60?57===n.version?65535:65536:0x7ffffff5),t},o=function(e,r){let i=65536;"firefox"===n.browser&&57===n.version&&(i=65535);let s=t(q).matchPrefix(e.sdp,"a=max-message-size:");return s.length>0?i=parseInt(s[0].substring(19),10):"firefox"===n.browser&&-1!==r&&(i=0x7ffffff5),i},a=e.RTCPeerConnection.prototype.setRemoteDescription;e.RTCPeerConnection.prototype.setRemoteDescription=function(){if(this._sctp=null,"chrome"===n.browser&&n.version>=76){let{sdpSemantics:e}=this.getConfiguration();"plan-b"===e&&Object.defineProperty(this,"sctp",{get(){return void 0===this._sctp?null:this._sctp},enumerable:!0,configurable:!0})}if(r(arguments[0])){let e,t=i(arguments[0]),n=s(t),r=o(arguments[0],t);e=0===n&&0===r?Number.POSITIVE_INFINITY:0===n||0===r?Math.max(n,r):Math.min(n,r);let a={};Object.defineProperty(a,"maxMessageSize",{get:()=>e}),this._sctp=a}return a.apply(this,arguments)}}function er(e){if(!(e.RTCPeerConnection&&"createDataChannel"in e.RTCPeerConnection.prototype))return;function t(e,t){let n=e.send;e.send=function(){let r=arguments[0],i=r.length||r.size||r.byteLength;if("open"===e.readyState&&t.sctp&&i>t.sctp.maxMessageSize)throw TypeError("Message too large (can send a maximum of "+t.sctp.maxMessageSize+" bytes)");return n.apply(e,arguments)}}let n=e.RTCPeerConnection.prototype.createDataChannel;e.RTCPeerConnection.prototype.createDataChannel=function(){let e=n.apply(this,arguments);return t(e,this),e},l(e,"datachannel",e=>(t(e.channel,e.target),e))}function ei(e){if(!e.RTCPeerConnection||"connectionState"in e.RTCPeerConnection.prototype)return;let t=e.RTCPeerConnection.prototype;Object.defineProperty(t,"connectionState",{get(){return({completed:"connected",checking:"connecting"})[this.iceConnectionState]||this.iceConnectionState},enumerable:!0,configurable:!0}),Object.defineProperty(t,"onconnectionstatechange",{get(){return this._onconnectionstatechange||null},set(e){this._onconnectionstatechange&&(this.removeEventListener("connectionstatechange",this._onconnectionstatechange),delete this._onconnectionstatechange),e&&this.addEventListener("connectionstatechange",this._onconnectionstatechange=e)},enumerable:!0,configurable:!0}),["setLocalDescription","setRemoteDescription"].forEach(e=>{let n=t[e];t[e]=function(){return this._connectionstatechangepoly||(this._connectionstatechangepoly=e=>{let t=e.target;if(t._lastConnectionState!==t.connectionState){t._lastConnectionState=t.connectionState;let n=new Event("connectionstatechange",e);t.dispatchEvent(n)}return e},this.addEventListener("iceconnectionstatechange",this._connectionstatechangepoly)),n.apply(this,arguments)}})}function es(e,t){if(!e.RTCPeerConnection||"chrome"===t.browser&&t.version>=71||"safari"===t.browser&&t.version>=605)return;let n=e.RTCPeerConnection.prototype.setRemoteDescription;e.RTCPeerConnection.prototype.setRemoteDescription=function(t){if(t&&t.sdp&&-1!==t.sdp.indexOf("\na=extmap-allow-mixed")){let n=t.sdp.split("\n").filter(e=>"a=extmap-allow-mixed"!==e.trim()).join("\n");e.RTCSessionDescription&&t instanceof e.RTCSessionDescription?arguments[0]=new e.RTCSessionDescription({type:t.type,sdp:n}):t.sdp=n}return n.apply(this,arguments)}}function eo(e,t){if(!(e.RTCPeerConnection&&e.RTCPeerConnection.prototype))return;let n=e.RTCPeerConnection.prototype.addIceCandidate;n&&0!==n.length&&(e.RTCPeerConnection.prototype.addIceCandidate=function(){return arguments[0]?("chrome"===t.browser&&t.version<78||"firefox"===t.browser&&t.version<68||"safari"===t.browser)&&arguments[0]&&""===arguments[0].candidate?Promise.resolve():n.apply(this,arguments):(arguments[1]&&arguments[1].apply(null),Promise.resolve())})}function ea(e,t){if(!(e.RTCPeerConnection&&e.RTCPeerConnection.prototype))return;let n=e.RTCPeerConnection.prototype.setLocalDescription;n&&0!==n.length&&(e.RTCPeerConnection.prototype.setLocalDescription=function(){let e=arguments[0]||{};if("object"!=typeof e||e.type&&e.sdp)return n.apply(this,arguments);if(!(e={type:e.type,sdp:e.sdp}).type)switch(this.signalingState){case"stable":case"have-local-offer":case"have-remote-pranswer":e.type="offer";break;default:e.type="answer"}return e.sdp||"offer"!==e.type&&"answer"!==e.type?n.apply(this,[e]):("offer"===e.type?this.createOffer:this.createAnswer).apply(this).then(e=>n.apply(this,[e]))})}"use strict";Z.generateIdentifier=function(){return Math.random().toString(36).substring(2,12)},Z.localCName=Z.generateIdentifier(),Z.splitLines=function(e){return e.trim().split("\n").map(e=>e.trim())},Z.splitSections=function(e){return e.split("\nm=").map((e,t)=>(t>0?"m="+e:e).trim()+"\r\n")},Z.getDescription=function(e){let t=Z.splitSections(e);return t&&t[0]},Z.getMediaSections=function(e){let t=Z.splitSections(e);return t.shift(),t},Z.matchPrefix=function(e,t){return Z.splitLines(e).filter(e=>0===e.indexOf(t))},Z.parseCandidate=function(e){let t,n={foundation:(t=0===e.indexOf("a=candidate:")?e.substring(12).split(" "):e.substring(10).split(" "))[0],component:{1:"rtp",2:"rtcp"}[t[1]]||t[1],protocol:t[2].toLowerCase(),priority:parseInt(t[3],10),ip:t[4],address:t[4],port:parseInt(t[5],10),type:t[7]};for(let e=8;e<t.length;e+=2)switch(t[e]){case"raddr":n.relatedAddress=t[e+1];break;case"rport":n.relatedPort=parseInt(t[e+1],10);break;case"tcptype":n.tcpType=t[e+1];break;case"ufrag":n.ufrag=t[e+1],n.usernameFragment=t[e+1];break;default:void 0===n[t[e]]&&(n[t[e]]=t[e+1])}return n},Z.writeCandidate=function(e){let t=[];t.push(e.foundation);let n=e.component;"rtp"===n?t.push(1):"rtcp"===n?t.push(2):t.push(n),t.push(e.protocol.toUpperCase()),t.push(e.priority),t.push(e.address||e.ip),t.push(e.port);let r=e.type;return t.push("typ"),t.push(r),"host"!==r&&e.relatedAddress&&e.relatedPort&&(t.push("raddr"),t.push(e.relatedAddress),t.push("rport"),t.push(e.relatedPort)),e.tcpType&&"tcp"===e.protocol.toLowerCase()&&(t.push("tcptype"),t.push(e.tcpType)),(e.usernameFragment||e.ufrag)&&(t.push("ufrag"),t.push(e.usernameFragment||e.ufrag)),"candidate:"+t.join(" ")},Z.parseIceOptions=function(e){return e.substring(14).split(" ")},Z.parseRtpMap=function(e){let t=e.substring(9).split(" "),n={payloadType:parseInt(t.shift(),10)};return n.name=(t=t[0].split("/"))[0],n.clockRate=parseInt(t[1],10),n.channels=3===t.length?parseInt(t[2],10):1,n.numChannels=n.channels,n},Z.writeRtpMap=function(e){let t=e.payloadType;void 0!==e.preferredPayloadType&&(t=e.preferredPayloadType);let n=e.channels||e.numChannels||1;return"a=rtpmap:"+t+" "+e.name+"/"+e.clockRate+(1!==n?"/"+n:"")+"\r\n"},Z.parseExtmap=function(e){let t=e.substring(9).split(" ");return{id:parseInt(t[0],10),direction:t[0].indexOf("/")>0?t[0].split("/")[1]:"sendrecv",uri:t[1],attributes:t.slice(2).join(" ")}},Z.writeExtmap=function(e){return"a=extmap:"+(e.id||e.preferredId)+(e.direction&&"sendrecv"!==e.direction?"/"+e.direction:"")+" "+e.uri+(e.attributes?" "+e.attributes:"")+"\r\n"},Z.parseFmtp=function(e){let t,n={},r=e.substring(e.indexOf(" ")+1).split(";");for(let e=0;e<r.length;e++)n[(t=r[e].trim().split("="))[0].trim()]=t[1];return n},Z.writeFmtp=function(e){let t="",n=e.payloadType;if(void 0!==e.preferredPayloadType&&(n=e.preferredPayloadType),e.parameters&&Object.keys(e.parameters).length){let r=[];Object.keys(e.parameters).forEach(t=>{void 0!==e.parameters[t]?r.push(t+"="+e.parameters[t]):r.push(t)}),t+="a=fmtp:"+n+" "+r.join(";")+"\r\n"}return t},Z.parseRtcpFb=function(e){let t=e.substring(e.indexOf(" ")+1).split(" ");return{type:t.shift(),parameter:t.join(" ")}},Z.writeRtcpFb=function(e){let t="",n=e.payloadType;return void 0!==e.preferredPayloadType&&(n=e.preferredPayloadType),e.rtcpFeedback&&e.rtcpFeedback.length&&e.rtcpFeedback.forEach(e=>{t+="a=rtcp-fb:"+n+" "+e.type+(e.parameter&&e.parameter.length?" "+e.parameter:"")+"\r\n"}),t},Z.parseSsrcMedia=function(e){let t=e.indexOf(" "),n={ssrc:parseInt(e.substring(7,t),10)},r=e.indexOf(":",t);return r>-1?(n.attribute=e.substring(t+1,r),n.value=e.substring(r+1)):n.attribute=e.substring(t+1),n},Z.parseSsrcGroup=function(e){let t=e.substring(13).split(" ");return{semantics:t.shift(),ssrcs:t.map(e=>parseInt(e,10))}},Z.getMid=function(e){let t=Z.matchPrefix(e,"a=mid:")[0];if(t)return t.substring(6)},Z.parseFingerprint=function(e){let t=e.substring(14).split(" ");return{algorithm:t[0].toLowerCase(),value:t[1].toUpperCase()}},Z.getDtlsParameters=function(e,t){return{role:"auto",fingerprints:Z.matchPrefix(e+t,"a=fingerprint:").map(Z.parseFingerprint)}},Z.writeDtlsParameters=function(e,t){let n="a=setup:"+t+"\r\n";return e.fingerprints.forEach(e=>{n+="a=fingerprint:"+e.algorithm+" "+e.value+"\r\n"}),n},Z.parseCryptoLine=function(e){let t=e.substring(9).split(" ");return{tag:parseInt(t[0],10),cryptoSuite:t[1],keyParams:t[2],sessionParams:t.slice(3)}},Z.writeCryptoLine=function(e){return"a=crypto:"+e.tag+" "+e.cryptoSuite+" "+("object"==typeof e.keyParams?Z.writeCryptoKeyParams(e.keyParams):e.keyParams)+(e.sessionParams?" "+e.sessionParams.join(" "):"")+"\r\n"},Z.parseCryptoKeyParams=function(e){if(0!==e.indexOf("inline:"))return null;let t=e.substring(7).split("|");return{keyMethod:"inline",keySalt:t[0],lifeTime:t[1],mkiValue:t[2]?t[2].split(":")[0]:void 0,mkiLength:t[2]?t[2].split(":")[1]:void 0}},Z.writeCryptoKeyParams=function(e){return e.keyMethod+":"+e.keySalt+(e.lifeTime?"|"+e.lifeTime:"")+(e.mkiValue&&e.mkiLength?"|"+e.mkiValue+":"+e.mkiLength:"")},Z.getCryptoParameters=function(e,t){return Z.matchPrefix(e+t,"a=crypto:").map(Z.parseCryptoLine)},Z.getIceParameters=function(e,t){let n=Z.matchPrefix(e+t,"a=ice-ufrag:")[0],r=Z.matchPrefix(e+t,"a=ice-pwd:")[0];return n&&r?{usernameFragment:n.substring(12),password:r.substring(10)}:null},Z.writeIceParameters=function(e){let t="a=ice-ufrag:"+e.usernameFragment+"\r\na=ice-pwd:"+e.password+"\r\n";return e.iceLite&&(t+="a=ice-lite\r\n"),t},Z.parseRtpParameters=function(e){let t={codecs:[],headerExtensions:[],fecMechanisms:[],rtcp:[]},n=Z.splitLines(e)[0].split(" ");t.profile=n[2];for(let r=3;r<n.length;r++){let i=n[r],s=Z.matchPrefix(e,"a=rtpmap:"+i+" ")[0];if(s){let n=Z.parseRtpMap(s),r=Z.matchPrefix(e,"a=fmtp:"+i+" ");switch(n.parameters=r.length?Z.parseFmtp(r[0]):{},n.rtcpFeedback=Z.matchPrefix(e,"a=rtcp-fb:"+i+" ").map(Z.parseRtcpFb),t.codecs.push(n),n.name.toUpperCase()){case"RED":case"ULPFEC":t.fecMechanisms.push(n.name.toUpperCase())}}}Z.matchPrefix(e,"a=extmap:").forEach(e=>{t.headerExtensions.push(Z.parseExtmap(e))});let r=Z.matchPrefix(e,"a=rtcp-fb:* ").map(Z.parseRtcpFb);return t.codecs.forEach(e=>{r.forEach(t=>{e.rtcpFeedback.find(e=>e.type===t.type&&e.parameter===t.parameter)||e.rtcpFeedback.push(t)})}),t},Z.writeRtpDescription=function(e,t){let n="";n+="m="+e+" ",n+=t.codecs.length>0?"9":"0",n+=" "+(t.profile||"UDP/TLS/RTP/SAVPF")+" ",n+=t.codecs.map(e=>void 0!==e.preferredPayloadType?e.preferredPayloadType:e.payloadType).join(" ")+"\r\n",n+="c=IN IP4 0.0.0.0\r\n",n+="a=rtcp:9 IN IP4 0.0.0.0\r\n",t.codecs.forEach(e=>{n+=Z.writeRtpMap(e),n+=Z.writeFmtp(e),n+=Z.writeRtcpFb(e)});let r=0;return t.codecs.forEach(e=>{e.maxptime>r&&(r=e.maxptime)}),r>0&&(n+="a=maxptime:"+r+"\r\n"),t.headerExtensions&&t.headerExtensions.forEach(e=>{n+=Z.writeExtmap(e)}),n},Z.parseRtpEncodingParameters=function(e){let t,n=[],r=Z.parseRtpParameters(e),i=-1!==r.fecMechanisms.indexOf("RED"),s=-1!==r.fecMechanisms.indexOf("ULPFEC"),o=Z.matchPrefix(e,"a=ssrc:").map(e=>Z.parseSsrcMedia(e)).filter(e=>"cname"===e.attribute),a=o.length>0&&o[0].ssrc,c=Z.matchPrefix(e,"a=ssrc-group:FID").map(e=>e.substring(17).split(" ").map(e=>parseInt(e,10)));c.length>0&&c[0].length>1&&c[0][0]===a&&(t=c[0][1]),r.codecs.forEach(e=>{if("RTX"===e.name.toUpperCase()&&e.parameters.apt){let r={ssrc:a,codecPayloadType:parseInt(e.parameters.apt,10)};a&&t&&(r.rtx={ssrc:t}),n.push(r),i&&((r=JSON.parse(JSON.stringify(r))).fec={ssrc:a,mechanism:s?"red+ulpfec":"red"},n.push(r))}}),0===n.length&&a&&n.push({ssrc:a});let p=Z.matchPrefix(e,"b=");return p.length&&(p=0===p[0].indexOf("b=TIAS:")?parseInt(p[0].substring(7),10):0===p[0].indexOf("b=AS:")?950*parseInt(p[0].substring(5),10)-16e3:void 0,n.forEach(e=>{e.maxBitrate=p})),n},Z.parseRtcpParameters=function(e){let t={},n=Z.matchPrefix(e,"a=ssrc:").map(e=>Z.parseSsrcMedia(e)).filter(e=>"cname"===e.attribute)[0];n&&(t.cname=n.value,t.ssrc=n.ssrc);let r=Z.matchPrefix(e,"a=rtcp-rsize");return t.reducedSize=r.length>0,t.compound=0===r.length,t.mux=Z.matchPrefix(e,"a=rtcp-mux").length>0,t},Z.writeRtcpParameters=function(e){let t="";return e.reducedSize&&(t+="a=rtcp-rsize\r\n"),e.mux&&(t+="a=rtcp-mux\r\n"),void 0!==e.ssrc&&e.cname&&(t+="a=ssrc:"+e.ssrc+" cname:"+e.cname+"\r\n"),t},Z.parseMsid=function(e){let t,n=Z.matchPrefix(e,"a=msid:");if(1===n.length)return{stream:(t=n[0].substring(7).split(" "))[0],track:t[1]};let r=Z.matchPrefix(e,"a=ssrc:").map(e=>Z.parseSsrcMedia(e)).filter(e=>"msid"===e.attribute);if(r.length>0)return{stream:(t=r[0].value.split(" "))[0],track:t[1]}},Z.parseSctpDescription=function(e){let t,n=Z.parseMLine(e),r=Z.matchPrefix(e,"a=max-message-size:");r.length>0&&(t=parseInt(r[0].substring(19),10)),isNaN(t)&&(t=65536);let i=Z.matchPrefix(e,"a=sctp-port:");if(i.length>0)return{port:parseInt(i[0].substring(12),10),protocol:n.fmt,maxMessageSize:t};let s=Z.matchPrefix(e,"a=sctpmap:");if(s.length>0){let e=s[0].substring(10).split(" ");return{port:parseInt(e[0],10),protocol:e[1],maxMessageSize:t}}},Z.writeSctpDescription=function(e,t){let n=[];return n="DTLS/SCTP"!==e.protocol?["m="+e.kind+" 9 "+e.protocol+" "+t.protocol+"\r\n","c=IN IP4 0.0.0.0\r\n","a=sctp-port:"+t.port+"\r\n"]:["m="+e.kind+" 9 "+e.protocol+" "+t.port+"\r\n","c=IN IP4 0.0.0.0\r\n","a=sctpmap:"+t.port+" "+t.protocol+" 65535\r\n"],void 0!==t.maxMessageSize&&n.push("a=max-message-size:"+t.maxMessageSize+"\r\n"),n.join("")},Z.generateSessionId=function(){return Math.random().toString().substr(2,22)},Z.writeSessionBoilerplate=function(e,t,n){return"v=0\r\no="+(n||"thisisadapterortc")+" "+(e||Z.generateSessionId())+" "+(void 0!==t?t:2)+" IN IP4 127.0.0.1\r\ns=-\r\nt=0 0\r\n"},Z.getDirection=function(e,t){let n=Z.splitLines(e);for(let e=0;e<n.length;e++)switch(n[e]){case"a=sendrecv":case"a=sendonly":case"a=recvonly":case"a=inactive":return n[e].substring(2)}return t?Z.getDirection(t):"sendrecv"},Z.getKind=function(e){return Z.splitLines(e)[0].split(" ")[0].substring(2)},Z.isRejected=function(e){return"0"===e.split(" ",2)[1]},Z.parseMLine=function(e){let t=Z.splitLines(e)[0].substring(2).split(" ");return{kind:t[0],port:parseInt(t[1],10),protocol:t[2],fmt:t.slice(3).join(" ")}},Z.parseOLine=function(e){let t=Z.matchPrefix(e,"o=")[0].substring(2).split(" ");return{username:t[0],sessionId:t[1],sessionVersion:parseInt(t[2],10),netType:t[3],addressType:t[4],address:t[5]}},Z.isValidSDP=function(e){if("string"!=typeof e||0===e.length)return!1;let t=Z.splitLines(e);for(let e=0;e<t.length;e++)if(t[e].length<2||"="!==t[e].charAt(1))return!1;return!0},q=Z;let ec=function({window:e}={},t={shimChrome:!0,shimFirefox:!0,shimSafari:!0}){let n=function(e){let t={browser:null,version:null};if(void 0===e||!e.navigator||!e.navigator.userAgent)return t.browser="Not a browser.",t;let{navigator:n}=e;if(n.userAgentData&&n.userAgentData.brands){let e=n.userAgentData.brands.find(e=>"Chromium"===e.brand);if(e)return{browser:"chrome",version:parseInt(e.version,10)}}return n.mozGetUserMedia?(t.browser="firefox",t.version=d(n.userAgent,/Firefox\/(\d+)\./,1)):n.webkitGetUserMedia||!1===e.isSecureContext&&e.webkitRTCPeerConnection?(t.browser="chrome",t.version=d(n.userAgent,/Chrom(e|ium)\/(\d+)\./,2)):e.RTCPeerConnection&&n.userAgent.match(/AppleWebKit\/(\d+)\./)?(t.browser="safari",t.version=d(n.userAgent,/AppleWebKit\/(\d+)\./,1),t.supportsUnifiedPlan=e.RTCRtpTransceiver&&"currentDirection"in e.RTCRtpTransceiver.prototype):t.browser="Not a supported browser.",t}(e),r={browserDetails:n,commonShim:Q,extractVersion:d,disableLog:h,disableWarnings:u,sdp:q};switch(n.browser){case"chrome":if(!y||!y.shimPeerConnection||!t.shimChrome){f("Chrome shim is not included in this adapter release.");break}if(null===n.version){f("Chrome shim can not determine version, not shimming.");break}f("adapter.js shimming chrome."),r.browserShim=y,eo(e,n),ea(e,n),y.shimGetUserMedia(e,n),y.shimMediaStream(e,n),y.shimPeerConnection(e,n),y.shimOnTrack(e,n),y.shimAddTrackRemoveTrack(e,n),y.shimGetSendersWithDtmf(e,n),y.shimSenderReceiverGetStats(e,n),y.fixNegotiationNeeded(e,n),ee(e,n),et(e,n),ei(e,n),en(e,n),er(e,n),es(e,n);break;case"firefox":if(!E||!E.shimPeerConnection||!t.shimFirefox){f("Firefox shim is not included in this adapter release.");break}f("adapter.js shimming firefox."),r.browserShim=E,eo(e,n),ea(e,n),E.shimGetUserMedia(e,n),E.shimPeerConnection(e,n),E.shimOnTrack(e,n),E.shimRemoveStream(e,n),E.shimSenderGetStats(e,n),E.shimReceiverGetStats(e,n),E.shimRTCDataChannel(e,n),E.shimAddTransceiver(e,n),E.shimGetParameters(e,n),E.shimCreateOffer(e,n),E.shimCreateAnswer(e,n),ee(e,n),ei(e,n),en(e,n),er(e,n);break;case"safari":if(!z||!t.shimSafari){f("Safari shim is not included in this adapter release.");break}f("adapter.js shimming safari."),r.browserShim=z,eo(e,n),ea(e,n),z.shimRTCIceServerUrls(e,n),z.shimCreateOfferLegacy(e,n),z.shimCallbacksAPI(e,n),z.shimLocalStreamsAPI(e,n),z.shimRemoteStreamsAPI(e,n),z.shimTrackEventTransceiver(e,n),z.shimGetUserMedia(e,n),z.shimAudioContext(e,n),ee(e,n),et(e,n),en(e,n),er(e,n),es(e,n);break;default:f("Unsupported browser!")}return r}({window:"undefined"==typeof window?void 0:window}),ep=ec.default||ec,ed=new class{isWebRTCSupported(){return"undefined"!=typeof RTCPeerConnection}isBrowserSupported(){let e=this.getBrowser(),t=this.getVersion();return!!this.supportedBrowsers.includes(e)&&("chrome"===e?t>=this.minChromeVersion:"firefox"===e?t>=this.minFirefoxVersion:"safari"===e&&!this.isIOS&&t>=this.minSafariVersion)}getBrowser(){return ep.browserDetails.browser}getVersion(){return ep.browserDetails.version||0}isUnifiedPlanSupported(){let e,t=this.getBrowser(),n=ep.browserDetails.version||0;if("chrome"===t&&n<this.minChromeVersion)return!1;if("firefox"===t&&n>=this.minFirefoxVersion)return!0;if(!window.RTCRtpTransceiver||!("currentDirection"in RTCRtpTransceiver.prototype))return!1;let r=!1;try{(e=new RTCPeerConnection).addTransceiver("audio"),r=!0}catch(e){}finally{e&&e.close()}return r}toString(){return`Supports:
+    browser:${this.getBrowser()}
+    version:${this.getVersion()}
+    isIOS:${this.isIOS}
+    isWebRTCSupported:${this.isWebRTCSupported()}
+    isBrowserSupported:${this.isBrowserSupported()}
+    isUnifiedPlanSupported:${this.isUnifiedPlanSupported()}`}constructor(){this.isIOS="undefined"!=typeof navigator&&["iPad","iPhone","iPod"].includes(navigator.platform),this.supportedBrowsers=["firefox","chrome","safari"],this.minFirefoxVersion=59,this.minChromeVersion=72,this.minSafariVersion=605}},el=e=>!e||/^[A-Za-z0-9]+(?:[ _-][A-Za-z0-9]+)*$/.test(e),eh=()=>Math.random().toString(36).slice(2),eu={iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:["turn:eu-0.turn.peerjs.com:3478","turn:us-0.turn.peerjs.com:3478"],username:"peerjs",credential:"peerjsp"}],sdpSemantics:"unified-plan"},ef=new class extends n{noop(){}blobToArrayBuffer(e,t){let n=new FileReader;return n.onload=function(e){e.target&&t(e.target.result)},n.readAsArrayBuffer(e),n}binaryStringToArrayBuffer(e){let t=new Uint8Array(e.length);for(let n=0;n<e.length;n++)t[n]=255&e.charCodeAt(n);return t.buffer}isSecure(){return"https:"===location.protocol}constructor(...e){super(...e),this.CLOUD_HOST="0.peerjs.com",this.CLOUD_PORT=443,this.chunkedBrowsers={Chrome:1,chrome:1},this.defaultConfig=eu,this.browser=ed.getBrowser(),this.browserVersion=ed.getVersion(),this.pack=s,this.unpack=i,this.supports=function(){let e,t={browser:ed.isBrowserSupported(),webRTC:ed.isWebRTCSupported(),audioVideo:!1,data:!1,binaryBlob:!1,reliable:!1};if(!t.webRTC)return t;try{let n;e=new RTCPeerConnection(eu),t.audioVideo=!0;try{n=e.createDataChannel("_PEERJSTEST",{ordered:!0}),t.data=!0,t.reliable=!!n.ordered;try{n.binaryType="blob",t.binaryBlob=!ed.isIOS}catch(e){}}catch(e){}finally{n&&n.close()}}catch(e){}finally{e&&e.close()}return t}(),this.validateId=el,this.randomToken=eh}};"use strict";var em=new class{get logLevel(){return this._logLevel}set logLevel(e){this._logLevel=e}log(...e){this._logLevel>=3&&this._print(3,...e)}warn(...e){this._logLevel>=2&&this._print(2,...e)}error(...e){this._logLevel>=1&&this._print(1,...e)}setLogFunction(e){this._print=e}_print(e,...t){let n=["PeerJS: ",...t];for(let e in n)n[e]instanceof Error&&(n[e]="("+n[e].name+") "+n[e].message);e>=3?console.log(...n):e>=2?console.warn("WARNING",...n):e>=1&&console.error("ERROR",...n)}constructor(){this._logLevel=0}},e_={},eg=Object.prototype.hasOwnProperty,ey="~";function eC(){}function ev(e,t,n){this.fn=e,this.context=t,this.once=n||!1}function eb(e,t,n,r,i){if("function"!=typeof n)throw TypeError("The listener must be a function");var s=new ev(n,r||e,i),o=ey?ey+t:t;return e._events[o]?e._events[o].fn?e._events[o]=[e._events[o],s]:e._events[o].push(s):(e._events[o]=s,e._eventsCount++),e}function eT(e,t){0==--e._eventsCount?e._events=new eC:delete e._events[t]}function eS(){this._events=new eC,this._eventsCount=0}Object.create&&(eC.prototype=Object.create(null),new eC().__proto__||(ey=!1)),eS.prototype.eventNames=function(){var e,t,n=[];if(0===this._eventsCount)return n;for(t in e=this._events)eg.call(e,t)&&n.push(ey?t.slice(1):t);return Object.getOwnPropertySymbols?n.concat(Object.getOwnPropertySymbols(e)):n},eS.prototype.listeners=function(e){var t=ey?ey+e:e,n=this._events[t];if(!n)return[];if(n.fn)return[n.fn];for(var r=0,i=n.length,s=Array(i);r<i;r++)s[r]=n[r].fn;return s},eS.prototype.listenerCount=function(e){var t=ey?ey+e:e,n=this._events[t];return n?n.fn?1:n.length:0},eS.prototype.emit=function(e,t,n,r,i,s){var o=ey?ey+e:e;if(!this._events[o])return!1;var a,c,p=this._events[o],d=arguments.length;if(p.fn){switch(p.once&&this.removeListener(e,p.fn,void 0,!0),d){case 1:return p.fn.call(p.context),!0;case 2:return p.fn.call(p.context,t),!0;case 3:return p.fn.call(p.context,t,n),!0;case 4:return p.fn.call(p.context,t,n,r),!0;case 5:return p.fn.call(p.context,t,n,r,i),!0;case 6:return p.fn.call(p.context,t,n,r,i,s),!0}for(c=1,a=Array(d-1);c<d;c++)a[c-1]=arguments[c];p.fn.apply(p.context,a)}else{var l,h=p.length;for(c=0;c<h;c++)switch(p[c].once&&this.removeListener(e,p[c].fn,void 0,!0),d){case 1:p[c].fn.call(p[c].context);break;case 2:p[c].fn.call(p[c].context,t);break;case 3:p[c].fn.call(p[c].context,t,n);break;case 4:p[c].fn.call(p[c].context,t,n,r);break;default:if(!a)for(l=1,a=Array(d-1);l<d;l++)a[l-1]=arguments[l];p[c].fn.apply(p[c].context,a)}}return!0},eS.prototype.on=function(e,t,n){return eb(this,e,t,n,!1)},eS.prototype.once=function(e,t,n){return eb(this,e,t,n,!0)},eS.prototype.removeListener=function(e,t,n,r){var i=ey?ey+e:e;if(!this._events[i])return this;if(!t)return eT(this,i),this;var s=this._events[i];if(s.fn)s.fn!==t||r&&!s.once||n&&s.context!==n||eT(this,i);else{for(var o=0,a=[],c=s.length;o<c;o++)(s[o].fn!==t||r&&!s[o].once||n&&s[o].context!==n)&&a.push(s[o]);a.length?this._events[i]=1===a.length?a[0]:a:eT(this,i)}return this},eS.prototype.removeAllListeners=function(e){var t;return e?(t=ey?ey+e:e,this._events[t]&&eT(this,t)):(this._events=new eC,this._eventsCount=0),this},eS.prototype.off=eS.prototype.removeListener,eS.prototype.addListener=eS.prototype.on,eS.prefixed=ey,eS.EventEmitter=eS,e_=eS;var ek=function(e){return e.Data="data",e.Media="media",e}({}),eR=function(e){return e.BrowserIncompatible="browser-incompatible",e.Disconnected="disconnected",e.InvalidID="invalid-id",e.InvalidKey="invalid-key",e.Network="network",e.PeerUnavailable="peer-unavailable",e.SslUnavailable="ssl-unavailable",e.ServerError="server-error",e.SocketError="socket-error",e.SocketClosed="socket-closed",e.UnavailableID="unavailable-id",e.WebRTC="webrtc",e}({}),eP=function(e){return e.NegotiationFailed="negotiation-failed",e.ConnectionClosed="connection-closed",e}({}),ew=function(e){return e.NotOpenYet="not-open-yet",e.MessageToBig="message-too-big",e}({}),eE=function(e){return e.Binary="binary",e.BinaryUTF8="binary-utf8",e.JSON="json",e.None="raw",e}({}),ex=function(e){return e.Message="message",e.Disconnected="disconnected",e.Error="error",e.Close="close",e}({}),eD=function(e){return e.Heartbeat="HEARTBEAT",e.Candidate="CANDIDATE",e.Offer="OFFER",e.Answer="ANSWER",e.Open="OPEN",e.Error="ERROR",e.IdTaken="ID-TAKEN",e.InvalidKey="INVALID-KEY",e.Leave="LEAVE",e.Expire="EXPIRE",e}({});let eI="1.5.5";class eM extends e_.EventEmitter{start(e,t){this._id=e;let n=`${this._baseUrl}&id=${e}&token=${t}`;!this._socket&&this._disconnected&&(this._socket=new WebSocket(n+"&version="+eI),this._disconnected=!1,this._socket.onmessage=e=>{let t;try{t=JSON.parse(e.data),em.log("Server message received:",t)}catch(t){em.log("Invalid server message",e.data);return}this.emit(ex.Message,t)},this._socket.onclose=e=>{this._disconnected||(em.log("Socket closed.",e),this._cleanup(),this._disconnected=!0,this.emit(ex.Disconnected))},this._socket.onopen=()=>{this._disconnected||(this._sendQueuedMessages(),em.log("Socket open"),this._scheduleHeartbeat())})}_scheduleHeartbeat(){this._wsPingTimer=setTimeout(()=>{this._sendHeartbeat()},this.pingInterval)}_sendHeartbeat(){if(!this._wsOpen())return void em.log("Cannot send heartbeat, because socket closed");let e=JSON.stringify({type:eD.Heartbeat});this._socket.send(e),this._scheduleHeartbeat()}_wsOpen(){return!!this._socket&&1===this._socket.readyState}_sendQueuedMessages(){let e=[...this._messagesQueue];for(let t of(this._messagesQueue=[],e))this.send(t)}send(e){if(this._disconnected)return;if(!this._id)return void this._messagesQueue.push(e);if(!e.type)return void this.emit(ex.Error,"Invalid message");if(!this._wsOpen())return;let t=JSON.stringify(e);this._socket.send(t)}close(){this._disconnected||(this._cleanup(),this._disconnected=!0)}_cleanup(){this._socket&&(this._socket.onopen=this._socket.onmessage=this._socket.onclose=null,this._socket.close(),this._socket=void 0),clearTimeout(this._wsPingTimer)}constructor(e,t,n,r,i,s=5e3){super(),this.pingInterval=s,this._disconnected=!0,this._messagesQueue=[],this._baseUrl=(e?"wss://":"ws://")+t+":"+n+r+"peerjs?key="+i}}class eO{startConnection(e){let t=this._startPeerConnection();if(this.connection.peerConnection=t,this.connection.type===ek.Media&&e._stream&&this._addTracksToConnection(e._stream,t),e.originator){let n=this.connection,r={ordered:!!e.reliable},i=t.createDataChannel(n.label,r);n._initializeDataChannel(i),this._makeOffer()}else this.handleSDP("OFFER",e.sdp)}_startPeerConnection(){em.log("Creating RTCPeerConnection.");let e=new RTCPeerConnection(this.connection.provider.options.config);return this._setupListeners(e),e}_setupListeners(e){let t=this.connection.peer,n=this.connection.connectionId,r=this.connection.type,i=this.connection.provider;em.log("Listening for ICE candidates."),e.onicecandidate=e=>{e.candidate&&e.candidate.candidate&&(em.log(`Received ICE candidates for ${t}:`,e.candidate),i.socket.send({type:eD.Candidate,payload:{candidate:e.candidate,type:r,connectionId:n},dst:t}))},e.oniceconnectionstatechange=()=>{switch(e.iceConnectionState){case"failed":em.log("iceConnectionState is failed, closing connections to "+t),this.connection.emitError(eP.NegotiationFailed,"Negotiation of connection to "+t+" failed."),this.connection.close();break;case"closed":em.log("iceConnectionState is closed, closing connections to "+t),this.connection.emitError(eP.ConnectionClosed,"Connection to "+t+" closed."),this.connection.close();break;case"disconnected":em.log("iceConnectionState changed to disconnected on the connection with "+t);break;case"completed":e.onicecandidate=()=>{}}this.connection.emit("iceStateChanged",e.iceConnectionState)},em.log("Listening for data channel"),e.ondatachannel=e=>{em.log("Received data channel");let r=e.channel;i.getConnection(t,n)._initializeDataChannel(r)},em.log("Listening for remote stream"),e.ontrack=e=>{em.log("Received remote stream");let r=e.streams[0],s=i.getConnection(t,n);s.type===ek.Media&&this._addStreamToMediaConnection(r,s)}}cleanup(){em.log("Cleaning up PeerConnection to "+this.connection.peer);let e=this.connection.peerConnection;if(!e)return;this.connection.peerConnection=null,e.onicecandidate=e.oniceconnectionstatechange=e.ondatachannel=e.ontrack=()=>{};let t="closed"!==e.signalingState,n=!1,r=this.connection.dataChannel;r&&(n=!!r.readyState&&"closed"!==r.readyState),(t||n)&&e.close()}async _makeOffer(){let e=this.connection.peerConnection,t=this.connection.provider;try{let n=await e.createOffer(this.connection.options.constraints);em.log("Created offer."),this.connection.options.sdpTransform&&"function"==typeof this.connection.options.sdpTransform&&(n.sdp=this.connection.options.sdpTransform(n.sdp)||n.sdp);try{await e.setLocalDescription(n),em.log("Set localDescription:",n,`for:${this.connection.peer}`);let r={sdp:n,type:this.connection.type,connectionId:this.connection.connectionId,metadata:this.connection.metadata};if(this.connection.type===ek.Data){let e=this.connection;r={...r,label:e.label,reliable:e.reliable,serialization:e.serialization}}t.socket.send({type:eD.Offer,payload:r,dst:this.connection.peer})}catch(e){"OperationError: Failed to set local offer sdp: Called in wrong state: kHaveRemoteOffer"!=e&&(t.emitError(eR.WebRTC,e),em.log("Failed to setLocalDescription, ",e))}}catch(e){t.emitError(eR.WebRTC,e),em.log("Failed to createOffer, ",e)}}async _makeAnswer(){let e=this.connection.peerConnection,t=this.connection.provider;try{let n=await e.createAnswer();em.log("Created answer."),this.connection.options.sdpTransform&&"function"==typeof this.connection.options.sdpTransform&&(n.sdp=this.connection.options.sdpTransform(n.sdp)||n.sdp);try{await e.setLocalDescription(n),em.log("Set localDescription:",n,`for:${this.connection.peer}`),t.socket.send({type:eD.Answer,payload:{sdp:n,type:this.connection.type,connectionId:this.connection.connectionId},dst:this.connection.peer})}catch(e){t.emitError(eR.WebRTC,e),em.log("Failed to setLocalDescription, ",e)}}catch(e){t.emitError(eR.WebRTC,e),em.log("Failed to create answer, ",e)}}async handleSDP(e,t){t=new RTCSessionDescription(t);let n=this.connection.peerConnection,r=this.connection.provider;em.log("Setting remote description",t);try{await n.setRemoteDescription(t),em.log(`Set remoteDescription:${e} for:${this.connection.peer}`),"OFFER"===e&&await this._makeAnswer()}catch(e){r.emitError(eR.WebRTC,e),em.log("Failed to setRemoteDescription, ",e)}}async handleCandidate(e){em.log("handleCandidate:",e);try{await this.connection.peerConnection.addIceCandidate(e),em.log(`Added ICE candidate for:${this.connection.peer}`)}catch(e){this.connection.provider.emitError(eR.WebRTC,e),em.log("Failed to handleCandidate, ",e)}}_addTracksToConnection(e,t){if(em.log(`add tracks from stream ${e.id} to peer connection`),!t.addTrack)return em.error("Your browser does't support RTCPeerConnection#addTrack. Ignored.");e.getTracks().forEach(n=>{t.addTrack(n,e)})}_addStreamToMediaConnection(e,t){em.log(`add stream ${e.id} to media connection ${t.connectionId}`),t.addStream(e)}constructor(e){this.connection=e}}class eL extends e_.EventEmitter{emitError(e,t){em.error("Error:",t),this.emit("error",new eA(`${e}`,t))}}class eA extends Error{constructor(e,t){"string"==typeof t?super(t):(super(),Object.assign(this,t)),this.type=e}}class ej extends eL{get open(){return this._open}constructor(e,t,n){super(),this.peer=e,this.provider=t,this.options=n,this._open=!1,this.metadata=n.metadata}}class eB extends ej{get type(){return ek.Media}get localStream(){return this._localStream}get remoteStream(){return this._remoteStream}_initializeDataChannel(e){this.dataChannel=e,this.dataChannel.onopen=()=>{em.log(`DC#${this.connectionId} dc connection success`),this.emit("willCloseOnRemote")},this.dataChannel.onclose=()=>{em.log(`DC#${this.connectionId} dc closed for:`,this.peer),this.close()}}addStream(e){em.log("Receiving stream",e),this._remoteStream=e,super.emit("stream",e)}handleMessage(e){let t=e.type,n=e.payload;switch(e.type){case eD.Answer:this._negotiator.handleSDP(t,n.sdp),this._open=!0;break;case eD.Candidate:this._negotiator.handleCandidate(n.candidate);break;default:em.warn(`Unrecognized message type:${t} from peer:${this.peer}`)}}answer(e,t={}){if(this._localStream)return void em.warn("Local stream already exists on this MediaConnection. Are you answering a call twice?");for(let n of(this._localStream=e,t&&t.sdpTransform&&(this.options.sdpTransform=t.sdpTransform),this._negotiator.startConnection({...this.options._payload,_stream:e}),this.provider._getMessages(this.connectionId)))this.handleMessage(n);this._open=!0}close(){this._negotiator&&(this._negotiator.cleanup(),this._negotiator=null),this._localStream=null,this._remoteStream=null,this.provider&&(this.provider._removeConnection(this),this.provider=null),this.options&&this.options._stream&&(this.options._stream=null),this.open&&(this._open=!1,super.emit("close"))}constructor(e,t,n){super(e,t,n),this._localStream=this.options._stream,this.connectionId=this.options.connectionId||eB.ID_PREFIX+ef.randomToken(),this._negotiator=new eO(this),this._localStream&&this._negotiator.startConnection({_stream:this._localStream,originator:!0})}}eB.ID_PREFIX="mc_";class eU{_buildRequest(e){let t=this._options.secure?"https":"http",{host:n,port:r,path:i,key:s}=this._options,o=new URL(`${t}://${n}:${r}${i}${s}/${e}`);return o.searchParams.set("ts",`${Date.now()}${Math.random()}`),o.searchParams.set("version",eI),fetch(o.href,{referrerPolicy:this._options.referrerPolicy})}async retrieveId(){try{let e=await this._buildRequest("id");if(200!==e.status)throw Error(`Error. Status:${e.status}`);return e.text()}catch(t){em.error("Error retrieving ID",t);let e="";throw"/"===this._options.path&&this._options.host!==ef.CLOUD_HOST&&(e=" If you passed in a `path` to your self-hosted PeerServer, you'll also need to pass in that same path when creating a new Peer."),Error("Could not get an ID from the server."+e)}}async listAllPeers(){try{let e=await this._buildRequest("peers");if(200!==e.status){if(401===e.status){let e="";throw e=this._options.host===ef.CLOUD_HOST?"It looks like you're using the cloud server. You can email team@peerjs.com to enable peer listing for your API key.":"You need to enable `allow_discovery` on your self-hosted PeerServer to use this feature.",Error("It doesn't look like you have permission to list peers IDs. "+e)}throw Error(`Error. Status:${e.status}`)}return e.json()}catch(e){throw em.error("Error retrieving list peers",e),Error("Could not get list peers from the server."+e)}}constructor(e){this._options=e}}class eF extends ej{get type(){return ek.Data}_initializeDataChannel(e){this.dataChannel=e,this.dataChannel.onopen=()=>{em.log(`DC#${this.connectionId} dc connection success`),this._open=!0,this.emit("open")},this.dataChannel.onmessage=e=>{em.log(`DC#${this.connectionId} dc onmessage:`,e.data)},this.dataChannel.onclose=()=>{em.log(`DC#${this.connectionId} dc closed for:`,this.peer),this.close()}}close(e){if(e?.flush)return void this.send({__peerData:{type:"close"}});this._negotiator&&(this._negotiator.cleanup(),this._negotiator=null),this.provider&&(this.provider._removeConnection(this),this.provider=null),this.dataChannel&&(this.dataChannel.onopen=null,this.dataChannel.onmessage=null,this.dataChannel.onclose=null,this.dataChannel=null),this.open&&(this._open=!1,super.emit("close"))}send(e,t=!1){return this.open?this._send(e,t):void this.emitError(ew.NotOpenYet,"Connection is not open. You should listen for the `open` event before sending messages.")}async handleMessage(e){let t=e.payload;switch(e.type){case eD.Answer:await this._negotiator.handleSDP(e.type,t.sdp);break;case eD.Candidate:await this._negotiator.handleCandidate(t.candidate);break;default:em.warn("Unrecognized message type:",e.type,"from peer:",this.peer)}}constructor(e,t,n){super(e,t,n),this.connectionId=this.options.connectionId||eF.ID_PREFIX+eh(),this.label=this.options.label||this.connectionId,this.reliable=!!this.options.reliable,this._negotiator=new eO(this),this._negotiator.startConnection(this.options._payload||{originator:!0,reliable:this.reliable})}}eF.ID_PREFIX="dc_",eF.MAX_BUFFERED_AMOUNT=8388608;class eN extends eF{get bufferSize(){return this._bufferSize}_initializeDataChannel(e){super._initializeDataChannel(e),this.dataChannel.binaryType="arraybuffer",this.dataChannel.addEventListener("message",e=>this._handleDataMessage(e))}_bufferedSend(e){(this._buffering||!this._trySend(e))&&(this._buffer.push(e),this._bufferSize=this._buffer.length)}_trySend(e){if(!this.open)return!1;if(this.dataChannel.bufferedAmount>eF.MAX_BUFFERED_AMOUNT)return this._buffering=!0,setTimeout(()=>{this._buffering=!1,this._tryBuffer()},50),!1;try{this.dataChannel.send(e)}catch(e){return em.error(`DC#:${this.connectionId} Error when sending:`,e),this._buffering=!0,this.close(),!1}return!0}_tryBuffer(){if(!this.open||0===this._buffer.length)return;let e=this._buffer[0];this._trySend(e)&&(this._buffer.shift(),this._bufferSize=this._buffer.length,this._tryBuffer())}close(e){if(e?.flush)return void this.send({__peerData:{type:"close"}});this._buffer=[],this._bufferSize=0,super.close()}constructor(...e){super(...e),this._buffer=[],this._bufferSize=0,this._buffering=!1}}class ez extends eN{close(e){super.close(e),this._chunkedData={}}_handleDataMessage({data:e}){let t=i(e),n=t.__peerData;if(n)return"close"===n.type?void this.close():void this._handleChunk(t);this.emit("data",t)}_handleChunk(e){let t=e.__peerData,n=this._chunkedData[t]||{data:[],count:0,total:e.total};if(n.data[e.n]=new Uint8Array(e.data),n.count++,this._chunkedData[t]=n,n.total===n.count){delete this._chunkedData[t];let e=function(e){let t=0;for(let n of e)t+=n.byteLength;let n=new Uint8Array(t),r=0;for(let t of e)n.set(t,r),r+=t.byteLength;return n}(n.data);this._handleDataMessage({data:e})}}_send(e,t){let n=s(e);return n instanceof Promise?this._send_blob(n):!t&&n.byteLength>this.chunker.chunkedMTU?void this._sendChunks(n):void this._bufferedSend(n)}async _send_blob(e){let t=await e;if(t.byteLength>this.chunker.chunkedMTU)return void this._sendChunks(t);this._bufferedSend(t)}_sendChunks(e){let t=this.chunker.chunk(e);for(let e of(em.log(`DC#${this.connectionId} Try to send ${t.length} chunks...`),t))this.send(e,!0)}constructor(e,t,r){super(e,t,r),this.chunker=new n,this.serialization=eE.Binary,this._chunkedData={}}}class e$ extends eN{_handleDataMessage({data:e}){super.emit("data",e)}_send(e,t){this._bufferedSend(e)}constructor(...e){super(...e),this.serialization=eE.None}}class eV extends eN{_handleDataMessage({data:e}){let t=this.parse(this.decoder.decode(e)),n=t.__peerData;if(n&&"close"===n.type)return void this.close();this.emit("data",t)}_send(e,t){let n=this.encoder.encode(this.stringify(e));if(n.byteLength>=ef.chunkedMTU)return void this.emitError(ew.MessageToBig,"Message too big for JSON channel");this._bufferedSend(n)}constructor(...e){super(...e),this.serialization=eE.JSON,this.encoder=new TextEncoder,this.decoder=new TextDecoder,this.stringify=JSON.stringify,this.parse=JSON.parse}}class eG extends eL{get id(){return this._id}get options(){return this._options}get open(){return this._open}get socket(){return this._socket}get connections(){let e=Object.create(null);for(let[t,n]of this._connections)e[t]=n;return e}get destroyed(){return this._destroyed}get disconnected(){return this._disconnected}_createServerConnection(){let e=new eM(this._options.secure,this._options.host,this._options.port,this._options.path,this._options.key,this._options.pingInterval);return e.on(ex.Message,e=>{this._handleMessage(e)}),e.on(ex.Error,e=>{this._abort(eR.SocketError,e)}),e.on(ex.Disconnected,()=>{this.disconnected||(this.emitError(eR.Network,"Lost connection to server."),this.disconnect())}),e.on(ex.Close,()=>{this.disconnected||this._abort(eR.SocketClosed,"Underlying socket is already closed.")}),e}_initialize(e){this._id=e,this.socket.start(e,this._options.token)}_handleMessage(e){let t=e.type,n=e.payload,r=e.src;switch(t){case eD.Open:this._lastServerId=this.id,this._open=!0,this.emit("open",this.id);break;case eD.Error:this._abort(eR.ServerError,n.msg);break;case eD.IdTaken:this._abort(eR.UnavailableID,`ID "${this.id}" is taken`);break;case eD.InvalidKey:this._abort(eR.InvalidKey,`API KEY "${this._options.key}" is invalid`);break;case eD.Leave:em.log(`Received leave message from ${r}`),this._cleanupPeer(r),this._connections.delete(r);break;case eD.Expire:this.emitError(eR.PeerUnavailable,`Could not connect to peer ${r}`);break;case eD.Offer:{let e=n.connectionId,t=this.getConnection(r,e);if(t&&(t.close(),em.warn(`Offer received for existing Connection ID:${e}`)),n.type===ek.Media){let i=new eB(r,this,{connectionId:e,_payload:n,metadata:n.metadata});t=i,this._addConnection(r,t),this.emit("call",i)}else{if(n.type!==ek.Data)return void em.warn(`Received malformed connection type:${n.type}`);let i=new this._serializers[n.serialization](r,this,{connectionId:e,_payload:n,metadata:n.metadata,label:n.label,serialization:n.serialization,reliable:n.reliable});t=i,this._addConnection(r,t),this.emit("connection",i)}for(let n of this._getMessages(e))t.handleMessage(n);break}default:{if(!n)return void em.warn(`You received a malformed message from ${r} of type ${t}`);let i=n.connectionId,s=this.getConnection(r,i);s&&s.peerConnection?s.handleMessage(e):i?this._storeMessage(i,e):em.warn("You received an unrecognized message:",e)}}}_storeMessage(e,t){this._lostMessages.has(e)||this._lostMessages.set(e,[]),this._lostMessages.get(e).push(t)}_getMessages(e){let t=this._lostMessages.get(e);return t?(this._lostMessages.delete(e),t):[]}connect(e,t={}){if(t={serialization:"default",...t},this.disconnected){em.warn("You cannot connect to a new Peer because you called .disconnect() on this Peer and ended your connection with the server. You can create a new Peer to reconnect, or call reconnect on this peer if you believe its ID to still be available."),this.emitError(eR.Disconnected,"Cannot connect to new Peer after disconnecting from server.");return}let n=new this._serializers[t.serialization](e,this,t);return this._addConnection(e,n),n}call(e,t,n={}){if(this.disconnected){em.warn("You cannot connect to a new Peer because you called .disconnect() on this Peer and ended your connection with the server. You can create a new Peer to reconnect."),this.emitError(eR.Disconnected,"Cannot connect to new Peer after disconnecting from server.");return}if(!t)return void em.error("To call a peer, you must provide a stream from your browser's `getUserMedia`.");let r=new eB(e,this,{...n,_stream:t});return this._addConnection(e,r),r}_addConnection(e,t){em.log(`add connection ${t.type}:${t.connectionId} to peerId:${e}`),this._connections.has(e)||this._connections.set(e,[]),this._connections.get(e).push(t)}_removeConnection(e){let t=this._connections.get(e.peer);if(t){let n=t.indexOf(e);-1!==n&&t.splice(n,1)}this._lostMessages.delete(e.connectionId)}getConnection(e,t){let n=this._connections.get(e);if(!n)return null;for(let e of n)if(e.connectionId===t)return e;return null}_delayedAbort(e,t){setTimeout(()=>{this._abort(e,t)},0)}_abort(e,t){em.error("Aborting!"),this.emitError(e,t),this._lastServerId?this.disconnect():this.destroy()}destroy(){this.destroyed||(em.log(`Destroy peer with ID:${this.id}`),this.disconnect(),this._cleanup(),this._destroyed=!0,this.emit("close"))}_cleanup(){for(let e of this._connections.keys())this._cleanupPeer(e),this._connections.delete(e);this.socket.removeAllListeners()}_cleanupPeer(e){let t=this._connections.get(e);if(t)for(let e of t)e.close()}disconnect(){if(this.disconnected)return;let e=this.id;em.log(`Disconnect peer with ID:${e}`),this._disconnected=!0,this._open=!1,this.socket.close(),this._lastServerId=e,this._id=null,this.emit("disconnected",e)}reconnect(){if(this.disconnected&&!this.destroyed)em.log(`Attempting reconnection to server with ID ${this._lastServerId}`),this._disconnected=!1,this._initialize(this._lastServerId);else if(this.destroyed)throw Error("This peer cannot reconnect to the server. It has already been destroyed.");else if(this.disconnected||this.open)throw Error(`Peer ${this.id} cannot reconnect because it is not disconnected from the server!`);else em.error("In a hurry? We're still trying to make the initial connection!")}listAllPeers(e=e=>{}){this._api.listAllPeers().then(t=>e(t)).catch(e=>this._abort(eR.ServerError,e))}constructor(e,t){let n;if(super(),this._serializers={raw:e$,json:eV,binary:ez,"binary-utf8":ez,default:ez},this._id=null,this._lastServerId=null,this._destroyed=!1,this._disconnected=!1,this._open=!1,this._connections=new Map,this._lostMessages=new Map,e&&e.constructor==Object?t=e:e&&(n=e.toString()),t={debug:0,host:ef.CLOUD_HOST,port:ef.CLOUD_PORT,path:"/",key:eG.DEFAULT_KEY,token:ef.randomToken(),config:ef.defaultConfig,referrerPolicy:"strict-origin-when-cross-origin",serializers:{},...t},this._options=t,this._serializers={...this._serializers,...this.options.serializers},"/"===this._options.host&&(this._options.host=window.location.hostname),this._options.path&&("/"!==this._options.path[0]&&(this._options.path="/"+this._options.path),"/"!==this._options.path[this._options.path.length-1]&&(this._options.path+="/")),void 0===this._options.secure&&this._options.host!==ef.CLOUD_HOST?this._options.secure=ef.isSecure():this._options.host==ef.CLOUD_HOST&&(this._options.secure=!0),this._options.logFunction&&em.setLogFunction(this._options.logFunction),em.logLevel=this._options.debug||0,this._api=new eU(t),this._socket=this._createServerConnection(),!ef.supports.audioVideo&&!ef.supports.data)return void this._delayedAbort(eR.BrowserIncompatible,"The current browser does not support WebRTC");if(n&&!ef.validateId(n))return void this._delayedAbort(eR.InvalidID,`ID "${n}" is invalid`);n?this._initialize(n):this._api.retrieveId().then(e=>this._initialize(e)).catch(e=>this._abort(eR.ServerError,e))}}eG.DEFAULT_KEY="peerjs",window.peerjs={Peer:eG,util:ef},window.Peer=eG})();
 
 // ==== web/src/store.js ====
 // web/src/store.js — 스토리지 3단 폴백 (아티팩트 → localStorage → 메모리)
@@ -409,33 +420,195 @@ if (typeof module !== 'undefined') module.exports = { Store, createStore };
 
 
 // ==== web/src/rules.js ====
-// web/src/rules.js — 판정 엔진 껍데기
+// web/src/rules.js — 판정 엔진 (명세 02)
 //
-// 이 파일은 명세 01에서는 인터페이스만 확정하고 내용을 채우지 않는다.
-// 실제 구현은 docs/specs/02-check-engine.md(명세 02) 담당이며, 그 문서가
-// 이 파일의 유일한 소유자다.
+// 전부 부수효과 없는 순수 함수. RULES(= data/rules.json, 빌드 시 전역
+// 상수로 인라인됨)를 읽되 수치는 하드코딩하지 않는다 — DC/임계치/보정치는
+// 전부 data/rules.json이 정본이다(docs/specs/README.md 공통 규칙 3).
 //
-// 계약: 전부 순수 함수. data/rules.json(전역 RULES)을 읽되 수치를
-// 하드코딩하지 않는다. 지금은 항상 "무해한" 고정값만 반환하므로 이 파일을
-// 호출하는 쪽(app.js, ui.js, ui-check.js)의 동작에는 영향이 없다.
+// Node(tools/test.mjs)와 브라우저 양쪽에서 로드되므로 전역 RULES가 없는
+// 환경(node:test)에서는 require('../../data/rules.json')로 대체한다.
 const Rules = (() => {
+  const RULES_DATA = (typeof RULES !== 'undefined')
+    ? RULES
+    : require('../../data/rules.json');
+
+  // 룰북 3.1은 잔향 페널티를 "모든 신체 능력치 판정"에 건다고만 쓰고 어느
+  // 능력치가 "신체"인지는 명시하지 않는다. STR(근력)/AGI(민첩)/CON(지구력)을
+  // 신체 능력치로, INT(지능)/WIS(감각)/CHA(매력)를 비신체로 간주한다 —
+  // data/rules.json의 resonance.thresholds[].scope가 "physical"인 이유가
+  // 이것이다(docs/specs/02-check-engine.md §1 참고). 이 판단은 코드 주석에만
+  // 남기지 않고 ui-check.js의 잔향 보정 표시에도 동일하게 노출한다.
+  const PHYSICAL_ABILITIES = ['STR', 'AGI', 'CON'];
+  const ABILITY_IDS = RULES_DATA.abilities.map((a) => a.id);
+
+  // outcomeTiers[].rule 문자열("total >= dc + 10" 등)에서 dc 기준 오프셋만
+  // 뽑아낸다. 숫자를 코드에 다시 박아 넣지 않고 rules.json을 그대로 따라가기
+  // 위함이다 — 디자이너가 대성공/부분 성공 폭을 바꾸면 이 코드는 손댈 필요가
+  // 없다.
+  function dcOffset(ruleStr) {
+    const m = /dc\s*([+-])\s*(\d+)/.exec(ruleStr || '');
+    if (!m) return 0;
+    return m[1] === '+' ? parseInt(m[2], 10) : -parseInt(m[2], 10);
+  }
+  const tierById = {};
+  (RULES_DATA.outcomeTiers || []).forEach((t) => { tierById[t.id] = t; });
+  const CRIT_OFFSET = dcOffset(tierById.crit && tierById.crit.rule);       // 보통 +10
+  const SUCCESS_OFFSET = dcOffset(tierById.success && tierById.success.rule); // 보통 0
+  const PARTIAL_OFFSET = dcOffset(tierById.partial && tierById.partial.rule); // 보통 -4
+  // fail 임계치(dc-5)는 partial 하한(dc-4) 바로 아래이므로 별도 분기 없이
+  // "partial 조건도 못 채우면 fail"로 자연스럽게 떨어진다(아래 resolve 참고).
+
+  function toNum(v) {
+    if (typeof v === 'number') return v;
+    const n = parseInt(v, 10);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function normalizeSkillName(raw) {
+    return String(raw == null ? '' : raw).replace(/\(숙련\)\s*$/, '').trim();
+  }
+
+  function findSkillById(skillId) {
+    return (RULES_DATA.skills || []).find((s) => s.id === skillId) || null;
+  }
+
+  // 캐릭터의 숙련 목록(문자열, "은신(숙련)" 형태)에 이 기술이 포함되는지.
+  // rules.json의 skills[].aliases까지 확인한다 — 그래도 실패하면(errata R-5:
+  // 기계정비·추적/관찰·협상) false를 돌려줄 뿐 추측하지 않는다.
+  function isProficient(character, skill) {
+    if (!character || !Array.isArray(character.skills) || !skill) return false;
+    const names = new Set([skill.name, ...(skill.aliases || [])]);
+    return character.skills.some((raw) => names.has(normalizeSkillName(raw)));
+  }
+
+  function abilityValue(character, abilityId) {
+    if (!character || !character.stats) return 0;
+    return toNum(character.stats[abilityId]);
+  }
+
   return {
-    // 굴림 → 4단계 결과. 순수 함수. RULES.outcomeTiers를 따른다.
-    // 'crit' | 'success' | 'partial' | 'fail'
-    resolve({ natural, total, dc }) { return 'success'; },
+    // 굴림 → 4단계 결과. RULES.outcomeTiers를 따른다.
+    //
+    // 규칙서의 모호한 지점(docs/specs/02-check-engine.md §1): 자연 1이면서
+    // total이 dc-1~dc-4 범위(=부분 성공 조건)에 들어가면 "자연 1→실패"와
+    // "부분 성공" 조건이 동시에 성립한다. 여기서는 **자연 1을 우선**해
+    // 실패로 판정한다(자연 20도 마찬가지로 total과 무관하게 최우선). GM이
+    // 다르게 재정할 수 있도록 이 판단을 UI 쪽에도 동일하게 노출한다
+    // (ui-check.js 참고).
+    //
+    // natural은 d20 굴림에만 의미가 있다. 2d6 등에는 자연 20/1 개념이 없으므로
+    // natural을 null로 넘기면 이 특례를 전혀 적용하지 않고 total만으로 판정한다.
+    resolve({ natural, total, dc }) {
+      if (natural === 20) return 'crit'; // 자연 20 — total과 무관하게 최우선
+      if (natural === 1) return 'fail';  // 자연 1 — total과 무관하게 최우선 (위 모호성 해소)
+      if (total >= dc + CRIT_OFFSET) return 'crit';
+      if (total >= dc + SUCCESS_OFFSET) return 'success';
+      if (total >= dc + PARTIAL_OFFSET) return 'partial';
+      return 'fail';
+    },
 
-    // 캐릭터의 현재 상태에서 자동 적용될 보정치 목록.
-    // [{ label:'잔향', value:-1, source:'resonance' }, ...]
-    modifiers(character, skillId) { return []; },
+    // 캐릭터의 현재 상태에서 자동 적용될 보정치 목록: [{ label, value, source }]
+    //
+    // skillId는 둘 중 하나다:
+    //   - RULES.skills[].id (예: 'stealth') — 정식 기술. 관련 능력치(둘이면
+    //     높은 쪽) + 숙련 +2(캐릭터가 실제로 숙련이면)를 자동 계산한다.
+    //   - 능력치 ID 자체(STR/AGI/CON/INT/WIS/CHA) — 기술 표에 없는 행동이거나
+    //     (errata R-5: 기계정비·추적/관찰·협상) GM이 룰북 1.4 절차 1대로
+    //     능력치를 직접 고른 경우. 이 경우 숙련 보너스는 자동 적용하지 않는다
+    //     (표에 없는 임의 판정이므로 "숙련"이라는 개념 자체가 애매하다 —
+    //     GM이 필요하면 상황 보정으로 직접 반영하게 둔다).
+    modifiers(character, skillId) {
+      const entries = [];
+      if (!character) return entries;
 
-    // 그룹 판정 집계 (룰북 1.5). results는 각자의 resolve() 결과 배열.
-    groupResult(results) { return 'success'; },
+      let ability = null;
+      let skill = null;
+      let proficient = false;
+
+      if (ABILITY_IDS.includes(skillId)) {
+        ability = skillId;
+      } else {
+        skill = findSkillById(skillId);
+        if (!skill) return entries; // 알 수 없는 skillId — 호출부(ui-check.js)가 처리
+        ability = skill.abilities.reduce(
+          (best, a) => (abilityValue(character, a) > abilityValue(character, best) ? a : best),
+          skill.abilities[0]
+        );
+        proficient = isProficient(character, skill);
+      }
+
+      const abilityLabel = (RULES_DATA.abilities.find((a) => a.id === ability) || {}).name || ability;
+      const multiAbility = skill && skill.abilities.length > 1;
+      entries.push({
+        label: `능력치 ${ability}(${abilityLabel})`,
+        value: abilityValue(character, ability),
+        source: 'ability',
+        detail: multiAbility ? `${skill.abilities.join('/')} 중 더 높은 쪽(${ability}) 사용` : null,
+      });
+
+      if (proficient) {
+        entries.push({ label: '숙련', value: RULES_DATA.check.proficiencyBonus, source: 'proficiency' });
+      }
+
+      // 부상 — RULES.combat.woundTiers[].checkModifier (빈사는 null → 미적용,
+      // 애초에 판정 자체가 불가능한 상태이므로 UI에서 별도 경고한다)
+      const hp = toNum(character.hp);
+      const maxHp = toNum(character.maxHp);
+      const wtId = this.woundTier(hp, maxHp);
+      const wt = (RULES_DATA.combat.woundTiers || []).find((w) => w.id === wtId);
+      if (wt && typeof wt.checkModifier === 'number' && wt.checkModifier !== 0) {
+        entries.push({ label: `부상(${wt.label})`, value: wt.checkModifier, source: 'wound' });
+      }
+
+      // 위상잔향 — "모든 신체 능력치 판정"에만 적용(위 PHYSICAL_ABILITIES 주석 참고).
+      if (PHYSICAL_ABILITIES.includes(ability)) {
+        const eff = this.resonanceEffect(toNum(character.radiation));
+        if (eff && typeof eff.checkModifier === 'number' && eff.checkModifier !== 0) {
+          entries.push({ label: `잔향(${eff.at} 이상)`, value: eff.checkModifier, source: 'resonance' });
+        }
+      }
+
+      return entries;
+    },
+
+    // 그룹 판정 집계 (룰북 1.5). results는 각자의 resolve() 결과('crit'|'success'|'partial'|'fail') 배열.
+    //
+    // 룰북 1.5: "절반 이상이 성공하면 전체가 '성공'으로, 절반 미만이면 전체가
+    // '부분 성공'으로 처리합니다." 이상(>=)과 미만(<)이 맞물려 빈틈이 없으므로
+    // 정확히 절반(8인 중 4명)은 성공 쪽이다.
+    groupResult(results) {
+      const cfg = RULES_DATA.groupCheck;
+      if (!Array.isArray(results) || results.length === 0) return cfg.onMinority;
+      const successCount = results.filter((r) => r === 'crit' || r === 'success').length;
+      const ratio = successCount / results.length;
+      return ratio >= cfg.successThreshold ? cfg.onMajority : cfg.onMinority;
+    },
 
     // HP → 부상 단계 ('light' | 'serious' | 'dying')
-    woundTier(hp, maxHp) { return 'light'; },
+    // 경계: 중상은 "50% 미만"이므로 정확히 50%는 light다(hpRatioAtLeast 우선 평가).
+    woundTier(hp, maxHp) {
+      const tiers = RULES_DATA.combat.woundTiers || [];
+      const dyingTier = tiers.find((t) => typeof t.hp === 'number');
+      if (dyingTier && hp <= dyingTier.hp) return dyingTier.id;
+      const ratio = maxHp > 0 ? hp / maxHp : 0;
+      const atLeastTier = tiers.find((t) => typeof t.hpRatioAtLeast === 'number');
+      if (atLeastTier && ratio >= atLeastTier.hpRatioAtLeast) return atLeastTier.id;
+      const belowTier = tiers.find((t) => typeof t.hpRatioBelow === 'number');
+      if (belowTier) return belowTier.id;
+      return atLeastTier ? atLeastTier.id : (tiers[0] ? tiers[0].id : 'light');
+    },
 
-    // 위상잔향 값 → 임계 효과 (없으면 null)
-    resonanceEffect(value) { return null; },
+    // 위상잔향 값 → 임계 효과 객체(없으면 null). "N 이상"이므로 해당하는
+    // 임계치 중 가장 높은 것을 돌려준다(예: 60 → 50 임계치, 25 임계치 아님).
+    resonanceEffect(value) {
+      const thresholds = RULES_DATA.resonance.thresholds || [];
+      let matched = null;
+      for (const t of thresholds) {
+        if (value >= t.at && (!matched || t.at > matched.at)) matched = t;
+      }
+      return matched || null;
+    },
   };
 })();
 
@@ -444,49 +617,561 @@ if (typeof module !== 'undefined') module.exports = Rules;
 
 
 // ==== web/src/net.js ====
-// web/src/net.js — P2P 동기화 껍데기
+// web/src/net.js — P2P 동기화 (명세 03)
 //
-// 이 파일은 명세 01에서는 인터페이스만 확정하고 내용을 채우지 않는다.
-// 실제 구현은 docs/specs/03-p2p-sync.md(명세 03) 담당이며, 그 문서가
-// 이 파일과 web/src/ui-net.js, web/vendor/**의 유일한 소유자다.
+// 설계 근거: docs/adr/001-p2p-sync.md. GM 단말을 허브로 하는 스타 토폴로지.
+// 지켜야 할 단 하나의 원칙: P2P는 동기화 계층이지 저장 계층이 아니다.
+// 네트워크가 하나도 안 붙어도 도구는 100% 동작해야 한다 — host()/join()이
+// 실패해도 예외를 던질 뿐 세션을 막지 않는다(app.js가 이미 그렇게 호출한다).
 //
-// 원칙(03이 지켜야 할 것, 여기 남겨 둔다): P2P는 동기화 계층이지 저장
-// 계층이 아니다. 네트워크가 하나도 안 붙어도 도구는 100% 동작해야 한다.
-// 지금 이 껍데기가 정확히 그 상태다 — status는 항상 'offline'이고
-// host/join/send는 아무 일도 하지 않는다. app.js는 이미 이 인터페이스를
-// 호출하도록 배선되어 있으므로(§5), 03이 내용만 채우면 그대로 살아난다.
+// app.js는 이 파일을 다음 방식으로만 쓴다(app.js §"net.js 배선" 참고):
+//   - Net.host(code) / Net.join(code): 입장 시 1회
+//   - Net.send({v:1,t:'state',room}): withRoom() 뒤에 매번 — "로컬에서
+//     방금 이렇게 바뀌었다"는 통지다. app.js는 그 이상을 모른다.
+//   - Net.onMessage(cb): 이미 handleNetMessage가 등록되어 있고,
+//     v1이 아니면 무시, 'state'는 ROOM을 통째로 교체, 'roll'/'log'는
+//     addLog, 'reject'는 alert, 'bye'는 재렌더만 한다. 즉 **검증·클램프·
+//     비밀 필터링은 app.js가 아니라 이 파일 안에서 전부 끝나 있어야 한다.**
+//   - Net.peers(): GM 대시보드가 매 렌더 호출.
+//
+// app.js가 GM이든 플레이어든 구분 없이 항상 "내가 방금 로컬에서 바꾼 전체
+// 방 상태"를 보낸다는 게 이 구현의 핵심 제약이다(app.js를 고칠 수 없으므로).
+// 그래서:
+//   - 호스트 역할일 때 send()는 "이게 곧 진실"이라 보고 필터링만 해서
+//     각 접속자에게 뿌린다.
+//   - 게스트 역할일 때 send()는 그 전체 스냅샷을 곧이곧대로 내보내지
+//     않는다. 직전에 알고 있던 방 상태와 diff를 떠서 "내가 점유한
+//     캐릭터의 변경" · "내 점유/해제" · "새로 생긴 로그 한 줄"만
+//     의도(intent)로 변환해 GM에게 보낸다(§3 프로토콜). 그 외 필드
+//     (이니셔티브, 타이머, GM 지정 등 — 원래 GM 대시보드는 UI 단에서
+//     아무나 볼 수 있지만 그건 ui.js의 몫이라 손댈 수 없다)의 변경은
+//     의도적으로 전송하지 않는다. GM의 다음 브로드캐스트가 오면
+//     자동으로 되돌아온다 — 게스트가 세션 구조를 net을 통해 흔들 수
+//     없게 만드는 부수 효과이기도 하다.
+//
+// 호스트는 손님의 claim/release/update/roll/log 의도를 받으면 자기
+// localStorage(Store)를 "hg:{code}:*" 키로 직접 읽고 쓴다(store.js가
+// 문서화한 키 스킴을 그대로 따른다 — store.js 파일 자체는 건드리지
+// 않는다). app.js의 ROOM은 다음 withRoom() 호출 때 어차피 Store에서
+// 다시 읽으므로, 여기서 Store에 반영해 두지 않으면 4초 폴링이나 다음
+// 로컬 조작이 그 변경을 덮어써 버린다 — 실제로 겪을 뻔한 버그라 이 방식으로
+// 고정한다. 대신 GM 자신의 화면은 messageHandlers를 직접 호출해 즉시
+// 갱신한다(handleNetMessage가 이미 'state'를 받으면 ROOM을 통째로 바꾼다).
+//
+// 비밀(§4): 사전 제작 캐릭터의 `secret` 필드는 PREGENS(정적 데이터)에
+// 있다. PREGENS는 오프라인 우선 원칙 때문에 빌드 시 모든 클라이언트에
+// 동일하게 인라인되고(tools/build.mjs, 명세 01 소유) net.js가 손댈 수
+// 있는 지점이 아니다 — 그건 네트워크를 하나도 안 붙여도 캐릭터 시트가
+// 동작해야 한다는 원칙 자체의 대가다. net.js가 실제로 막을 수 있는 건
+// **세션 중 오가는 동적 상태**(ROOM)뿐이고, 거기서 사적인 필드는 캐릭터당
+// 자유 메모(notes)뿐이다. 그래서 filterRoomFor()는 수신자가 그 캐릭터의
+// 점유자(또는 GM)가 아니면 notes를 지운다 — "남의 비밀이 애초에 그
+// 브라우저에 도착하지 않는다"를 net.js가 다루는 데이터 범위 안에서
+// 실질적으로 구현한 것이다. ui.js §"비밀 차단" 주석은 여전히 렌더링
+// 단계 얘기를 하고 있는데, ui.js는 이 명세의 소유가 아니라 고칠 수
+// 없다 — 이 사실을 완료 조건 미비점으로 보고한다.
 const Net = (() => {
-  let status = 'offline'; // 'offline' | 'connecting' | 'host' | 'guest' | 'failed'
+  const VERSION = 1;
+  const ROOM_PREFIX = 'hapgyeong-';
+  const STATUSES = { OFFLINE: 'offline', CONNECTING: 'connecting', HOST: 'host', GUEST: 'guest', DISCONNECTED: 'disconnected', FAILED: 'failed' };
+  const CHAR_FIELDS = ['hp', 'radiation', 'parts', 'status', 'notes'];
+  const STATUS_VALUES = ['경상', '중상', '빈사'];
+
+  let status = 'offline'; // 'offline' | 'connecting' | 'host' | 'guest' | 'disconnected' | 'failed'
+  let role = null; // 'host' | 'guest' | null
   const messageHandlers = [];
   const statusHandlers = [];
+
+  let peer = null;
+  let roomCode = '';
+  let selfName = '';
+
+  // ---- 호스트 상태 ----
+  let connections = new Map(); // peerId -> { id, conn, name }
+  let lastBroadcastRoom = null; // peers()가 동기 함수라 캐시해 둔다
+
+  // ---- 게스트 상태 ----
+  let hostConn = null;
+  // diff 기준선 — 반드시 "내가 마지막으로 send()에 넘긴 로컬 스냅샷"만
+  // 담는다. 네트워크로 받은 GM의 권위 있는 상태로 갱신하면 안 된다:
+  // app.js의 withRoom()은 로컬 조작 때마다 Store에서 ROOM을 다시 읽는데,
+  // 이 클라이언트의 Store는 (특히 log처럼 누적되는 필드에서) GM의 로그보다
+  // 훨씬 짧을 수 있다 — 그 상태로 diff 기준선을 GM 스냅샷으로 잡으면
+  // "새 로그가 늘지 않은 것처럼" 보여 roll/log 의도가 통째로 사라진다
+  // (실제로 겪은 버그). 같은 클라이언트의 연속된 로컬 스냅샷끼리 비교해야
+  // 로그 길이가 항상 단조 증가한다는 전제가 성립한다.
+  let lastLocalRoom = null;
+  let pendingIntents = [];
+  let reconnectTimer = null;
+  let reconnectAttempts = 0;
 
   function setStatus(next) {
     status = next;
     statusHandlers.forEach((cb) => { try { cb(status); } catch (e) { /* 리스너 오류는 무시 */ } });
   }
 
+  function readNameFromDom() {
+    try {
+      const el = typeof document !== 'undefined' && document.getElementById('in-name');
+      return el && el.value ? String(el.value).trim().slice(0, 20) : '';
+    } catch (e) { return ''; }
+  }
+
+  function safeSend(conn, obj) {
+    try { if (conn && conn.open) conn.send(obj); } catch (e) { /* 연결이 막 끊긴 경우 등 — 무해 */ }
+  }
+
+  function num(v, fallback) {
+    const n = typeof v === 'number' ? v : parseInt(v, 10);
+    return Number.isFinite(n) ? n : fallback;
+  }
+  function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+  function makeLogEntry(text, type) {
+    return {
+      id: Date.now() + Math.random().toString(16).slice(2),
+      time: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }),
+      text,
+      type: type || 'sys',
+    };
+  }
+
+  function cleanupPeer() {
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+    if (peer) { try { peer.destroy(); } catch (e) { /* 무해 */ } }
+    peer = null;
+    hostConn = null;
+    connections = new Map();
+    lastBroadcastRoom = null;
+    lastLocalRoom = null;
+    pendingIntents = [];
+    reconnectAttempts = 0;
+  }
+
+  // ============================================================
+  // Store 직결 — store.js가 문서화한 키 스킴(hg:{code}:*)을 그대로 따른다.
+  // app.js의 roomKey()/loadRoomFromStore()/persistRoom()과 형태가 같지만
+  // app.js 파일 자체를 고칠 수 없어 net.js 쪽에도 같은 로직을 둔다.
+  // ============================================================
+  function keyFor(code, suffix) { return `hg:${code}:${suffix}`; }
+
+  function defaultCharState(p) {
+    return { hp: p.maxHp, radiation: 0, parts: p.startParts, status: '경상', notes: '' };
+  }
+
+  async function loadRoomFor(code) {
+    const [meta, claims, log, initiative] = await Promise.all([
+      Store.get(keyFor(code, 'meta')),
+      Store.get(keyFor(code, 'claims')),
+      Store.get(keyFor(code, 'log')),
+      Store.get(keyFor(code, 'combat')),
+    ]);
+    const characters = {};
+    await Promise.all((typeof PREGENS !== 'undefined' ? PREGENS : []).map(async (p) => {
+      const saved = await Store.get(keyFor(code, 'char:' + p.name));
+      characters[p.name] = saved || defaultCharState(p);
+    }));
+    return {
+      characters,
+      claims: claims || {},
+      log: log || [],
+      initiative: initiative || [],
+      round: (meta && meta.round) || 1,
+      turnIndex: (meta && meta.turnIndex) || 0,
+      gm: (meta && meta.gm) || null,
+      timer: (meta && meta.timer) || null,
+    };
+  }
+
+  async function persistRoomFor(code, room) {
+    const writes = [
+      Store.set(keyFor(code, 'meta'), { gm: room.gm, round: room.round, turnIndex: room.turnIndex, timer: room.timer }),
+      Store.set(keyFor(code, 'claims'), room.claims),
+      Store.set(keyFor(code, 'log'), room.log),
+      Store.set(keyFor(code, 'combat'), room.initiative),
+    ];
+    Object.keys(room.characters || {}).forEach((name) => {
+      writes.push(Store.set(keyFor(code, 'char:' + name), room.characters[name]));
+    });
+    await Promise.all(writes);
+  }
+
+  // 비밀 필터링(§4) — 점유자 또는 GM이 아니면 그 캐릭터의 자유 메모를 지운다.
+  // GM 자신에게 되돌려 보내는 로컬 echo는 이 함수를 거치지 않는다(GM은 전부 본다).
+  function filterRoomFor(room, recipientName) {
+    const claims = room.claims || {};
+    const characters = {};
+    Object.keys(room.characters || {}).forEach((name) => {
+      const cs = room.characters[name] || {};
+      if (claims[name] === recipientName) { characters[name] = { ...cs }; return; }
+      const copy = { ...cs };
+      copy.notes = '';
+      characters[name] = copy;
+    });
+    return { ...room, characters };
+  }
+
+  // ============================================================
+  // 호스트(GM) 로직
+  // ============================================================
+  function notifyRosterChange() {
+    // peers() 목록이 바뀌었음을 알리는 전용 이벤트가 따로 없으므로, 같은
+    // status 값을 다시 쏴서 onStatusChange 리스너(app.js)가 재렌더하게
+    // 만든다 — ctx.peers()가 렌더마다 새로 호출되므로 그걸로 충분하다.
+    if (role === 'host') setStatus(status);
+  }
+
+  function broadcastState(room, notifyLocal) {
+    lastBroadcastRoom = room;
+    connections.forEach((entry) => {
+      if (entry.conn && entry.conn.open) safeSend(entry.conn, { v: VERSION, t: 'state', room: filterRoomFor(room, entry.name) });
+    });
+    if (notifyLocal) {
+      messageHandlers.forEach((cb) => { try { cb({ v: VERSION, t: 'state', room }); } catch (e) { /* 무해 */ } });
+    }
+  }
+
+  function broadcastLine(type, text, notifyLocal) {
+    const payload = { v: VERSION, t: type, text };
+    connections.forEach((entry) => { if (entry.conn && entry.conn.open) safeSend(entry.conn, payload); });
+    if (notifyLocal) messageHandlers.forEach((cb) => { try { cb(payload); } catch (e) { /* 무해 */ } });
+  }
+
+  async function applyGuestIntent(entry, msg) {
+    if (!msg || msg.v !== VERSION) {
+      safeSend(entry.conn, { v: VERSION, t: 'reject', reason: '파일 버전이 다릅니다.' });
+      return;
+    }
+
+    if (msg.t === 'hello') {
+      entry.name = String(msg.name || entry.name || '익명').slice(0, 20);
+      try {
+        const room = await loadRoomFor(roomCode);
+        lastBroadcastRoom = room;
+        safeSend(entry.conn, { v: VERSION, t: 'state', room: filterRoomFor(room, entry.name) });
+      } catch (e) { /* Store 실패해도 연결 자체는 유지 */ }
+      notifyRosterChange();
+      return;
+    }
+
+    if (!entry.name) return; // hello 전에 온 의도는 무시 — 점유자 확인이 불가능하다
+
+    const room = await loadRoomFor(roomCode);
+
+    if (msg.t === 'claim') {
+      const char = String(msg.char || '');
+      const known = (typeof PREGENS !== 'undefined' ? PREGENS : []).find((p) => p.name === char);
+      if (!known) return;
+      if (room.claims[char] && room.claims[char] !== entry.name) {
+        safeSend(entry.conn, { v: VERSION, t: 'reject', reason: `이미 ${room.claims[char]}님이 선택한 캐릭터입니다.` });
+        return;
+      }
+      Object.keys(room.claims).forEach((n) => { if (room.claims[n] === entry.name) delete room.claims[n]; });
+      room.claims[char] = entry.name;
+      room.log = room.log || [];
+      room.log.push(makeLogEntry(`${entry.name}님이 ${char}(을)를 선택했습니다.`, 'sys'));
+      if (room.log.length > 300) room.log = room.log.slice(-300);
+      await persistRoomFor(roomCode, room);
+      broadcastState(room, true);
+      return;
+    }
+
+    if (msg.t === 'release') {
+      const char = String(msg.char || '');
+      if (room.claims[char] === entry.name) {
+        delete room.claims[char];
+        await persistRoomFor(roomCode, room);
+        broadcastState(room, true);
+      }
+      return;
+    }
+
+    if (msg.t === 'update') {
+      const char = String(msg.char || '');
+      const p = (typeof PREGENS !== 'undefined' ? PREGENS : []).find((pp) => pp.name === char);
+      if (!p) return;
+      if (room.claims[char] !== entry.name) {
+        safeSend(entry.conn, { v: VERSION, t: 'reject', reason: '본인이 선택한 캐릭터만 수정할 수 있습니다.' });
+        return;
+      }
+      const cur = room.characters[char] || defaultCharState(p);
+      const patch = (msg.patch && typeof msg.patch === 'object') ? msg.patch : {};
+      const next = { ...cur };
+      if ('hp' in patch) next.hp = clamp(num(patch.hp, cur.hp), 0, p.maxHp);
+      if ('radiation' in patch) next.radiation = clamp(num(patch.radiation, cur.radiation), 0, 100);
+      if ('parts' in patch) next.parts = Math.max(0, num(patch.parts, cur.parts));
+      if ('status' in patch && STATUS_VALUES.includes(patch.status)) next.status = patch.status;
+      if ('notes' in patch) next.notes = String(patch.notes == null ? '' : patch.notes).slice(0, 2000);
+      // 모르는 필드는 무시(§3) — 위 화이트리스트(hp/radiation/parts/status/notes) 밖의
+      // 키는 patch에 뭐가 오든 애초에 next로 옮겨지지 않는다.
+      room.characters[char] = next;
+      await persistRoomFor(roomCode, room);
+      broadcastState(room, true);
+      return;
+    }
+
+    if (msg.t === 'roll' || msg.t === 'log') {
+      const text = String((msg.t === 'roll' ? msg.roll : msg.text) || '').slice(0, 500);
+      if (!text) return;
+      room.log = room.log || [];
+      room.log.push(makeLogEntry(text, msg.t === 'roll' ? 'roll' : 'sys'));
+      if (room.log.length > 300) room.log = room.log.slice(-300);
+      await persistRoomFor(roomCode, room);
+      broadcastLine(msg.t, text, true);
+      return;
+    }
+  }
+
+  function attachHostConnection(conn) {
+    const entry = { id: conn.peer, name: null, conn };
+    connections.set(conn.peer, entry);
+    conn.on('data', (data) => { applyGuestIntent(entry, data).catch(() => { /* 무해 — 한 손님의 오류가 세션을 막지 않는다 */ }); });
+    conn.on('open', () => notifyRosterChange());
+    conn.on('close', () => { connections.delete(conn.peer); notifyRosterChange(); });
+    conn.on('error', () => { connections.delete(conn.peer); notifyRosterChange(); });
+  }
+
+  function host(code) {
+    cleanupPeer();
+    role = 'host';
+    roomCode = code;
+    selfName = readNameFromDom();
+    setStatus('connecting');
+
+    return new Promise((resolve, reject) => {
+      if (typeof Peer === 'undefined') {
+        setStatus('offline');
+        reject(new Error('PeerJS를 불러오지 못했습니다.'));
+        return;
+      }
+      let settled = false;
+      let p;
+      try {
+        p = new Peer(ROOM_PREFIX + code);
+      } catch (e) {
+        setStatus('offline');
+        reject(e);
+        return;
+      }
+      peer = p;
+      const timeoutId = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        try { p.destroy(); } catch (e) { /* 무해 */ }
+        peer = null;
+        setStatus('offline');
+        reject(new Error('연결 시간이 초과되었습니다.'));
+      }, 10000);
+
+      p.on('open', async () => {
+        clearTimeout(timeoutId);
+        try {
+          const meta = (await Store.get(keyFor(code, 'meta'))) || {};
+          meta.gm = selfName || meta.gm || null;
+          await Store.set(keyFor(code, 'meta'), meta);
+        } catch (e) { /* Store가 막혀 있어도 허브 자체는 연다 */ }
+        if (!settled) { settled = true; setStatus('host'); resolve(); }
+      });
+      p.on('connection', (conn) => attachHostConnection(conn));
+      p.on('error', (err) => {
+        if (!settled) {
+          settled = true;
+          clearTimeout(timeoutId);
+          setStatus('offline');
+          const isTaken = err && err.type === 'unavailable-id';
+          reject(new Error(isTaken ? '이미 쓰이는 방 코드입니다 — 새 코드를 생성하세요.' : String((err && err.type) || err)));
+        }
+        // 연결 수립 이후의 개별 에러는 conn 쪽 핸들러가 처리한다 — 여기서는 조용히 넘어간다.
+      });
+      p.on('disconnected', () => { try { p.reconnect(); } catch (e) { /* 무해 — 기존 DataChannel엔 영향 없음 */ } });
+    });
+  }
+
+  // ============================================================
+  // 게스트(플레이어) 로직
+  // ============================================================
+  function diffToIntents(newRoom, oldRoom, name) {
+    oldRoom = oldRoom || { characters: {}, claims: {}, log: [] };
+    const intents = [];
+    const oldClaims = oldRoom.claims || {};
+    const newClaims = newRoom.claims || {};
+    const oldMine = Object.keys(oldClaims).find((k) => oldClaims[k] === name);
+    const newMine = Object.keys(newClaims).find((k) => newClaims[k] === name);
+    let claimChanged = false;
+    if (newMine && newMine !== oldMine) { intents.push({ v: VERSION, t: 'claim', char: newMine }); claimChanged = true; }
+    else if (!newMine && oldMine) { intents.push({ v: VERSION, t: 'release', char: oldMine }); claimChanged = true; }
+
+    const myChar = newMine || oldMine;
+    let updateChanged = false;
+    if (myChar && !claimChanged) {
+      const oldCs = (oldRoom.characters || {})[myChar] || {};
+      const newCs = (newRoom.characters || {})[myChar] || {};
+      const patch = {};
+      CHAR_FIELDS.forEach((f) => { if (newCs[f] !== oldCs[f]) patch[f] = newCs[f]; });
+      if (Object.keys(patch).length) { intents.push({ v: VERSION, t: 'update', char: myChar, patch }); updateChanged = true; }
+    }
+
+    // 로그 diff는 claim/update가 이번 호출에서 이미 나갔으면 건너뛴다 —
+    // 그 로그 줄은 GM 쪽 처리기가 알아서 만들어 붙이므로, 그대로 전달하면
+    // 중복된다. 실제 UI 동작 하나당 claim/update/roll-or-log 중 하나만
+    // 일어나므로(ui.js) 이 구분으로 충분하다.
+    if (!claimChanged && !updateChanged) {
+      const oldLog = oldRoom.log || [];
+      const newLog = newRoom.log || [];
+      if (newLog.length > oldLog.length) {
+        newLog.slice(oldLog.length).forEach((item) => {
+          if (!item || !item.text) return;
+          if (item.type === 'roll') intents.push({ v: VERSION, t: 'roll', roll: item.text });
+          else intents.push({ v: VERSION, t: 'log', text: item.text });
+        });
+      }
+    }
+    return intents;
+  }
+
+  function flushPending() {
+    if (!hostConn || !hostConn.open) return;
+    const queued = pendingIntents.splice(0);
+    queued.forEach((intent) => safeSend(hostConn, intent));
+  }
+
+  function handleHostMessage(data) {
+    if (!data || data.v !== VERSION) return;
+    // 주의: 여기서 받은 GM의 권위 있는 state로 lastLocalRoom을 갱신하지
+    // 않는다 — 위 lastLocalRoom 선언부 주석 참고. app.js로만 전달한다.
+    messageHandlers.forEach((cb) => { try { cb(data); } catch (e) { /* 무해 */ } });
+  }
+
+  function onGuestDisconnected() {
+    if (role !== 'guest') return;
+    hostConn = null;
+    setStatus('disconnected');
+    scheduleReconnect();
+  }
+
+  function scheduleReconnect() {
+    if (reconnectTimer || role !== 'guest') return;
+    reconnectAttempts += 1;
+    const delay = Math.min(15000, 1000 * Math.pow(2, reconnectAttempts));
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      if (role !== 'guest') return;
+      setStatus('connecting');
+      attemptGuestConnect().catch(() => onGuestDisconnected());
+    }, delay);
+  }
+
+  function attemptGuestConnect() {
+    return new Promise((resolve, reject) => {
+      if (typeof Peer === 'undefined') { setStatus('offline'); reject(new Error('PeerJS를 불러오지 못했습니다.')); return; }
+      let settled = false;
+      let p;
+      try {
+        p = new Peer();
+      } catch (e) { setStatus('offline'); reject(e); return; }
+      peer = p;
+      const timeoutId = setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        try { p.destroy(); } catch (e) { /* 무해 */ }
+        setStatus('offline');
+        reject(new Error('연결 시간이 초과되었습니다.'));
+      }, 10000);
+
+      p.on('open', () => {
+        let conn;
+        try {
+          conn = p.connect(ROOM_PREFIX + roomCode, { reliable: true });
+        } catch (e) {
+          if (!settled) { settled = true; clearTimeout(timeoutId); setStatus('offline'); reject(e); }
+          return;
+        }
+        hostConn = conn;
+        conn.on('open', () => {
+          clearTimeout(timeoutId);
+          if (!settled) { settled = true; resolve(); }
+          setStatus('guest');
+          reconnectAttempts = 0;
+          safeSend(conn, { v: VERSION, t: 'hello', name: selfName });
+          flushPending();
+        });
+        conn.on('data', (data) => handleHostMessage(data));
+        conn.on('close', () => onGuestDisconnected());
+        conn.on('error', () => {
+          if (!settled) { settled = true; clearTimeout(timeoutId); setStatus('offline'); reject(new Error('연결에 실패했습니다.')); }
+          else onGuestDisconnected();
+        });
+      });
+      p.on('error', (err) => {
+        // 존재하지 않는 방 코드('peer-unavailable') 포함
+        if (!settled) { settled = true; clearTimeout(timeoutId); setStatus('offline'); reject(new Error(String((err && err.type) || err))); }
+        else onGuestDisconnected();
+      });
+      p.on('disconnected', () => { /* 시그널링만 끊긴 경우 — 기존 DataChannel은 별개, 조용히 둔다 */ });
+    });
+  }
+
+  function join(code) {
+    cleanupPeer();
+    role = 'guest';
+    roomCode = code;
+    selfName = readNameFromDom();
+    setStatus('connecting');
+    return attemptGuestConnect();
+  }
+
+  // ============================================================
+  // 공개 인터페이스
+  // ============================================================
   return {
     get status() { return status; },
 
-    // GM: 허브 시작. 방 코드 선점 실패 시 던지거나 상태를 'failed'로 바꾼다.
-    async host(roomCode) { /* 명세 03 */ },
+    host,
+    join,
 
-    // 플레이어: 허브에 접속.
-    async join(roomCode) { /* 명세 03 */ },
+    send(msg) {
+      if (!msg) return;
+      if (role === 'host') {
+        if (msg.t === 'state' && msg.room) broadcastState(msg.room, false);
+        return;
+      }
+      if (role === 'guest') {
+        if (msg.t !== 'state' || !msg.room) return;
+        const intents = diffToIntents(msg.room, lastLocalRoom, selfName);
+        lastLocalRoom = msg.room;
+        intents.forEach((intent) => {
+          if (hostConn && hostConn.open) safeSend(hostConn, intent);
+          else {
+            pendingIntents.push(intent);
+            if (pendingIntents.length > 200) pendingIntents.shift();
+          }
+        });
+        return;
+      }
+      // 연결이 없으면(오프라인) 조용히 무시 — 로컬 모드의 정상 경로다.
+    },
 
-    // 의도 전송(플레이어) / 브로드캐스트(GM). 연결이 없으면 조용히 무시.
-    send(msg) { /* 명세 03 */ },
-
-    // 수신 콜백 등록.
     onMessage(cb) { messageHandlers.push(cb); },
-
-    // 상태 변화 콜백 등록.
     onStatusChange(cb) { statusHandlers.push(cb); },
 
-    // 접속자 목록 (GM 전용 화면에서 사용).
-    peers() { return []; },
+    peers() {
+      if (role !== 'host') return [];
+      const claims = (lastBroadcastRoom && lastBroadcastRoom.claims) || {};
+      return [...connections.values()].map((e) => ({
+        id: e.id,
+        name: e.name || '(접속 중…)',
+        char: e.name ? (Object.keys(claims).find((c) => claims[c] === e.name) || null) : null,
+      }));
+    },
 
-    disconnect() { /* 명세 03 */ },
+    disconnect() {
+      if (role === 'host') connections.forEach((e) => safeSend(e.conn, { v: VERSION, t: 'bye' }));
+      else if (role === 'guest' && hostConn) safeSend(hostConn, { v: VERSION, t: 'bye' });
+      cleanupPeer();
+      role = null;
+      roomCode = '';
+      setStatus('offline');
+    },
 
     // 테스트/03 구현 편의 — 실제 프로토콜 코드에서 setStatus를 쓰게 될 자리.
     _setStatus: setStatus,
@@ -972,26 +1657,643 @@ const UI = (() => {
 
 
 // ==== web/src/ui-check.js ====
-// web/src/ui-check.js — 판정 화면 껍데기
+// web/src/ui-check.js — 판정 화면 (명세 02)
 //
-// 명세 01에서는 호출 지점만 뚫어 둔다. 실제 내용은 docs/specs/02-check-engine.md
-// (명세 02) 담당이며, 그 문서가 이 파일과 web/src/rules.js의 유일한 소유자다.
+// ui.js의 renderDice()가 매 렌더마다 이 render(container, ctx)를 호출하고
+// 빈 컨테이너를 넘겨준다(§5, "주사위" 탭 안쪽 #check-slot). 기존 자유 굴림
+// 기능은 ui.js가 이미 그리므로 이 파일은 그 아래에 캐릭터/기술/DC 선택 +
+// 4단계 결과 + 그룹 판정 + 상태 자동화 UI를 덧붙이기만 한다.
 //
-// ui.js의 renderDice()가 매 렌더마다 이 render()를 호출하고 빈 컨테이너를
-// 넘겨준다(§5). 지금은 아무것도 그리지 않으므로 "주사위" 탭의 기존 자유
-// 굴림 기능(ui.js가 직접 그린다)에는 영향이 없다. 02가 이 파일을 채우면
-// 그 컨테이너 안에 캐릭터/기술/DC 선택 + 4단계 결과 + 그룹 판정 UI가
-// 나타나기 시작한다 — ui.js는 더 손댈 필요가 없다.
+// 소유권 경계(docs/specs/README.md, docs/specs/02-check-engine.md): 이
+// 파일과 rules.js만 고친다. app.js·ui.js·store.js·net.js는 손대지 않는다.
+// 그래서 "그룹 판정 상태"처럼 app.js의 room 스키마(meta/claims/log/combat/
+// char:*)에 자리가 없는 값은, app.js를 고치는 대신 이미 전역으로 존재하는
+// Store(01이 만든 3단 폴백 스토리지, web/src/store.js)를 이 파일이 직접
+// 읽고 써서 방 코드별 키(hg:{code}:groupcheck)에 보관한다. 캐릭터 한 명에
+// 붙는 값(여파화 결과 등)은 반대로 ctx.actions.withRoom()으로
+// state.characters[name]에 얹는다 — app.js의 persistRoom()이 캐릭터 상태를
+// 통짜 객체로 저장하므로 새 필드를 추가해도 그대로 정상 저장된다.
 //
-// ctx로 넘어오는 것(app.js buildCtx() 참고): ROOM, PLAYER_NAME, isGM,
-// PREGENS, MONSTERS, RULES(=data/rules.json), Rules(=판정 엔진, 이 옆의
-// rules.js), actions.withRoom / actions.addLog / actions.render 등.
+// 상태 자동화에 관한 알려진 한계: 룰북/명세는 "HP를 바꾸면 부상 단계가
+// 자동으로 갱신되고 기존 수동 드롭다운을 제거"하라고 하지만, 그 드롭다운은
+// ui.js의 캐릭터시트 탭(#f-status)에 있고 ui.js는 이 명세의 소유가 아니다.
+// 대신 이 파일은 Rules.woundTier()로 계산한 자동값을 판정에 실제로
+// 적용하고(수동 status 필드는 참고만), 자동값과 수동 필드가 다르면 눈에
+// 띄게 표시한다 — README의 "공용 파일 수정이 필요하면 멈추고 보고" 원칙에
+//따라 ui.js는 건드리지 않았다.
 const UICheck = (() => {
-  function render(container, ctx) {
-    // TODO(명세 02): 캐릭터 선택 → 기술(숙련 우선 정렬) → DC/상황 보정 →
-    // Rules.resolve()/Rules.modifiers()로 4단계 결과 표시. 그룹 판정 포함.
-    // 지금은 의도적으로 비워 둔다 — container에 아무것도 append하지 않는다.
+  // ---------------- 공용 헬퍼 ----------------
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+
+  const OUTCOME_COLOR = { crit: 'var(--amber)', success: 'var(--good)', partial: 'var(--rust)', fail: 'var(--danger)' };
+  const STATUS_TO_TIER = { '경상': 'light', '중상': 'serious', '빈사': 'dying' };
+  const TIER_LABEL = { light: '경상', serious: '중상', dying: '빈사' };
+
+  function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }
+  function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
+  function normalizeSkillName(raw) { return String(raw == null ? '' : raw).replace(/\(숙련\)\s*$/, '').trim(); }
+  function findRulesSkillByName(RULES, name) {
+    return (RULES.skills || []).find((s) => s.name === name || (s.aliases || []).includes(name)) || null;
   }
+
+  // 캐릭터 스냅샷 — Rules.modifiers()가 기대하는 모양으로 PREGENS 항목(p, 정적
+  // 데이터)과 ROOM.characters[name](cs, 가변 상태)을 합친다.
+  function snapshot(p, cs) {
+    return {
+      stats: p.stats,
+      skills: p.skills,
+      hp: cs.hp,
+      maxHp: p.maxHp,
+      radiation: cs.radiation,
+      status: cs.status,
+    };
+  }
+
+  // 기술 드롭다운 옵션: 캐릭터의 숙련(위로 정렬) → 매칭 실패한 숙련(표에 없음,
+  // errata R-5) → 나머지 전체 기술 카탈로그.
+  function buildSkillOptions(RULES, p) {
+    const matchedIds = new Set();
+    const proficientMatched = [];
+    const proficientUnmatched = [];
+    (p.skills || []).forEach((raw) => {
+      const name = normalizeSkillName(raw);
+      const skill = findRulesSkillByName(RULES, name);
+      if (skill) {
+        matchedIds.add(skill.id);
+        proficientMatched.push({ value: 'skill:' + skill.id, label: `★ ${skill.name} (숙련)`, proficient: true });
+      } else {
+        proficientUnmatched.push({ value: 'raw:' + name, label: `⚠ ${name} (숙련 — 기술 표에 없음)`, unmatched: true, rawName: name });
+      }
+    });
+    const rest = (RULES.skills || [])
+      .filter((s) => !matchedIds.has(s.id))
+      .map((s) => ({ value: 'skill:' + s.id, label: s.name, proficient: false }));
+    return [...proficientMatched, ...proficientUnmatched, ...rest];
+  }
+
+  // ---------------- 판정 탭 세션 상태 (모듈 전역, 렌더마다 유지) ----------------
+  // ctx가 매 렌더 새로 만들어지고(app.js buildCtx), 컨테이너 DOM도 매번
+  // 새로 그려지므로(ui.js render()가 tab-content.innerHTML = '' 후 재생성),
+  // 선택값을 여기 모듈 스코프에 붙잡아 둔다. char 탭의 ctx.selectedChar와
+  // 같은 패턴이다.
+  const S = {
+    charName: null,
+    skillChoice: null,   // 'skill:<id>' | 'raw:<name>'
+    manualAbility: null, // raw:<name> 선택 시 GM이 직접 고른 능력치(STR 등)
+    dcChoice: 'preset:1', // 'preset:<dcTable index>' | 'custom'
+    dcCustom: 12,
+    situational: 0,
+    lastResult: null,    // 마지막 판정 결과 표시용
+  };
+
+  function ensureDefaults(ctx) {
+    const { PREGENS, ROOM } = ctx;
+    if (!S.charName || !PREGENS.some((p) => p.name === S.charName)) {
+      const mine = Object.keys(ROOM.claims || {}).find((n) => ROOM.claims[n] === ctx.PLAYER_NAME);
+      S.charName = ctx.selectedChar || mine || PREGENS[0].name;
+    }
+    const p = PREGENS.find((x) => x.name === S.charName) || PREGENS[0];
+    const options = buildSkillOptions(ctx.RULES, p);
+    if (!S.skillChoice || !options.some((o) => o.value === S.skillChoice)) {
+      S.skillChoice = options.length ? options[0].value : null;
+    }
+  }
+
+  // ---------------- 그룹 판정 상태: Store 자체 키로 폴링 ----------------
+  let groupState = null;
+  let groupStateRoomCode = null;
+  let groupLoadInFlight = false;
+
+  function groupKey(roomCode) { return `hg:${roomCode}:groupcheck`; }
+
+  // render()는 앱 전체가 4초마다 폴링하며 다시 부르므로(app.js
+  // startPolling), 이 함수도 매 렌더 호출된다 — 그런데 fetch 완료 콜백에서
+  // 무조건 ctx.actions.render()를 부르면 "렌더 → 로드 예약 → 로드 완료 →
+  // 렌더 → …"가 끊이지 않는 루프가 된다(실제로 겪은 버그: 이 때문에
+  // 브라우저 탭이 멈춰 verify-ui의 클릭이 타임아웃났다). 그래서 값이 실제로
+  // 바뀌었을 때만 다시 그린다.
+  function scheduleGroupLoad(ctx) {
+    if (groupLoadInFlight || !ctx.ROOM_CODE) return;
+    groupLoadInFlight = true;
+    Store.get(groupKey(ctx.ROOM_CODE)).then((data) => {
+      const next = data || null;
+      const changed = JSON.stringify(next) !== JSON.stringify(groupState);
+      groupState = next;
+      groupStateRoomCode = ctx.ROOM_CODE;
+      groupLoadInFlight = false;
+      if (changed) ctx.actions.render();
+    }).catch(() => { groupLoadInFlight = false; });
+  }
+
+  async function saveGroupState(ctx, next) {
+    groupState = next;
+    groupStateRoomCode = ctx.ROOM_CODE;
+    await Store.set(groupKey(ctx.ROOM_CODE), next);
+    ctx.actions.render();
+  }
+
+  // ---------------- 잔향 "임계치를 넘긴 순간" 감지 ----------------
+  const lastKnownRadiation = new Map(); // name -> 마지막으로 관측한 잔향치
+  function justCrossedThreshold(ctx, name, current) {
+    const prev = lastKnownRadiation.has(name) ? lastKnownRadiation.get(name) : current;
+    lastKnownRadiation.set(name, current);
+    const prevEff = ctx.Rules.resonanceEffect(prev);
+    const curEff = ctx.Rules.resonanceEffect(current);
+    const prevAt = prevEff ? prevEff.at : 0;
+    const curAt = curEff ? curEff.at : 0;
+    return curAt > prevAt; // 더 높은 임계치를 새로 넘었으면 true
+  }
+
+  // ==================================================================
+  // 판정 패널
+  // ==================================================================
+  function renderCheckPanel(ctx) {
+    const { PREGENS, ROOM, RULES, Rules, actions } = ctx;
+    const panel = el('<div class="panel"><h3>판정 — 4단계 결과 (룰북 1.4)</h3></div>');
+
+    const p = PREGENS.find((x) => x.name === S.charName) || PREGENS[0];
+    const cs = ROOM.characters[p.name] || {};
+    const char = snapshot(p, cs);
+    const options = buildSkillOptions(RULES, p);
+
+    // ---- 캐릭터 / 기술 / DC / 상황 선택 행 ----
+    const row = el('<div class="modrow"></div>');
+
+    const charField = el('<div class="field"><label>캐릭터</label></div>');
+    const charSel = document.createElement('select');
+    PREGENS.forEach((pp) => {
+      const o = document.createElement('option');
+      o.value = pp.name; o.textContent = pp.name;
+      if (pp.name === S.charName) o.selected = true;
+      charSel.appendChild(o);
+    });
+    charSel.onchange = () => { S.charName = charSel.value; S.skillChoice = null; S.manualAbility = null; actions.render(); };
+    charField.appendChild(charSel);
+    row.appendChild(charField);
+
+    const skillField = el('<div class="field"><label>기술 (숙련 ★ 위로 정렬)</label></div>');
+    const skillSel = document.createElement('select');
+    options.forEach((o) => {
+      const opt = document.createElement('option');
+      opt.value = o.value; opt.textContent = o.label;
+      if (o.value === S.skillChoice) opt.selected = true;
+      skillSel.appendChild(opt);
+    });
+    skillSel.onchange = () => { S.skillChoice = skillSel.value; S.manualAbility = null; actions.render(); };
+    skillField.appendChild(skillSel);
+    row.appendChild(skillField);
+    panel.appendChild(row);
+
+    // ---- 표에 없는 기술(errata R-5) → 능력치 직접 선택 ----
+    const chosen = options.find((o) => o.value === S.skillChoice) || null;
+    let resolvedId = null;
+    let resolvedNote = '';
+    if (chosen && chosen.value.startsWith('skill:')) {
+      resolvedId = chosen.value.slice(6);
+    } else if (chosen && chosen.unmatched) {
+      const warn = el(`<div class="kv" style="border:1px solid var(--danger);border-radius:3px;padding:8px 10px;background:rgba(176,69,63,0.08)">
+        <b style="color:var(--danger)">이 기술은 표에 없습니다 (errata R-5)</b>
+        '${escapeHtml(chosen.rawName)}'은 룰북 1.6 기술 표와 정확히 일치하지 않습니다(구분자·표기 차이 포함).
+        임의로 추측해 매칭하지 않습니다 — 능력치를 GM이 직접 골라 주세요.
+      </div>`);
+      panel.appendChild(warn);
+      const abilityRow = el('<div class="dice-grid" style="margin-bottom:14px"></div>');
+      RULES.abilities.forEach((a) => {
+        const b = el(`<button ${S.manualAbility === a.id ? 'class="primary"' : ''}>${escapeHtml(a.id)} · ${escapeHtml(a.name)}</button>`);
+        b.onclick = () => { S.manualAbility = a.id; actions.render(); };
+        abilityRow.appendChild(b);
+      });
+      panel.appendChild(abilityRow);
+      if (S.manualAbility) {
+        resolvedId = S.manualAbility;
+        resolvedNote = `(기술 '${chosen.rawName}' → 능력치 ${S.manualAbility} 직접 선택)`;
+      }
+    }
+
+    // ---- DC 선택 ----
+    const dcRow = el('<div class="modrow"></div>');
+    const dcField = el('<div class="field"><label>DC (난이도)</label></div>');
+    const dcSel = document.createElement('select');
+    RULES.dcTable.forEach((d, i) => {
+      const o = document.createElement('option');
+      o.value = 'preset:' + i; o.textContent = `${d.label} (${d.dc})`;
+      if (S.dcChoice === 'preset:' + i) o.selected = true;
+      dcSel.appendChild(o);
+    });
+    const customOpt = document.createElement('option');
+    customOpt.value = 'custom'; customOpt.textContent = '직접 입력';
+    if (S.dcChoice === 'custom') customOpt.selected = true;
+    dcSel.appendChild(customOpt);
+    dcSel.onchange = () => { S.dcChoice = dcSel.value; actions.render(); };
+    dcField.appendChild(dcSel);
+    dcRow.appendChild(dcField);
+
+    if (S.dcChoice === 'custom') {
+      const customField = el('<div class="field"><label>DC 직접 입력</label></div>');
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.value = S.dcCustom;
+      inp.onchange = () => { S.dcCustom = parseInt(inp.value, 10) || 0; actions.render(); };
+      customField.appendChild(inp);
+      dcRow.appendChild(customField);
+    }
+
+    const [shiftMin, shiftMax] = RULES.check.situationalDcShift;
+    const sitField = el(`<div class="field"><label>상황 보정 (룰북 1.4 절차 2 — 유리하면 DC를 낮추고, 불리하면 높입니다)</label></div>`);
+    const sitInp = document.createElement('input');
+    sitInp.type = 'number'; sitInp.min = shiftMin; sitInp.max = shiftMax; sitInp.value = S.situational;
+    sitInp.onchange = () => {
+      let v = parseInt(sitInp.value, 10) || 0;
+      v = Math.max(shiftMin, Math.min(shiftMax, v));
+      S.situational = v; actions.render();
+    };
+    sitField.appendChild(sitInp);
+    dcRow.appendChild(sitField);
+    panel.appendChild(dcRow);
+
+    const baseDc = S.dcChoice === 'custom' ? S.dcCustom : RULES.dcTable[parseInt(S.dcChoice.split(':')[1], 10)].dc;
+    const effectiveDc = baseDc + S.situational;
+
+    // ---- 보정 내역 미리보기 (자동 합산 근거를 항상 펼쳐 보인다) ----
+    const mods = resolvedId ? Rules.modifiers(char, resolvedId) : [];
+    const preview = el('<div class="kv" style="background:#100E0A;border:1px solid var(--border);border-radius:3px;padding:10px 12px"></div>');
+    const previewTitle = document.createElement('b');
+    previewTitle.textContent = '보정 내역 (자동 계산 — 굴리기 전 미리보기)';
+    preview.appendChild(previewTitle);
+    if (!resolvedId) {
+      preview.appendChild(el('<div style="color:var(--paper-dim)">기술 또는 능력치를 먼저 선택하세요.</div>'));
+    } else if (!mods.length) {
+      preview.appendChild(el('<div style="color:var(--paper-dim)">추가 보정 없음 (기본 능력치만 적용, 값 0)</div>'));
+    } else {
+      mods.forEach((m) => {
+        const line = document.createElement('div');
+        line.textContent = `${fmtSigned(m.value)}  ${m.label}${m.detail ? '  — ' + m.detail : ''}`;
+        line.style.color = m.value < 0 ? 'var(--danger)' : (m.value > 0 ? 'var(--good)' : 'var(--paper-dim)');
+        preview.appendChild(line);
+      });
+    }
+    const dcLine = document.createElement('div');
+    dcLine.style.marginTop = '6px';
+    dcLine.style.color = 'var(--paper-dim)';
+    dcLine.textContent = `DC ${baseDc} ${S.situational ? (S.situational > 0 ? `+ ${S.situational}(불리)` : `− ${Math.abs(S.situational)}(유리)`) : ''} = 유효 DC ${effectiveDc}`;
+    preview.appendChild(dcLine);
+    panel.appendChild(preview);
+
+    // ---- 판정 버튼 ----
+    const rollBtn = el('<button class="primary" style="width:100%;margin-top:12px;padding:12px">판정 (d20)</button>');
+    rollBtn.disabled = !resolvedId;
+    rollBtn.onclick = () => {
+      const natural = rollD(20);
+      const modSum = mods.reduce((a, m) => a + m.value, 0);
+      const total = natural + modSum;
+      const tier = Rules.resolve({ natural, total, dc: effectiveDc });
+      const tierDef = RULES.outcomeTiers.find((t) => t.id === tier);
+      const skillLabel = resolvedId && RULES.skills.some((s) => s.id === resolvedId)
+        ? RULES.skills.find((s) => s.id === resolvedId).name
+        : `능력치 ${resolvedId}`;
+
+      const parts = [`d20[${natural}]`, ...mods.map((m) => `${fmtSigned(m.value)}${m.label}`)];
+      const expr = `${parts.join(' ')} = ${total}  (DC ${effectiveDc})`;
+
+      S.lastResult = { natural, total, dc: effectiveDc, tier, tierDef, expr, charName: p.name, skillLabel, resolvedNote };
+      actions.setLastRoll({ total, expr: `${p.name} · ${skillLabel} — ${expr}` });
+
+      const naturalNote = natural === 20 ? ' [자연 20]' : (natural === 1 ? ' [자연 1]' : '');
+      const logText = `${ctx.PLAYER_NAME} — ${p.name}의 ${skillLabel} 판정: ${expr}${naturalNote} → ${tierDef.label}`;
+      actions.withRoom((state) => actions.addLog(state, logText, 'roll'));
+    };
+    panel.appendChild(rollBtn);
+
+    // ---- 결과 표시 ----
+    if (S.lastResult && S.lastResult.charName === p.name) {
+      const r = S.lastResult;
+      const color = OUTCOME_COLOR[r.tier] || 'var(--paper)';
+      const naturalBadge = r.natural === 20
+        ? '<span style="background:var(--amber);color:#1a0e08;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px">자연 20</span>'
+        : (r.natural === 1 ? '<span style="background:var(--danger);color:#1a0e08;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:8px">자연 1</span>' : '');
+      const resultBox = el(`<div style="margin-top:14px;border:2px solid ${color};border-radius:4px;padding:14px;background:#100E0A">
+        <div class="mono" style="font-size:14px;color:var(--paper-dim)">${escapeHtml(r.expr)}${r.resolvedNote ? ' ' + escapeHtml(r.resolvedNote) : ''}</div>
+        <div style="font-size:22px;font-weight:700;color:${color};margin-top:6px">${escapeHtml(r.tierDef.label)}${naturalBadge}</div>
+        <div style="margin-top:4px;font-size:13px">${escapeHtml(r.tierDef.effect)}</div>
+        ${r.tier === 'partial' ? `<div style="margin-top:8px;border-top:1px dashed var(--rust);padding-top:8px;color:var(--rust);font-weight:600">
+          ⚠ GM 상기: 원하는 걸 주되 반드시 대가를 붙이세요 — 소음 · 부상 · 자원 소모 · 잔향 획득 중 하나.
+        </div>` : ''}
+      </div>`);
+      panel.appendChild(resultBox);
+    }
+
+    // ---- 자연 1/20 우선순위 안내 (룰북 모호 지점 — 코드 주석과 UI 양쪽에 남긴다) ----
+    const tip = el(`<div class="small-note">
+      규칙 재정: 자연 20/자연 1은 <b>total과 무관하게 항상 최우선</b>입니다.
+      특히 자연 1이면서 total이 DC-1~DC-4(부분 성공 범위)에 걸리는 경우, 이 도구는
+      <b>자연 1(실패)을 우선</b> 적용합니다 — 원문 표에서 두 조건이 동시에 성립하는
+      유일한 지점이라 GM이 다르게 재정할 수 있습니다.
+    </div>`);
+    panel.appendChild(tip);
+
+    return panel;
+  }
+
+  // ==================================================================
+  // 상태 자동화 패널 (부상 / 잔향)
+  // ==================================================================
+  function renderStatusPanel(ctx) {
+    const { PREGENS, ROOM, RULES, Rules, actions } = ctx;
+    const p = PREGENS.find((x) => x.name === S.charName) || PREGENS[0];
+    const cs = ROOM.characters[p.name] || {};
+    const panel = el(`<div class="panel"><h3>상태 자동화 — ${escapeHtml(p.name)}</h3></div>`);
+
+    // ---- 부상 단계 ----
+    const autoTier = Rules.woundTier(cs.hp, p.maxHp);
+    const manualTier = STATUS_TO_TIER[cs.status] || null;
+    const mismatch = manualTier && manualTier !== autoTier;
+    const woundBox = el(`<div class="kv">
+      <b>부상 단계 (자동, HP ${cs.hp}/${p.maxHp} 기준)</b>
+      <span style="font-size:16px;font-weight:700;color:${autoTier === 'serious' ? 'var(--danger)' : (autoTier === 'dying' ? 'var(--danger)' : 'var(--good)')}">${escapeHtml(TIER_LABEL[autoTier] || autoTier)}</span>
+      ${autoTier === 'serious' ? ' — 모든 판정에 -2 (자동 반영됨)' : ''}
+      ${autoTier === 'dying' ? ' — 행동 불가, 매 라운드 사망 판정(d20, 10 미만 시 사망) — 캐릭터시트 탭에서 응급처치/사망 판정을 기록하세요' : ''}
+    </div>`);
+    panel.appendChild(woundBox);
+    if (mismatch) {
+      panel.appendChild(el(`<div class="kv" style="color:var(--danger)">
+        ⚠ 캐릭터시트의 수동 상태값('${escapeHtml(cs.status)}')이 자동 계산값('${escapeHtml(TIER_LABEL[autoTier])}')과 다릅니다.
+        판정 보정은 <b>자동 계산값을 기준</b>으로 적용됩니다.
+      </div>`));
+    }
+
+    // ---- 위상잔향 ----
+    const crossed = justCrossedThreshold(ctx, p.name, cs.radiation || 0);
+    const eff = Rules.resonanceEffect(cs.radiation || 0);
+    const radBox = el(`<div class="kv">
+      <b>위상잔향 ${cs.radiation || 0} / 100</b>
+      ${eff ? `<span style="color:var(--rust);font-weight:700">${escapeHtml(eff.effect)}</span>` : '<span style="color:var(--paper-dim)">임계치 미만 — 페널티 없음</span>'}
+    </div>`);
+    panel.appendChild(radBox);
+    if (eff && crossed) {
+      panel.appendChild(el(`<div class="kv" style="border:1px solid var(--rust);border-radius:3px;padding:8px 10px;background:rgba(139,46,107,0.1);color:var(--rust);font-weight:600">
+        방금 잔향 임계치(${eff.at})를 넘었습니다.
+      </div>`));
+    }
+    if (eff && eff.mutationCheckOnLongRest) {
+      panel.appendChild(el(`<div class="kv" style="color:var(--amber)">
+        잔향 50 이상 — 장시간 휴식마다 여파화 판정이 필요합니다. GM: 지금 진행할까요? (자유 굴림 d20 사용, 아래 d10은 실제 여파 결과 뽑기)
+      </div>`));
+    }
+
+    // ---- 여파화 d10 ----
+    const mutRow = el('<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px"></div>');
+    const mutBtn = el('<button>여파화 판정 (d10)</button>');
+    const mutResultSpan = el('<span class="mono" style="color:var(--paper-dim)"></span>');
+    mutRow.appendChild(mutBtn); mutRow.appendChild(mutResultSpan);
+    panel.appendChild(mutRow);
+
+    mutBtn.onclick = async () => {
+      const roll = rollD(10);
+      const entry = RULES.resonance.mutationTable.find((m) => m.roll === roll);
+      let text = entry ? `${entry.name} — ${entry.effect} (${entry.tone})` : '알 수 없음';
+      let customText = null;
+      if (roll === 10) {
+        customText = prompt('10번(GM 재량): 구역 테마에 맞는 여파를 직접 입력하세요', '') || '';
+        text = `GM 재량 — ${customText || '(미입력)'}`;
+      }
+      mutResultSpan.textContent = `d10[${roll}] → ${text}`;
+      await actions.withRoom((state) => {
+        const target = state.characters[p.name] || {};
+        const mutations = Array.isArray(target.mutations) ? target.mutations.slice() : [];
+        mutations.push({ roll, name: entry ? entry.name : 'GM 재량', tone: entry ? entry.tone : '가변', effect: customText != null ? customText : (entry ? entry.effect : ''), at: Date.now() });
+        state.characters[p.name] = { ...target, mutations };
+        actions.addLog(state, `${p.name} 여파화 판정: d10[${roll}] → ${text}`, 'gm');
+      });
+    };
+
+    // ---- 기존 부착된 여파 목록 ----
+    if (Array.isArray(cs.mutations) && cs.mutations.length) {
+      const list = el('<div class="kv" style="margin-top:8px"><b>부착된 여파</b></div>');
+      cs.mutations.forEach((m) => {
+        list.appendChild(el(`<div style="font-size:13px;margin-top:2px">· ${escapeHtml(m.name)} — ${escapeHtml(m.effect)}</div>`));
+      });
+      panel.appendChild(list);
+    }
+
+    return panel;
+  }
+
+  // ==================================================================
+  // 그룹 판정 패널 (룰북 1.5)
+  // ==================================================================
+  function renderGroupPanel(ctx) {
+    const { PREGENS, ROOM, RULES, Rules, actions, isGM, PLAYER_NAME } = ctx;
+    const panel = el('<div class="panel"><h3>그룹 판정 (룰북 1.5 — 8인 파티용)</h3></div>');
+
+    // 매 렌더(= app.js의 4초 폴링 포함)마다 최신값을 다시 읽는다 — 같은
+    // 브라우저의 다른 탭이나(로컬스토리지 공유) 아티팩트 공유 저장소를 쓰는
+    // 경우 다른 클라이언트의 갱신을 반영하기 위함이다. scheduleGroupLoad
+    // 내부의 in-flight 가드가 중복 호출을 막는다.
+    scheduleGroupLoad(ctx);
+    const gs = groupState;
+
+    if (!gs || !gs.active) {
+      if (!isGM) {
+        panel.appendChild(el('<div class="empty">개시된 그룹 판정이 없습니다. 보통 GM이 시작합니다.</div>'));
+      }
+      const form = el('<div></div>');
+      const row = el('<div class="modrow"></div>');
+
+      const skillField = el('<div class="field"><label>기술</label></div>');
+      const skillSel = document.createElement('select');
+      RULES.skills.forEach((s) => {
+        const o = document.createElement('option'); o.value = s.id; o.textContent = s.name; skillSel.appendChild(o);
+      });
+      skillField.appendChild(skillSel); row.appendChild(skillField);
+
+      const dcField = el('<div class="field"><label>DC</label></div>');
+      const dcSel = document.createElement('select');
+      RULES.dcTable.forEach((d) => {
+        const o = document.createElement('option'); o.value = d.dc; o.textContent = `${d.label} (${d.dc})`;
+        if (d.dc === 12) o.selected = true;
+        dcSel.appendChild(o);
+      });
+      dcField.appendChild(dcSel); row.appendChild(dcField);
+      form.appendChild(row);
+
+      const rosterField = el('<div class="field"><label>참가자 (기본값: 현재 점유된 캐릭터)</label></div>');
+      const rosterGrid = el('<div class="char-grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))"></div>');
+      const checkboxes = {};
+      PREGENS.forEach((p) => {
+        const claimed = !!(ROOM.claims && ROOM.claims[p.name]);
+        const row2 = document.createElement('label');
+        row2.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:12px;background:var(--panel2);border:1px solid var(--border);border-radius:3px;padding:6px 8px;cursor:pointer';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.style.width = 'auto'; cb.checked = claimed; cb.value = p.name;
+        checkboxes[p.name] = cb;
+        row2.appendChild(cb);
+        row2.appendChild(document.createTextNode(p.name));
+        rosterGrid.appendChild(row2);
+      });
+      rosterField.appendChild(rosterGrid);
+      form.appendChild(rosterField);
+
+      const startBtn = el('<button class="primary">그룹 판정 개시</button>');
+      startBtn.onclick = () => {
+        const roster = PREGENS.filter((p) => checkboxes[p.name].checked).map((p) => p.name);
+        if (!roster.length) { alert('참가자를 1명 이상 선택하세요.'); return; }
+        const skillId = skillSel.value;
+        const skillLabel = (RULES.skills.find((s) => s.id === skillId) || {}).name || skillId;
+        const dc = parseInt(dcSel.value, 10);
+        const participants = {};
+        roster.forEach((n) => { participants[n] = { status: 'pending' }; });
+        const next = {
+          active: true, skillId, skillLabel, dc,
+          startedBy: PLAYER_NAME, startedAt: Date.now(),
+          helper: { active: false, by: null },
+          participants, result: null,
+        };
+        saveGroupState(ctx, next);
+        actions.withRoom((state) => actions.addLog(state, `${PLAYER_NAME}님이 그룹 판정을 개시했습니다: ${skillLabel} vs DC ${dc} (참가자 ${roster.length}명)`, 'gm'));
+      };
+      form.appendChild(startBtn);
+      panel.appendChild(form);
+      return panel;
+    }
+
+    // ---- 진행 중인 그룹 판정 ----
+    const header = el(`<div class="kv">
+      <b>${escapeHtml(gs.skillLabel)} vs DC ${gs.dc}</b>
+      개시: ${escapeHtml(gs.startedBy)} · 참가자 ${Object.keys(gs.participants).length}명
+      ${gs.helper && gs.helper.active ? `<div style="color:var(--good);margin-top:4px">조력자 성공 — ${escapeHtml(gs.helper.by)}. 아직 굴리지 않은 인원 전원 +2</div>` : ''}
+    </div>`);
+    panel.appendChild(header);
+
+    // 조력자 선언
+    if (!gs.helper || !gs.helper.active) {
+      const helperRow = el('<div class="modrow"></div>');
+      const helperField = el('<div class="field"><label>조력자 후보 (보통 DC 12로 먼저 판정, 성공 시 나머지 전원 +2)</label></div>');
+      const helperSel = document.createElement('select');
+      Object.keys(gs.participants).forEach((n) => {
+        const o = document.createElement('option'); o.value = n; o.textContent = n; helperSel.appendChild(o);
+      });
+      helperField.appendChild(helperSel); helperRow.appendChild(helperField);
+      const helperBtn = el('<button>조력자로 판정 (DC 12)</button>');
+      helperBtn.onclick = () => {
+        const name = helperSel.value;
+        const p = PREGENS.find((x) => x.name === name);
+        const cs = ROOM.characters[name] || {};
+        const char = snapshot(p, cs);
+        const mods = Rules.modifiers(char, gs.skillId);
+        const natural = rollD(20);
+        const total = natural + mods.reduce((a, m) => a + m.value, 0);
+        const tier = Rules.resolve({ natural, total, dc: RULES.groupCheck.helperCheckDc });
+        const success = tier === 'crit' || tier === 'success';
+        const next = { ...gs, helper: { active: success, by: success ? name : null } };
+        saveGroupState(ctx, next);
+        actions.withRoom((state) => actions.addLog(
+          state,
+          `${name}의 조력자 판정(DC ${RULES.groupCheck.helperCheckDc}): d20[${natural}]+${mods.reduce((a, m) => a + m.value, 0)}=${total} → ${success ? '성공, 전원 +2' : '실패, 조력 없음'}`,
+          'roll'
+        ));
+      };
+      helperRow.appendChild(helperBtn);
+      panel.appendChild(helperRow);
+    }
+
+    // 참가자 목록
+    const list = el('<div class="init-list" style="margin-top:10px"></div>');
+    Object.keys(gs.participants).forEach((name) => {
+      const entry = gs.participants[name];
+      const p = PREGENS.find((x) => x.name === name);
+      const row = document.createElement('div');
+      row.className = 'init-item';
+      row.style.gridTemplateColumns = '1fr auto auto';
+      const nameDiv = document.createElement('div');
+      nameDiv.style.fontWeight = '600';
+      nameDiv.textContent = name + (ROOM.claims && ROOM.claims[name] === PLAYER_NAME ? ' (나)' : '');
+      row.appendChild(nameDiv);
+      const statusDiv = document.createElement('div');
+      statusDiv.className = 'mono';
+      if (entry.status === 'done') {
+        statusDiv.textContent = `d20[${entry.natural}]=${entry.total} → ${(RULES.outcomeTiers.find((t) => t.id === entry.tier) || {}).label || entry.tier}`;
+        statusDiv.style.color = OUTCOME_COLOR[entry.tier] || 'var(--paper)';
+      } else {
+        statusDiv.textContent = '대기 중';
+        statusDiv.style.color = 'var(--paper-dim)';
+      }
+      row.appendChild(statusDiv);
+      const actionDiv = document.createElement('div');
+      if (entry.status !== 'done') {
+        const rb = el('<button>이 캐릭터로 굴리기</button>');
+        rb.onclick = () => {
+          const cs = ROOM.characters[name] || {};
+          const char = snapshot(p, cs);
+          let mods = Rules.modifiers(char, gs.skillId);
+          if (gs.helper && gs.helper.active && gs.helper.by !== name) {
+            mods = [...mods, { label: '조력자 보너스', value: RULES.groupCheck.helperBonus, source: 'helper' }];
+          }
+          const natural = rollD(20);
+          const modSum = mods.reduce((a, m) => a + m.value, 0);
+          const total = natural + modSum;
+          const tier = Rules.resolve({ natural, total, dc: gs.dc });
+          const next = { ...gs, participants: { ...gs.participants, [name]: { status: 'done', natural, total, tier, rolledBy: PLAYER_NAME } } };
+          saveGroupState(ctx, next);
+          actions.withRoom((state) => actions.addLog(state, `[그룹] ${name}의 ${gs.skillLabel}: d20[${natural}]${modSum >= 0 ? '+' : ''}${modSum}=${total} → ${(RULES.outcomeTiers.find((t) => t.id === tier) || {}).label}`, 'roll'));
+        };
+        actionDiv.appendChild(rb);
+      }
+      row.appendChild(actionDiv);
+      list.appendChild(row);
+    });
+    panel.appendChild(list);
+
+    // 집계 / 마감
+    const allDone = Object.values(gs.participants).every((e) => e.status === 'done');
+    const closeRow = el('<div style="display:flex;gap:8px;margin-top:12px"></div>');
+    const closeBtn = el(`<button class="primary">${allDone ? '집계 결과 보기' : '지금 마감하고 집계 (미완료 인원은 실패로 간주)'}</button>`);
+    closeBtn.onclick = () => {
+      const results = Object.values(gs.participants).map((e) => (e.status === 'done' ? e.tier : 'fail'));
+      const outcome = Rules.groupResult(results);
+      const outcomeDef = RULES.outcomeTiers.find((t) => t.id === outcome);
+      const successCount = results.filter((r) => r === 'crit' || r === 'success').length;
+      const next = { ...gs, active: false, result: { outcome, successCount, total: results.length, closedAt: Date.now() } };
+      saveGroupState(ctx, next);
+      actions.withRoom((state) => actions.addLog(state, `그룹 판정 집계: ${successCount}/${results.length} 성공 → ${outcomeDef ? outcomeDef.label : outcome} (${outcomeDef ? outcomeDef.effect : ''})`, 'gm'));
+    };
+    closeRow.appendChild(closeBtn);
+    const resetBtn = el('<button class="ghost">그룹 판정 취소</button>');
+    resetBtn.onclick = () => saveGroupState(ctx, null);
+    closeRow.appendChild(resetBtn);
+    panel.appendChild(closeRow);
+
+    return panel;
+  }
+
+  function renderGroupResultPanel(ctx) {
+    const gs = groupState;
+    if (!gs || gs.active || !gs.result) return null;
+    const { RULES, actions } = ctx;
+    const def = RULES.outcomeTiers.find((t) => t.id === gs.result.outcome);
+    const panel = el(`<div class="panel"><h3>그룹 판정 결과</h3>
+      <div style="font-size:20px;font-weight:700;color:${OUTCOME_COLOR[gs.result.outcome] || 'var(--paper)'}">${escapeHtml(def ? def.label : gs.result.outcome)}</div>
+      <div style="margin-top:4px">${escapeHtml(def ? def.effect : '')}</div>
+      <div class="small-note">${gs.result.successCount} / ${gs.result.total}명 성공 (${escapeHtml(gs.skillLabel)} vs DC ${gs.dc})</div>
+    </div>`);
+    const newBtn = el('<button>새 그룹 판정 시작</button>');
+    newBtn.onclick = () => saveGroupState(ctx, null);
+    panel.appendChild(newBtn);
+    return panel;
+  }
+
+  // ==================================================================
+  function render(container, ctx) {
+    if (!ctx || !ctx.ROOM || !ctx.PREGENS || !ctx.PREGENS.length) return;
+    ensureDefaults(ctx);
+    container.appendChild(renderCheckPanel(ctx));
+    container.appendChild(renderStatusPanel(ctx));
+    const groupResultPanel = renderGroupResultPanel(ctx);
+    if (groupResultPanel) container.appendChild(groupResultPanel);
+    container.appendChild(renderGroupPanel(ctx));
+  }
+
   return { render };
 })();
 
@@ -999,30 +2301,228 @@ if (typeof module !== 'undefined') module.exports = UICheck;
 
 
 // ==== web/src/ui-net.js ====
-// web/src/ui-net.js — 연결 상태 UI 껍데기
+// web/src/ui-net.js — 연결 상태 UI (명세 03)
 //
-// 명세 01에서는 호출 지점만 뚫어 둔다. 실제 내용은 docs/specs/03-p2p-sync.md
-// (명세 03) 담당이며, 그 문서가 이 파일과 web/src/net.js, web/vendor/**의
-// 유일한 소유자다.
+// ui.js(명세 01, 수정 금지)가 세 군데에서 UINet.render(container, ctx)를
+// 부른다 — container.id로 자리를 구분한다:
+//   1. #join-net-slot  — 입장 전, 1회만 렌더(app.js 맨 아래
+//      UI.renderJoinExtras() 호출). "로컬로 시작 / GM으로 방 열기 /
+//      방 코드로 참가"를 #in-net-mode(hidden input)에 반영하고,
+//      "최후 수단"(§5 4단계) — 내보낸 상태 파일을 읽어 그 방 코드로
+//      Store를 미리 채워 둔다. 그러면 app.js가 곧이어 host()를 부를 때
+//      이미 그 방 상태가 있는 채로 새 허브가 선다.
+//   2. #topbar-net-slot — 매 렌더. 연결 상태 배지.
+//   3. #gm-net-slot — GM 대시보드 탭. 접속자 목록 + "상태 내보내기".
 //
-// ui.js가 세 군데에서 이 render()를 호출한다(§5):
-//   1. 입장 화면 #join-net-slot — "GM으로 열기 / 방 코드로 참가" 컨트롤을
-//      여기 그리고, 선택 결과를 #in-net-mode(hidden input)에 'host'/'join'/
-//      'local'로 써 두면 app.js의 입장 핸들러가 그 값을 읽어 Net.host()/
-//      Net.join()을 호출한다.
-//   2. 상단바 #topbar-net-slot — 매 렌더마다 호출. 연결 상태 배지
-//      ("로컬 전용" / "연결 중…" / "GM 허브 (n명 접속)" / "연결됨" / "연결 끊김").
-//   3. GM 대시보드 #gm-net-slot — 접속자 목록과 각자 점유한 캐릭터.
-// 세 경우 모두 container.id로 어느 자리인지 구분할 수 있다. 지금은
-// 아무것도 그리지 않으므로 위 세 자리는 항상 빈 채로 남는다(무해).
+// ctx: app.js buildCtx() 참고. 여기서 쓰는 필드는 netStatus(=Net.status),
+// peers(=Net.peers() 결과), ROOM, ROOM_CODE, isGM.
 //
-// ctx로 넘어오는 것: 위 ui-check.js와 동일한 필드 + netStatus(=Net.status),
-// peers(=Net.peers() 결과), Net(net.js 모듈 자체).
+// 입장 시점에 GM을 정하는 문제(§6 — "현재는 GM 지정이 입장 후에 이뤄지는데
+// 허브를 세우려면 입장 시점에 정해져야 한다")는 이 파일이 아니라 net.js의
+// host()가 Store에 직접 meta.gm을 써서 해결한다(app.js의
+// loadRoomFromStore()가 host()/join() *다음에* 실행되므로 순서가 맞는다).
+// 이 파일은 그저 사용자가 "GM으로 방 열기"를 선택하게만 해 주면 된다.
 const UINet = (() => {
-  function render(container, ctx) {
-    // TODO(명세 03): container.id로 join/topbar/gm 세 자리를 구분해 그린다.
-    // 지금은 의도적으로 비워 둔다 — container에 아무것도 append하지 않는다.
+  function keyFor(code, suffix) { return `hg:${code}:${suffix}`; }
+
+  async function importStateIntoStore(payload) {
+    const code = String(payload.roomCode).trim().toUpperCase();
+    const room = payload.room || {};
+    const writes = [
+      Store.set(keyFor(code, 'meta'), { gm: null, round: room.round || 1, turnIndex: room.turnIndex || 0, timer: room.timer || null }),
+      Store.set(keyFor(code, 'claims'), room.claims || {}),
+      Store.set(keyFor(code, 'log'), room.log || []),
+      Store.set(keyFor(code, 'combat'), room.initiative || []),
+    ];
+    Object.keys(room.characters || {}).forEach((name) => {
+      writes.push(Store.set(keyFor(code, 'char:' + name), room.characters[name]));
+    });
+    await Promise.all(writes);
+    return code;
   }
+
+  function exportState(ctx) {
+    if (!ctx.ROOM) return;
+    const payload = { v: 1, roomCode: ctx.ROOM_CODE, exportedAt: new Date().toISOString(), room: ctx.ROOM };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hapgyeong-${ctx.ROOM_CODE || 'session'}-state.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => { try { URL.revokeObjectURL(url); } catch (e) { /* 무해 */ } }, 1000);
+  }
+
+  function renderJoinSlot(container) {
+    const netModeInput = document.getElementById('in-net-mode');
+
+    const modeField = document.createElement('div');
+    modeField.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = '연결 (선택 — 아무것도 고르지 않아도 전부 동작합니다)';
+    modeField.appendChild(label);
+
+    const optionsWrap = document.createElement('div');
+    optionsWrap.style.display = 'flex';
+    optionsWrap.style.flexDirection = 'column';
+    optionsWrap.style.gap = '8px';
+
+    const options = [
+      { value: 'local', text: '로컬로 시작 — 연결 없이 이 브라우저에만 저장' },
+      { value: 'host', text: 'GM으로 방 열기 — 이 방 코드의 허브가 됩니다' },
+      { value: 'join', text: '방 코드로 참가 — GM 허브에 접속합니다' },
+    ];
+    const currentMode = netModeInput ? netModeInput.value : 'local';
+    const radios = [];
+    options.forEach((opt) => {
+      const row = document.createElement('label');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:13px;font-weight:normal;text-transform:none;letter-spacing:normal;cursor:pointer;';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'net-mode-choice';
+      radio.value = opt.value;
+      radio.style.width = 'auto';
+      radio.checked = currentMode === opt.value;
+      radio.onchange = () => { if (netModeInput) netModeInput.value = opt.value; };
+      radios.push(radio);
+      row.appendChild(radio);
+      row.appendChild(document.createTextNode(opt.text));
+      optionsWrap.appendChild(row);
+    });
+    modeField.appendChild(optionsWrap);
+    container.appendChild(modeField);
+
+    // §5 4단계 — 최후 수단: GM이 나간 방 이어받기
+    const importField = document.createElement('div');
+    importField.className = 'field';
+    const importLabel = document.createElement('label');
+    importLabel.textContent = 'GM이 없어졌다면 — 내보낸 상태 파일 이어받기';
+    importField.appendChild(importLabel);
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json,.json';
+    importField.appendChild(fileInput);
+    const importNote = document.createElement('div');
+    importNote.style.cssText = 'font-size:11px;color:var(--paper-dim);margin-top:6px;line-height:1.5;';
+    importField.appendChild(importNote);
+
+    fileInput.onchange = () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        let payload;
+        try {
+          payload = JSON.parse(String(reader.result));
+          if (!payload || payload.v !== 1 || !payload.room || !payload.roomCode) throw new Error('형식이 올바르지 않습니다.');
+        } catch (e) {
+          importNote.textContent = '파일을 읽지 못했습니다 — ' + e.message;
+          importNote.style.color = 'var(--danger)';
+          return;
+        }
+        importStateIntoStore(payload).then((code) => {
+          const codeInput = document.getElementById('in-code');
+          if (codeInput) codeInput.value = code;
+          if (netModeInput) netModeInput.value = 'host';
+          radios.forEach((r) => { r.checked = r.value === 'host'; });
+          importNote.textContent = `방 코드 ${code}의 상태를 불러왔습니다. 위에서 이름을 입력하고 "세션 입장"을 누르면 이 브라우저가 새 허브가 됩니다.`;
+          importNote.style.color = 'var(--olive)';
+        }).catch((e) => {
+          importNote.textContent = '저장 중 오류가 발생했습니다 — ' + e.message;
+          importNote.style.color = 'var(--danger)';
+        });
+      };
+      reader.onerror = () => { importNote.textContent = '파일을 읽는 중 오류가 발생했습니다.'; importNote.style.color = 'var(--danger)'; };
+      reader.readAsText(file);
+    };
+    container.appendChild(importField);
+  }
+
+  function statusLabel(ctx) {
+    const status = ctx.netStatus;
+    if (status === 'connecting') return { text: '연결 중…', color: 'var(--amber)' };
+    if (status === 'host') return { text: `GM 허브 (${(ctx.peers || []).length}명 접속)`, color: 'var(--olive)' };
+    if (status === 'guest') return { text: '연결됨', color: 'var(--olive)' };
+    if (status === 'disconnected') return { text: '연결 끊김', color: 'var(--danger)' };
+    return { text: '로컬 전용', color: null }; // offline / failed 공통
+  }
+
+  function renderTopbarSlot(container, ctx) {
+    const info = statusLabel(ctx);
+    const span = document.createElement('span');
+    span.className = 'net-badge';
+    span.textContent = info.text;
+    if (info.color) { span.style.color = info.color; span.style.borderColor = info.color; }
+    container.appendChild(span);
+  }
+
+  function renderGmSlot(container, ctx) {
+    const box = document.createElement('div');
+    box.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid var(--border);';
+
+    const title = document.createElement('div');
+    title.style.cssText = 'font-size:11px;color:var(--olive);text-transform:uppercase;font-weight:700;margin-bottom:6px;letter-spacing:.05em;';
+    title.textContent = '접속 현황';
+    box.appendChild(title);
+
+    if (ctx.netStatus === 'host') {
+      const peers = ctx.peers || [];
+      if (!peers.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty';
+        empty.style.padding = '8px 0';
+        empty.textContent = '아직 접속한 플레이어가 없습니다. 방 코드를 공유하세요.';
+        box.appendChild(empty);
+      } else {
+        const list = document.createElement('div');
+        list.style.cssText = 'display:flex;flex-direction:column;gap:4px;';
+        peers.forEach((p) => {
+          const row = document.createElement('div');
+          row.style.fontSize = '13px';
+          row.textContent = p.name + (p.char ? ` — ${p.char}` : ' (캐릭터 미선택)');
+          list.appendChild(row);
+        });
+        box.appendChild(list);
+      }
+    } else if (ctx.netStatus === 'guest' || ctx.netStatus === 'disconnected' || ctx.netStatus === 'connecting') {
+      const note = document.createElement('div');
+      note.className = 'small-note';
+      note.textContent = '이 브라우저는 GM 허브에 접속한 플레이어입니다. 접속자 목록은 GM 허브 화면에서만 보입니다.';
+      box.appendChild(note);
+    } else {
+      const note = document.createElement('div');
+      note.className = 'small-note';
+      note.textContent = '로컬 전용 모드입니다 — 연결 없이도 이 화면의 모든 기능은 그대로 동작합니다.';
+      box.appendChild(note);
+    }
+
+    const exportRow = document.createElement('div');
+    exportRow.style.marginTop = '10px';
+    const exportBtn = document.createElement('button');
+    exportBtn.type = 'button';
+    exportBtn.className = 'ghost';
+    exportBtn.textContent = '세션 상태 내보내기 (JSON)';
+    exportBtn.onclick = () => exportState(ctx);
+    exportRow.appendChild(exportBtn);
+    const exportNote = document.createElement('div');
+    exportNote.className = 'small-note';
+    exportNote.textContent = 'GM 브라우저가 죽거나 자리를 비워도, 이 파일을 다른 사람에게 주면 입장 화면의 "GM이 없어졌다면"에서 이어받아 새 허브가 될 수 있습니다.';
+    exportRow.appendChild(exportNote);
+    box.appendChild(exportRow);
+
+    container.appendChild(box);
+  }
+
+  function render(container, ctx) {
+    if (!container) return;
+    container.innerHTML = '';
+    if (container.id === 'join-net-slot') renderJoinSlot(container, ctx);
+    else if (container.id === 'topbar-net-slot') renderTopbarSlot(container, ctx);
+    else if (container.id === 'gm-net-slot') renderGmSlot(container, ctx);
+  }
+
   return { render };
 })();
 
