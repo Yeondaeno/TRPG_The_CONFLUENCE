@@ -13,6 +13,7 @@
     "verify:play": "node tools/build.mjs && node tools/verify-play.mjs",
     "verify:parser": "node tools/build.mjs && node tools/verify-parser.mjs",
     "verify:combat": "node tools/build.mjs && node tools/verify-combat.mjs",
+    "verify:ai": "node tools/build.mjs && node tools/verify-ai.mjs",
     "demo": "node tools/build.mjs && node tools/demo-session.mjs"
   },
   "devDependencies": {

@@ -29,6 +29,7 @@ const CHARACTERS = require(join(root, 'data/characters.json'));
 const Combat = require(join(root, 'web/src/combat.js'));
 const MONSTERS = require(join(root, 'data/monsters.json'));
 const STATION0 = require(join(root, 'data/scenarios/station-0.json'));
+const AI = require(join(root, 'web/src/ai.js'));
 
 // ---- 테스트용 가짜 백엔드 ----
 function makeFakeLocalStorage({ throwOnKey } = {}) {
@@ -1200,5 +1201,125 @@ describe('캐릭터 성별 — data/characters.json의 gender', () => {
     const before = Rules.modifiers({ ...noa, hp: noa.maxHp }, 'persuade');
     const flipped = Rules.modifiers({ ...noa, gender: '여', hp: noa.maxHp }, 'persuade');
     assert.deepEqual(before, flipped);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// AI GM (BYOK) — 명세 09 (docs/specs/09-byok-ai.md)
+//
+// 여기서는 **네트워크를 타지 않는 부분**만 본다: 요청 조립, 응답 파싱,
+// 비밀 세척. 실제 호출 흐름은 tools/verify-ai.mjs가 fetch 스텁으로 본다.
+// 어느 쪽도 진짜 API를 부르지 않는다 — 그건 사용자가 자기 키로 확인한다.
+// ══════════════════════════════════════════════════════════════════════
+describe('AI.parseInterpretation — 응답에서 기술·DC 건져내기', () => {
+  const skills = RULES.skills;
+
+  test('평범한 JSON을 읽는다', () => {
+    const r = AI.parseInterpretation('{"skill":"tinker","dc":15,"reason":"배선"}', skills);
+    assert.deepEqual(r, { skill: 'tinker', dc: 15, reason: '배선' });
+  });
+
+  test('코드펜스와 앞뒤 잡담을 견딘다', () => {
+    const raw = '알겠습니다.\n```json\n{"skill":"stealth","dc":12,"reason":"어둠"}\n```\n도움이 되었길!';
+    assert.equal(AI.parseInterpretation(raw, skills).skill, 'stealth');
+  });
+
+  test('모르는 기술 id는 받지 않는다 — 규칙에 없는 값을 게임에 들이지 않는다', () => {
+    assert.equal(AI.parseInterpretation('{"skill":"해킹","dc":12}', skills), null);
+  });
+
+  test('DC가 숫자가 아니거나 말이 안 되는 범위면 버린다', () => {
+    assert.equal(AI.parseInterpretation('{"skill":"lore","dc":"어려움"}', skills), null);
+    assert.equal(AI.parseInterpretation('{"skill":"lore","dc":999}', skills), null);
+    assert.equal(AI.parseInterpretation('{"skill":"lore","dc":0}', skills), null);
+  });
+
+  test('JSON이 아예 없거나 깨졌으면 null — 호출부는 2층으로 간다', () => {
+    assert.equal(AI.parseInterpretation('그건 좀 애매한데요', skills), null);
+    assert.equal(AI.parseInterpretation('{깨진 JSON', skills), null);
+    assert.equal(AI.parseInterpretation('', skills), null);
+    assert.equal(AI.parseInterpretation(null, skills), null);
+  });
+});
+
+describe('AI.scrubSecrets — 프롬프트에 비밀이 들어가지 않는다 (명세 09 §3)', () => {
+  const secrets = CHARACTERS.map((c) => c.secret).filter(Boolean);
+
+  test('16명의 비밀이 문장에 섞여 있으면 전부 가린다', () => {
+    secrets.forEach((sec) => {
+      const out = AI.scrubSecrets(`앞말 ${sec} 뒷말`, secrets);
+      assert.ok(!out.includes(sec), sec.slice(0, 20));
+      assert.ok(out.includes('[비공개]'));
+    });
+  });
+
+  test('비밀이 없는 평범한 문장은 그대로 둔다', () => {
+    const t = '노아가 노점상을 진정시켰다.';
+    assert.equal(AI.scrubSecrets(t, secrets), t);
+  });
+
+  test('빈 값·null도 죽지 않는다', () => {
+    assert.equal(AI.scrubSecrets(null, secrets), '');
+    assert.equal(AI.scrubSecrets('x', null), 'x');
+  });
+});
+
+describe('AI 프롬프트 — 무엇을 넣고 무엇을 넣지 않는가', () => {
+  const scene = SCENES.scenes['1-1'];
+
+  test('해석 프롬프트는 기술 id 목록을 못 박아 준다', () => {
+    const p = AI.interpretPrompt(scene, '가로등을 끊는다', RULES.skills);
+    RULES.skills.forEach((s) => assert.ok(p.system.includes(s.id), s.id));
+    assert.ok(p.system.includes('JSON'));
+    assert.ok(p.messages[0].content.includes('가로등을 끊는다'));
+  });
+
+  test('해석 프롬프트에 씬의 affordance가 들어가고, 씬에 없는 건 안 들어간다', () => {
+    const p = AI.interpretPrompt(scene, 'x', RULES.skills);
+    assert.ok(p.messages[0].content.includes('scorch-wall'));
+    assert.ok(!p.messages[0].content.includes('streetlamp')); // 다른 씬의 것
+  });
+
+  test('서술 프롬프트는 "사실을 바꾸지 말라"고 명시한다 — 결과를 AI가 정하지 않는다', () => {
+    const p = AI.narratePrompt({ place: '창고', actor: '노아', action: '설득', tierLabel: '성공', outcome: '벽이 열린다' });
+    assert.match(p.system, /사실을 바꾸거나 새 사건을 만들지 마라/);
+    assert.ok(p.messages[0].content.includes('확정된 결과'));
+    assert.ok(p.messages[0].content.includes('성공'));
+  });
+
+  test('어떤 프롬프트에도 캐릭터 비밀이 들어가지 않는다(16명 전부)', () => {
+    const texts = [
+      JSON.stringify(AI.interpretPrompt(scene, '아무거나', RULES.skills)),
+      JSON.stringify(AI.narratePrompt({ place: scene.place, action: '아무거나', outcome: '아무거나' })),
+    ].join(' ');
+    CHARACTERS.forEach((c) => {
+      if (c.secret) assert.ok(!texts.includes(c.secret), `${c.name}의 비밀이 샘`);
+    });
+  });
+});
+
+describe('AI 공급자 목록 — 확인하지 않은 것을 단정하지 않는다', () => {
+  test('CORS 가능 여부를 true로 단정한 공급자가 없다', () => {
+    AI.providers().forEach((p) => {
+      assert.notEqual(p.corsOk, true, `${p.id}: 확인 없이 true로 단정함`);
+    });
+  });
+
+  test('로컬 모델(Ollama/LM Studio)이 목록 앞에 있다 — 확실한 경로를 먼저 보여준다', () => {
+    const list = AI.providers();
+    assert.equal(list[0].local, true);
+    assert.equal(list[1].local, true);
+  });
+
+  test('명세가 요구한 공급자가 전부 있다', () => {
+    const ids = AI.providers().map((p) => p.id);
+    ['anthropic', 'openai', 'gemini', 'xai', 'deepseek', 'moonshot', 'custom'].forEach((id) => {
+      assert.ok(ids.includes(id), id);
+    });
+  });
+
+  test('OpenAI 호환이 다수라 어댑터는 3종뿐이다', () => {
+    const kinds = new Set(AI.providers().map((p) => p.kind));
+    assert.deepEqual([...kinds].sort(), ['anthropic', 'gemini', 'openai']);
   });
 });

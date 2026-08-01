@@ -269,6 +269,35 @@ const UIPlay = (() => {
     return box;
   }
 
+  // ---------------- 3층: 결과 서술 (명세 09 §2-(2)) ----------------
+  // **판정이 끝난 뒤에** 부른다. AI에게 "무슨 일이 일어났는지"를 묻지 않고,
+  // 이미 확정된 사실을 주고 "묘사하라"고만 시킨다. 씬 원문은 그대로 두고
+  // 아래에 덧붙이므로, 실패하면 원문만 남는다 — 그게 폴백이다.
+  //
+  // getTarget()은 함수다: 응답이 오는 사이 사용자가 다른 걸 눌렀으면
+  // lastResult가 바뀌어 있고, 그때는 낡은 서술을 붙이지 않는다.
+  async function narrateLater(ctx, getTarget, facts) {
+    if (!AI.available('narrate')) return;
+    const target = getTarget();
+    if (!target) return;
+    const stamp = target;
+    try {
+      // 프롬프트에 캐릭터 비밀이 섞이지 않게 마지막으로 한 번 더 훑는다
+      // (명세 09 §3). 씬 데이터에는 애초에 없지만, GM이 secrets.json을
+      // 불러온 브라우저에서는 런타임에 존재할 수 있다.
+      const secrets = (ctx.PREGENS || []).map((p) => p.secret).filter(Boolean);
+      const clean = {};
+      Object.keys(facts).forEach((k) => { clean[k] = AI.scrubSecrets(facts[k], secrets); });
+      const p = AI.narratePrompt(clean);
+      const r = await AI.complete({ ...p, maxTokens: 300 });
+      if (getTarget() !== stamp) return; // 그 사이 다른 판정이 일어남
+      if (r.text) stamp.aiNarrative = r.text.trim();
+    } catch (e) {
+      if (getTarget() === stamp) stamp.aiNarrativeFailed = true;
+    }
+    ctx.actions.render();
+  }
+
   // ---------------- 선택 실행 ----------------
   // shownDice: 화면에 굴려 보여줄 주사위(명세 10 §3). 판정 없는 선택지는
   // 비어 있다 — 굴리지 않았으니 보여줄 것도 없다.
@@ -295,6 +324,12 @@ const UIPlay = (() => {
       // 판정 d20에 더해 효과가 요구한 주사위(잔향 1d6 등)도 함께 굴러간다.
       dice: (shownDice || []).concat(dice.map((d, i) => ({ sides: d.sides, value: rolls[i] }))),
     };
+
+    const sceneNow = scenario.scenes[state.sceneId] || {};
+    narrateLater(ctx, () => lastResult, {
+      place: sceneNow.place || sceneNow.title, actor: actorName,
+      action: choice.label, tierLabel: tier ? TIER_LABEL[tier] : null, outcome: result.narrative,
+    });
 
     await ctx.actions.withRoom((s) => {
       const tierNote = tier ? ` → ${TIER_LABEL[tier] || tier}` : '';
@@ -335,6 +370,22 @@ const UIPlay = (() => {
     } else {
       box.appendChild(el(`<div style="font-size:13px;line-height:1.6;color:var(--amber)">${escapeHtml(result.reason || '이 장면의 요소로는 해석할 수 없습니다.')}</div>`));
       box.appendChild(el('<div class="small-note" style="margin-top:2px">룰북 1.4대로 직접 정해 주세요 — 판정은 해드립니다.</div>'));
+    }
+
+    // 3층(명세 09) — AI 제안이 오면 2층 위에 덧붙여 보여준다. **덮어쓴
+    // 것을 감추지 않는다**: 어느 층이 이 값을 냈는지 보여야 사람이
+    // 판단할 수 있다. 어느 쪽이든 아래 "이대로 판정"을 눌러야 굴러간다.
+    if (fa.aiPending) {
+      box.appendChild(el('<div class="small-note" style="margin-top:6px;color:var(--olive)">AI에게 물어보는 중… (기다리지 않고 지금 바로 판정해도 됩니다)</div>'));
+    }
+    if (fa.ai) {
+      const skillDef = (ctx.RULES.skills || []).find((x) => x.id === fa.ai.skill);
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--olive)">
+        <b style="color:var(--olive)">AI 제안</b> — ${escapeHtml(skillDef ? skillDef.name : fa.ai.skill)} · DC ${fa.ai.dc}${fa.ai.reason ? ': ' + escapeHtml(fa.ai.reason) : ''}
+      </div>`));
+    }
+    if (fa.aiNote) {
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--amber)">${escapeHtml(fa.aiNote)}</div>`));
     }
 
     const row = el('<div class="modrow" style="margin-top:8px"></div>');
@@ -398,6 +449,35 @@ const UIPlay = (() => {
     return box;
   }
 
+  // 3층 — AI에게 기술·DC를 물어본다(명세 09 §2-(1)). 실패는 전부 정상
+  // 경로다: 조용히 2층 결과를 그대로 둔다. 오류 팝업을 띄우지 않는다.
+  async function askAI(ctx, scene, text, sceneId) {
+    if (!AI.available('interpret')) return;
+    const fa = freeActionState;
+    if (fa) { fa.aiPending = true; ctx.actions.render(); }
+    try {
+      const p = AI.interpretPrompt(scene, text, ctx.RULES.skills);
+      const r = await AI.complete({ ...p, maxTokens: 200 });
+      const parsed = AI.parseInterpretation(r.text, ctx.RULES.skills);
+      // 그 사이 사용자가 취소했거나 다른 씬으로 갔으면 버린다.
+      if (!freeActionState || freeActionState.sceneId !== sceneId || freeActionState.text !== text) return;
+      freeActionState.aiPending = false;
+      if (parsed) {
+        freeActionState.ai = parsed;
+        freeActionState.skillOverride = parsed.skill;
+        freeActionState.dcOverride = parsed.dc;
+      } else {
+        freeActionState.aiNote = 'AI 응답을 해석하지 못해 키워드 파서(2층) 제안을 그대로 씁니다.';
+      }
+    } catch (e) {
+      if (freeActionState && freeActionState.sceneId === sceneId) {
+        freeActionState.aiPending = false;
+        freeActionState.aiNote = 'AI에 연결하지 못했습니다 — 키워드 파서(2층) 제안으로 진행합니다.';
+      }
+    }
+    ctx.actions.render();
+  }
+
   function renderFreeAction(ctx, scenario, state, party, scene) {
     const panel = el('<div class="panel"><h3>다른 행동을 시도한다</h3></div>');
     panel.appendChild(el(`<div class="small-note" style="margin-bottom:8px">
@@ -414,7 +494,7 @@ const UIPlay = (() => {
     inField.appendChild(input);
     panel.appendChild(inField);
 
-    const interpretBtn = el('<button style="margin-top:6px">해석</button>');
+    const interpretBtn = el(`<button style="margin-top:6px">해석${AI.available('interpret') ? ' (AI)' : ''}</button>`);
     interpretBtn.onclick = () => {
       const text = input.value.trim();
       if (!text) return;
@@ -432,6 +512,10 @@ const UIPlay = (() => {
         actorOverride: null,
       };
       ctx.actions.render();
+      // 3층(명세 09). 2층 결과를 이미 세워 뒀으므로, AI가 실패하든 느리든
+      // 사람은 바로 판정할 수 있다. AI가 돌아오면 제안만 덮어쓴다 —
+      // **여전히 사람이 확인을 눌러야** 굴러간다.
+      askAI(ctx, scene, text, state.sceneId);
     };
     panel.appendChild(interpretBtn);
 
@@ -464,6 +548,10 @@ const UIPlay = (() => {
     await saveGame(ctx, applied.state);
 
     lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative, dice: [{ sides: 20, value: natural }] };
+    narrateLater(ctx, () => lastFreeResult, {
+      place: scene.place || scene.title, actor: actorName,
+      action: fa.text, tierLabel: TIER_LABEL[tier], outcome: narrative,
+    });
     freeActionState = null;
 
     await ctx.actions.withRoom((s) => {
@@ -507,6 +595,10 @@ const UIPlay = (() => {
         resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
       }
       resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      // 3층 서술은 원문 **아래에 덧붙인다** — 대체하지 않는다(명세 09).
+      if (r.aiNarrative) {
+        resultPanel.appendChild(el(`<div style="margin-top:8px;padding-left:10px;border-left:2px solid var(--olive);color:var(--paper-dim);line-height:1.7;white-space:pre-wrap">${escapeHtml(r.aiNarrative)}</div>`));
+      }
       if (r.nextSceneMissing) {
         resultPanel.appendChild(el('<div style="margin-top:8px;color:var(--amber);font-weight:600">다음 씬은 아직 작성되지 않았습니다.</div>'));
       }
@@ -522,6 +614,9 @@ const UIPlay = (() => {
       resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
       resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
       resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      if (r.aiNarrative) {
+        resultPanel.appendChild(el(`<div style="margin-top:8px;padding-left:10px;border-left:2px solid var(--olive);color:var(--paper-dim);line-height:1.7;white-space:pre-wrap">${escapeHtml(r.aiNarrative)}</div>`));
+      }
       c.appendChild(resultPanel);
     }
 

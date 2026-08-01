@@ -20,7 +20,8 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 10-combat-and-dice ✅  턴제 전투 + 주사위 애니메이션
         │             (적 스탯은 전부 기존 데이터에서 온다)
         ▼
-09-byok-ai            AI GM 연동 — 사용자 계정(BYOK) 다중 공급자 (3층)  ← 다음
+09-byok-ai ✅          AI GM 연동 — 사용자 계정(BYOK) 다중 공급자 (3층)
+                      (키 없어도 게임 100% 동작 · 로컬 모델 1급)
 ```
 
 **AI는 3층입니다** — [ADR-003](../adr/003-byok-ai-gm.md). 작은 모델을 내장하는
@@ -56,6 +57,7 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 | 06 | `web/src/ui-craft.js`, `web/src/ui-builder.js`, `web/src/rules.js`(추가만), `tools/verify-craft.mjs` |
 | 07 | `web/src/game.js`, `ui-play.js`, `data/scenarios/*.scenes.json`, `tools/verify-play.mjs` + **공용 파일 허용** (새 진입점이라 슬롯으로 우회 불가) |
 | 08 | A: `data/scenarios/*.scenes.json` / B: `web/src/parser.js`·`ui-party.js`·`ui-play.js`·`game.js`, `tools/verify-parser.mjs` |
+| 09 | `web/src/ai.js`·`ui-ai.js`(신규), `ui-play.js`·`ui.js`·`template.html`, `tools/verify-ai.mjs` |
 | 10 | `web/src/combat.js`·`ui-combat.js`·`ui-dice.js`(신규), `ui-play.js`·`ui-check.js`·`ui-builder.js`·`ui.js`·`rules.js`(추가만)·`template.html`, `tools/verify-combat.mjs` |
 
 02와 03은 **`app.js`·`ui.js`·`store.js`를 수정하지 않습니다.** 01이 미리

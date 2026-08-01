@@ -498,6 +498,7 @@ const UI = (() => {
     else if (ctx.activeTab === 'char') renderChar(c, ctx);
     else if (ctx.activeTab === 'dice') renderDice(c, ctx);
     else if (ctx.activeTab === 'gm') renderGM(c, ctx);
+    else if (ctx.activeTab === 'ai') UIAI.render(c, ctx);
     else if (ctx.activeTab === 'log') renderLog(c, ctx);
   }
 

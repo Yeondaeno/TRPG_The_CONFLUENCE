@@ -259,6 +259,7 @@
     <button class="tab-btn" data-tab="char">캐릭터시트</button>
     <button class="tab-btn" data-tab="dice">주사위</button>
     <button class="tab-btn" data-tab="gm">GM 대시보드</button>
+    <button class="tab-btn" data-tab="ai">AI GM</button>
     <button class="tab-btn" data-tab="log">세션 로그</button>
   </div>
   <div id="tab-content"></div>
@@ -2226,6 +2227,352 @@ const Combat = (() => {
 if (typeof module !== 'undefined') module.exports = Combat;
 
 
+// ==== web/src/ai.js ====
+// web/src/ai.js — AI GM 연동 (명세 09, docs/specs/09-byok-ai.md)
+//
+// **키가 없어도 게임은 100% 동작한다.** 이 파일이 통째로 실패해도 1층(규칙)과
+// 2층(키워드 파서)은 그대로 굴러간다. 연결 실패·키 없음·응답 오류는 전부
+// 정상 경로다 — 오류 팝업으로 세션을 막지 않는다.
+//
+// **규칙 판정은 절대 AI에게 맡기지 않는다.** 주사위·보정·4단계·상태 변경은
+// 전부 코드가 한다. AI가 하는 일은 딱 둘이다.
+//   (1) 자유 행동이 어느 기술·DC인지 **제안** — 사람이 확인해야 굴러간다
+//   (2) **이미 확정된** 결과를 문장으로 묘사 — 사실을 바꾸지 않는다
+//
+// 키 저장 위치: Store의 `hg:ai` — **방과 무관한 키**다. 방 데이터
+// (hg:{code}:*)에 넣으면 P2P 상태 내보내기에 섞여 나간다. 절대 안 된다.
+//
+// ── file:// 출처 문제 (명세 09 머리말의 A + C 결정) ────────────────────
+// index.html을 더블클릭해 열면 그 페이지의 출처는 `null`이다. 공급자가
+// CORS를 열어놨더라도 `Origin: null`은 대개 거부된다. 그래서 클라우드
+// 공급자는 전부 corsOk: null(미확인)이고, 확실한 경로는 사용자가 자기
+// 컴퓨터에서 CORS를 여는 로컬 모델(Ollama/LM Studio)이다.
+
+const AI = (() => {
+  const STORE_KEY = 'hg:ai'; // 방과 무관 — 아래 주석과 명세 09 §4 참고
+
+  // corsOk: true(확인됨) / false(불가 확인됨) / null(미확인).
+  // **추측해서 true를 적지 않는다** — 되는 척하고 실패하는 게 최악이다.
+  const PROVIDERS = [
+    {
+      id: 'ollama', label: 'Ollama (내 컴퓨터)', kind: 'openai',
+      baseUrl: 'http://localhost:11434/v1', corsOk: null, local: true,
+      models: ['llama3.1', 'qwen2.5', 'gemma2', 'mistral'],
+      keyUrl: null,
+      note: 'OLLAMA_ORIGINS="*" 를 설정하고 실행하면 브라우저에서 부를 수 있습니다. 키는 비워 두세요.',
+    },
+    {
+      id: 'lmstudio', label: 'LM Studio (내 컴퓨터)', kind: 'openai',
+      baseUrl: 'http://localhost:1234/v1', corsOk: null, local: true,
+      models: [],
+      keyUrl: null,
+      note: '로컬 서버를 켜고 CORS를 허용하면 브라우저에서 부를 수 있습니다. 키는 비워 두세요.',
+    },
+    {
+      id: 'anthropic', label: 'Claude', kind: 'anthropic',
+      baseUrl: 'https://api.anthropic.com', corsOk: null,
+      models: ['claude-sonnet-4-5', 'claude-opus-4-1', 'claude-haiku-4-5'],
+      keyUrl: 'console.anthropic.com',
+      note: 'anthropic-dangerous-direct-browser-access 헤더를 붙여 시도합니다.',
+    },
+    {
+      id: 'openai', label: 'ChatGPT', kind: 'openai',
+      baseUrl: 'https://api.openai.com/v1', corsOk: null,
+      models: ['gpt-4.1', 'gpt-4o', 'o4-mini'], keyUrl: 'platform.openai.com',
+    },
+    {
+      id: 'gemini', label: 'Gemini', kind: 'gemini',
+      baseUrl: 'https://generativelanguage.googleapis.com/v1beta', corsOk: null,
+      models: ['gemini-2.5-pro', 'gemini-2.5-flash'], keyUrl: 'aistudio.google.com',
+    },
+    {
+      id: 'xai', label: 'Grok', kind: 'openai',
+      baseUrl: 'https://api.x.ai/v1', corsOk: null,
+      models: ['grok-4', 'grok-3'], keyUrl: 'console.x.ai',
+    },
+    {
+      id: 'deepseek', label: 'DeepSeek', kind: 'openai',
+      baseUrl: 'https://api.deepseek.com/v1', corsOk: null,
+      models: ['deepseek-chat', 'deepseek-reasoner'], keyUrl: 'platform.deepseek.com',
+    },
+    {
+      id: 'moonshot', label: 'Kimi', kind: 'openai',
+      baseUrl: 'https://api.moonshot.cn/v1', corsOk: null,
+      models: ['moonshot-v1-8k', 'kimi-k2'], keyUrl: 'platform.moonshot.cn',
+    },
+    {
+      id: 'custom', label: '직접 입력 (OpenAI 호환)', kind: 'openai',
+      baseUrl: '', corsOk: null, models: [], keyUrl: null,
+      note: '자체 프록시나 사내 게이트웨이 등 OpenAI 호환 엔드포인트를 그대로 씁니다.',
+    },
+  ];
+
+  let cfg = { provider: 'ollama', model: '', baseUrl: '', apiKey: '', useInterpret: false, useNarrate: false };
+  let loaded = false;
+
+  function providerDef(id) { return PROVIDERS.find((p) => p.id === (id || cfg.provider)) || PROVIDERS[0]; }
+
+  async function load() {
+    if (loaded) return cfg;
+    try {
+      const saved = await Store.get(STORE_KEY);
+      if (saved && typeof saved === 'object') cfg = { ...cfg, ...saved };
+    } catch (e) { /* 저장소가 막혀 있어도 AI만 꺼진 채로 게임은 돈다 */ }
+    loaded = true;
+    return cfg;
+  }
+
+  async function save() { try { await Store.set(STORE_KEY, cfg); } catch (e) { /* 위와 같음 */ } }
+
+  function endpointFor(def) {
+    const base = (cfg.baseUrl || def.baseUrl || '').replace(/\/+$/, '');
+    if (def.kind === 'anthropic') return `${base}/v1/messages`;
+    if (def.kind === 'gemini') return `${base}/models/${encodeURIComponent(cfg.model || def.models[0] || '')}:generateContent`;
+    return `${base}/chat/completions`;
+  }
+
+  // 요청 하나를 만든다. **순수 함수** — 실제로 보내지 않는다. 검증
+  // (tools/verify-ai.mjs)과 테스트가 URL·헤더·바디를 그대로 검사한다.
+  function buildRequest({ system, messages, maxTokens }) {
+    const def = providerDef();
+    const model = cfg.model || def.models[0] || '';
+    const url = endpointFor(def);
+    const max = maxTokens || 400;
+
+    if (def.kind === 'anthropic') {
+      return {
+        url,
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': cfg.apiKey || '',
+          'anthropic-version': '2023-06-01',
+          // 브라우저에서 직접 부르려면 이 헤더가 필수다(명세 09 §1 표).
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: {
+          model, max_tokens: max, system: system || undefined,
+          messages: (messages || []).map((m) => ({ role: m.role, content: m.content })),
+        },
+      };
+    }
+
+    if (def.kind === 'gemini') {
+      return {
+        // 키를 쿼리로 붙이는 게 Gemini의 방식이다. 프롬프트에는 절대 안 넣는다.
+        url: `${url}?key=${encodeURIComponent(cfg.apiKey || '')}`,
+        headers: { 'content-type': 'application/json' },
+        body: {
+          systemInstruction: system ? { parts: [{ text: system }] } : undefined,
+          contents: (messages || []).map((m) => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }],
+          })),
+          generationConfig: { maxOutputTokens: max },
+        },
+      };
+    }
+
+    // OpenAI 호환 — ChatGPT·Grok·DeepSeek·Kimi·Ollama·LM Studio·custom이 전부 이것.
+    const headers = { 'content-type': 'application/json' };
+    // 로컬 모델은 대개 키가 필요 없다. 빈 Authorization을 보내면 오히려
+    // 거부하는 구현이 있어 키가 있을 때만 붙인다.
+    if (cfg.apiKey) headers.authorization = `Bearer ${cfg.apiKey}`;
+    return {
+      url, headers,
+      body: {
+        model, max_tokens: max,
+        messages: (system ? [{ role: 'system', content: system }] : []).concat(
+          (messages || []).map((m) => ({ role: m.role, content: m.content })),
+        ),
+      },
+    };
+  }
+
+  function extractText(def, data) {
+    try {
+      if (def.kind === 'anthropic') {
+        return (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('').trim();
+      }
+      if (def.kind === 'gemini') {
+        const parts = ((data.candidates || [])[0] || {}).content || {};
+        return (parts.parts || []).map((p) => p.text || '').join('').trim();
+      }
+      return (((data.choices || [])[0] || {}).message || {}).content || '';
+    } catch (e) { return ''; }
+  }
+
+  // 실패 원인을 추측해서 하나로 단정하지 않는다 — 후보를 그대로 보여준다
+  // (명세 09 머리말 A: "막히면 정직하게"). file:// 출처가 가장 흔한 원인이라
+  // 맨 앞에 둔다.
+  function diagnose(err, def) {
+    const isNetwork = err && /Failed to fetch|NetworkError|Load failed/i.test(String(err.message || err));
+    if (!isNetwork) return String(err && err.message ? err.message : err);
+    const fileOrigin = typeof location !== 'undefined' && location.protocol === 'file:';
+    const lines = ['브라우저에서 이 공급자를 직접 호출하지 못했습니다. 원인 후보:'];
+    if (fileOrigin && !def.local) {
+      lines.push('· 이 페이지를 file://로 열어 출처가 null입니다 — 대부분의 API가 거부합니다.');
+      lines.push('  (해결: 로컬 모델을 쓰거나, http://localhost 로 파일을 띄워 열어 보세요)');
+    }
+    if (def.local) lines.push('· 로컬 서버가 꺼져 있거나 CORS를 허용하지 않았습니다.');
+    else lines.push('· 공급자가 브라우저 직접 호출(CORS)을 허용하지 않을 수 있습니다.');
+    lines.push('· 네트워크·방화벽·확장 프로그램 차단');
+    return lines.join('\n');
+  }
+
+  return {
+    STORE_KEY,
+    providers() { return PROVIDERS.map((p) => ({ ...p })); },
+    providerDef,
+    load,
+
+    config() {
+      const def = providerDef();
+      return {
+        provider: cfg.provider, model: cfg.model || def.models[0] || '',
+        baseUrl: cfg.baseUrl || def.baseUrl, hasKey: !!cfg.apiKey,
+        useInterpret: !!cfg.useInterpret, useNarrate: !!cfg.useNarrate,
+        corsOk: def.corsOk, local: !!def.local,
+      };
+    },
+
+    async setConfig(next) {
+      await load();
+      cfg = { ...cfg, ...next };
+      if (next && next.provider && !next.model) cfg.model = ''; // 공급자를 바꾸면 모델은 기본값으로
+      await save();
+      return this.config();
+    },
+
+    async clearKey() { await load(); cfg.apiKey = ''; await save(); },
+
+    // 키가 있고(로컬은 없어도 됨) 기능이 켜져 있는가. **available()이
+    // false면 호출부는 아무 일도 없었던 것처럼 2층으로 간다.**
+    available(feature) {
+      const def = providerDef();
+      const keyOk = def.local || !!cfg.apiKey;
+      if (!keyOk) return false;
+      if (feature === 'interpret') return !!cfg.useInterpret;
+      if (feature === 'narrate') return !!cfg.useNarrate;
+      return true;
+    },
+
+    buildRequest, // 검증·테스트가 직접 검사한다
+
+    async complete({ system, messages, maxTokens, signal }) {
+      const def = providerDef();
+      const req = buildRequest({ system, messages, maxTokens });
+      let res;
+      try {
+        res = await fetch(req.url, {
+          method: 'POST', headers: req.headers, body: JSON.stringify(req.body), signal,
+        });
+      } catch (e) {
+        const err = new Error(diagnose(e, def));
+        err.kind = 'network';
+        throw err;
+      }
+      if (!res.ok) {
+        let detail = '';
+        try { detail = (await res.text()).slice(0, 200); } catch (e) { /* 본문이 없어도 상태 코드는 알린다 */ }
+        const err = new Error(`${res.status} ${res.statusText}${detail ? ' — ' + detail : ''}`);
+        err.kind = 'http';
+        throw err;
+      }
+      const data = await res.json();
+      return { text: extractText(def, data) };
+    },
+
+    async test() {
+      try {
+        const r = await this.complete({
+          system: '한 단어로만 답하세요.',
+          messages: [{ role: 'user', content: '연결 확인. "확인"이라고만 답하세요.' }],
+          maxTokens: 16,
+        });
+        return { ok: true, message: r.text ? `응답: ${r.text.slice(0, 40)}` : '응답이 비었지만 호출은 성공했습니다.' };
+      } catch (e) {
+        return { ok: false, message: e.message };
+      }
+    },
+
+    // ── 프롬프트 조립 ───────────────────────────────────────────────
+    // **플레이어가 아는 것만 넣는다**(명세 09 §3). GM 전용 진상과 캐릭터
+    // 비밀은 명세 04가 애초에 이 파일(web/index.html)에서 빼놨지만, GM이
+    // secrets.json을 불러오면 런타임에는 존재할 수 있다. 그래서 조립 단계에서
+    // 한 번 더 막는다 — scrubSecrets()가 최종 방어선이다.
+    scrubSecrets(text, secrets) {
+      let out = String(text == null ? '' : text);
+      (secrets || []).forEach((s) => {
+        if (s && out.includes(s)) out = out.split(s).join('[비공개]');
+      });
+      return out;
+    },
+
+    interpretPrompt(scene, text, skills) {
+      const affordances = (scene.affordances || []).map((a) => `- ${a.id}: ${a.noun.join('/')} (${a.tags.join('·')})`).join('\n');
+      return {
+        system: [
+          '너는 한국어 TRPG의 규칙 보조자다. 결과를 정하지 않는다.',
+          '플레이어의 자유 행동이 어느 기술과 난이도(DC)로 판정될지만 제안한다.',
+          'JSON 하나만 출력한다. 설명·인사·코드펜스 금지.',
+          '{"skill":"<기술 id>","dc":<정수>,"reason":"<한 문장>"}',
+          `기술 id는 다음 중 하나여야 한다: ${skills.map((s) => s.id).join(', ')}`,
+        ].join('\n'),
+        messages: [{
+          role: 'user',
+          content: [
+            `[장면] ${scene.title || ''} — ${scene.place || ''}`,
+            (scene.narrative || []).join(' '),
+            affordances ? `[장면에 있는 것]\n${affordances}` : '',
+            `[플레이어의 행동] ${text}`,
+          ].filter(Boolean).join('\n'),
+        }],
+      };
+    },
+
+    // 응답에서 JSON 하나를 건져낸다. 코드펜스·앞뒤 잡담을 견딘다.
+    // 실패하면 null — 호출부는 조용히 2층(키워드 파서)으로 간다.
+    parseInterpretation(raw, skills) {
+      if (!raw) return null;
+      const m = /\{[\s\S]*\}/.exec(String(raw));
+      if (!m) return null;
+      let obj;
+      try { obj = JSON.parse(m[0]); } catch (e) { return null; }
+      const ids = (skills || []).map((s) => s.id);
+      if (!obj || !ids.includes(obj.skill)) return null;
+      const dc = parseInt(obj.dc, 10);
+      if (!Number.isFinite(dc) || dc < 1 || dc > 40) return null;
+      return { skill: obj.skill, dc, reason: String(obj.reason || '').slice(0, 200) };
+    },
+
+    // 결과 서술 — **이미 확정된 사실**을 준다. "무슨 일이 일어났는지"를 묻지
+    // 않는다(명세 09 §2-(2)).
+    narratePrompt(facts) {
+      return {
+        system: [
+          '너는 한국어 TRPG의 서술자다. 아래 사실을 2~3문장으로 묘사하라.',
+          '**사실을 바꾸거나 새 사건을 만들지 마라.** 성패·수치·죽음 여부를 뒤집지 마라.',
+          '규칙 용어(DC, 굴림값)는 쓰지 말고 장면으로 보여줘라.',
+          '어반판타지 느와르 톤. 과장하지 말고 담담하게.',
+        ].join('\n'),
+        messages: [{
+          role: 'user',
+          content: [
+            `[장면] ${facts.place || ''}`,
+            `[행동한 사람] ${facts.actor || '파티'}`,
+            `[한 행동] ${facts.action || ''}`,
+            `[확정된 결과] ${facts.tierLabel || ''} — ${facts.outcome || ''}`,
+            facts.effects ? `[확정된 변화] ${facts.effects}` : '',
+          ].filter(Boolean).join('\n'),
+        }],
+      };
+    },
+  };
+})();
+
+if (typeof module !== 'undefined') module.exports = AI;
+
+
 // ==== web/src/ui.js ====
 // web/src/ui.js — 렌더링
 //
@@ -2727,6 +3074,7 @@ const UI = (() => {
     else if (ctx.activeTab === 'char') renderChar(c, ctx);
     else if (ctx.activeTab === 'dice') renderDice(c, ctx);
     else if (ctx.activeTab === 'gm') renderGM(c, ctx);
+    else if (ctx.activeTab === 'ai') UIAI.render(c, ctx);
     else if (ctx.activeTab === 'log') renderLog(c, ctx);
   }
 
@@ -3187,6 +3535,184 @@ const UICombat = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = UICombat;
+
+
+// ==== web/src/ui-ai.js ====
+// web/src/ui-ai.js — AI GM 설정 화면 (명세 09 §4)
+//
+// ui.js의 "AI GM" 탭이 UIAI.render(container, ctx)를 부른다. 이 화면은
+// **아무것도 강요하지 않는다** — 여기 손대지 않으면 AI는 꺼진 채이고
+// 게임은 그대로 굴러간다.
+//
+// 키는 AI.setConfig()가 Store의 `hg:ai`에 넣는다. 방과 무관한 키다 —
+// 방 데이터(hg:{code}:*)에 넣으면 P2P 내보내기에 섞여 나간다(명세 09 §4).
+
+const UIAI = (() => {
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+
+  let loaded = false;
+  let testResult = null; // { ok, message }
+  let testing = false;
+
+  function scheduleLoad(ctx) {
+    if (loaded) return;
+    loaded = true;
+    AI.load().then(() => ctx.actions.render());
+  }
+
+  function corsLabel(def) {
+    if (def.corsOk === true) return '<span style="color:var(--good)">브라우저 직접 호출 확인됨</span>';
+    if (def.corsOk === false) return '<span style="color:var(--danger)">브라우저에서 직접 호출할 수 없습니다 — 프록시가 필요합니다</span>';
+    return '<span style="color:var(--amber)">브라우저 직접 호출 가능 여부 <b>미확인</b> — 아래 [연결 확인]으로 직접 시도해 보세요</span>';
+  }
+
+  function render(container, ctx) {
+    if (!container) return;
+    scheduleLoad(ctx);
+    const cfg = AI.config();
+    const def = AI.providerDef(cfg.provider);
+
+    // ── 머리말 ────────────────────────────────────────────────────
+    const head = el('<div class="panel"><h3>AI GM (선택 사항)</h3></div>');
+    head.appendChild(el(`<div class="small-note" style="margin-top:0">
+      <b style="color:var(--paper)">키를 넣지 않아도 게임은 100% 동작합니다.</b>
+      AI는 얹는 층이지 기반이 아닙니다. 규칙 판정(주사위·보정·4단계·상태 변경)은
+      <b style="color:var(--paper)">언제나 코드가</b> 하고, AI는 확정된 결과를
+      문장으로 옮기거나 자유 행동이 어느 기술인지 <b style="color:var(--paper)">제안</b>만 합니다.
+    </div>`));
+    container.appendChild(head);
+
+    // ── 공급자 ────────────────────────────────────────────────────
+    const panel = el('<div class="panel"></div>');
+    const row = el('<div class="modrow"></div>');
+
+    const pField = el('<div class="field"><label>공급자</label></div>');
+    const pSel = document.createElement('select');
+    pSel.id = 'ai-provider';
+    AI.providers().forEach((p) => {
+      const o = document.createElement('option');
+      o.value = p.id; o.textContent = p.label + (p.local ? '' : '');
+      o.selected = p.id === cfg.provider;
+      pSel.appendChild(o);
+    });
+    pSel.onchange = async () => {
+      testResult = null;
+      await AI.setConfig({ provider: pSel.value, model: '', baseUrl: '' });
+      ctx.actions.render();
+    };
+    pField.appendChild(pSel); row.appendChild(pField);
+
+    // 모델 — 자유 입력이 기본이고 datalist는 제안일 뿐이다(명세 09 §1
+    // "모델 목록을 하드코딩하지 마세요"). 목록에 없다고 막지 않는다.
+    const mField = el('<div class="field"><label>모델 (자유 입력)</label></div>');
+    const mInp = document.createElement('input');
+    mInp.type = 'text'; mInp.id = 'ai-model'; mInp.value = cfg.model || '';
+    mInp.placeholder = def.models[0] || '모델 이름을 직접 입력';
+    mInp.setAttribute('list', 'ai-model-list');
+    mInp.onchange = async () => { await AI.setConfig({ model: mInp.value.trim() }); ctx.actions.render(); };
+    const dl = document.createElement('datalist');
+    dl.id = 'ai-model-list';
+    def.models.forEach((m) => { const o = document.createElement('option'); o.value = m; dl.appendChild(o); });
+    mField.appendChild(mInp); mField.appendChild(dl); row.appendChild(mField);
+    panel.appendChild(row);
+
+    panel.appendChild(el(`<div class="small-note" style="margin-top:4px">${corsLabel(def)}</div>`));
+    if (def.note) panel.appendChild(el(`<div class="small-note" style="margin-top:2px">${escapeHtml(def.note)}</div>`));
+
+    // ── 엔드포인트 (custom/로컬은 직접 고칠 수 있어야 한다) ──────────
+    const uField = el('<div class="field" style="margin-top:10px"><label>엔드포인트 (base URL)</label></div>');
+    const uInp = document.createElement('input');
+    uInp.type = 'text'; uInp.id = 'ai-baseurl'; uInp.value = cfg.baseUrl || '';
+    uInp.placeholder = def.baseUrl || 'https://... /v1';
+    uInp.onchange = async () => { testResult = null; await AI.setConfig({ baseUrl: uInp.value.trim() }); ctx.actions.render(); };
+    uField.appendChild(uInp);
+    panel.appendChild(uField);
+
+    // ── API 키 ────────────────────────────────────────────────────
+    const kField = el(`<div class="field" style="margin-top:10px"><label>API 키${def.local ? ' (로컬 모델은 대개 비워 둡니다)' : ''}</label></div>`);
+    const kInp = document.createElement('input');
+    kInp.type = 'password'; kInp.id = 'ai-key';
+    kInp.value = ''; // 저장된 키는 절대 화면에 되돌려 놓지 않는다
+    kInp.placeholder = cfg.hasKey ? '••••••••  (저장됨 — 바꾸려면 새로 입력)' : (def.keyUrl ? `${def.keyUrl} 에서 발급` : '');
+    kInp.onchange = async () => {
+      if (!kInp.value) return;
+      testResult = null;
+      await AI.setConfig({ apiKey: kInp.value });
+      kInp.value = '';
+      ctx.actions.render();
+    };
+    kField.appendChild(kInp);
+    panel.appendChild(kField);
+
+    const btnRow = el('<div class="dice-grid" style="margin-top:10px"></div>');
+    const testBtn = el(`<button class="primary">${testing ? '확인 중…' : '연결 확인'}</button>`);
+    testBtn.id = 'ai-test';
+    testBtn.disabled = testing;
+    testBtn.onclick = async () => {
+      testing = true; testResult = null; ctx.actions.render();
+      testResult = await AI.test();
+      testing = false;
+      ctx.actions.render();
+    };
+    btnRow.appendChild(testBtn);
+    const clearBtn = el('<button class="ghost">키 지우기</button>');
+    clearBtn.id = 'ai-clear';
+    clearBtn.onclick = async () => { await AI.clearKey(); testResult = null; ctx.actions.render(); };
+    btnRow.appendChild(clearBtn);
+    panel.appendChild(btnRow);
+
+    if (testResult) {
+      const color = testResult.ok ? 'var(--good)' : 'var(--danger)';
+      panel.appendChild(el(`<div class="kv" style="margin-top:10px;border-left:3px solid ${color};padding-left:8px">
+        <b style="color:${color}">${testResult.ok ? '연결됨' : '연결 실패'}</b>
+        <div style="white-space:pre-wrap;line-height:1.6">${escapeHtml(testResult.message)}</div>
+      </div>`));
+      if (!testResult.ok) {
+        panel.appendChild(el('<div class="small-note">실패해도 게임은 그대로 진행됩니다 — 자유 행동은 키워드 파서(2층)가, 결과 서술은 씬 원문이 맡습니다.</div>'));
+      }
+    }
+    container.appendChild(panel);
+
+    // ── 경고 ──────────────────────────────────────────────────────
+    const warn = el('<div class="panel"><h3>알고 쓰세요</h3></div>');
+    warn.appendChild(el(`<div class="kv" style="line-height:1.8">
+      ⚠ 키는 <b>이 브라우저에만</b> 저장됩니다(방 데이터와 분리 — P2P로 나가지 않습니다). 공유 PC에서는 넣지 마세요.<br>
+      ⚠ 게임 내용(장면·행동·캐릭터 이름)이 선택한 공급자에게 <b>전송</b>됩니다.<br>
+      ⚠ 캐릭터 비밀과 GM 전용 진상은 <b>전송하지 않습니다</b> — 조립 단계에서 걸러냅니다.<br>
+      ⚠ 비용은 <b>회원님 계정</b>에서 나갑니다.
+    </div>`));
+    container.appendChild(warn);
+
+    // ── 기능 토글 — 따로 껐다 켠다(명세 09 §4) ─────────────────────
+    const feat = el('<div class="panel"><h3>어디에 쓸까요</h3></div>');
+    [
+      ['useInterpret', '자유 행동 해석에 AI 쓰기', '"가로등 배선을 끊는다" → 어느 기술·DC인지 AI가 제안합니다. <b>확인을 눌러야</b> 판정이 굴러가고, 기술·DC는 직접 바꿀 수 있습니다. 실패하면 키워드 파서(2층)가 그대로 맡습니다.'],
+      ['useNarrate', '결과 서술에 AI 쓰기', '판정이 <b>끝난 뒤</b> 확정된 결과를 문장으로 옮깁니다. 씬 원문은 그대로 두고 <b>아래에 덧붙입니다</b> — 실패하면 원문만 남습니다.'],
+    ].forEach(([key, label, desc]) => {
+      const box = el('<div class="kv"></div>');
+      const lab = document.createElement('label');
+      lab.style.cssText = 'display:flex;gap:8px;align-items:flex-start;cursor:pointer';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.id = 'ai-' + key; cb.checked = !!cfg[key];
+      cb.onchange = async () => { await AI.setConfig({ [key]: cb.checked }); ctx.actions.render(); };
+      const txt = el(`<span><b style="color:var(--amber)">${escapeHtml(label)}</b>
+        <div style="color:var(--paper-dim);font-weight:400;margin-top:2px;line-height:1.6">${desc}</div></span>`);
+      lab.appendChild(cb); lab.appendChild(txt);
+      box.appendChild(lab);
+      feat.appendChild(box);
+    });
+    const ready = AI.available('interpret') || AI.available('narrate');
+    feat.appendChild(el(`<div class="small-note">현재 상태: <b style="color:${ready ? 'var(--good)' : 'var(--paper-dim)'}">${ready ? 'AI 사용 중' : 'AI 꺼짐 — 게임은 정상 동작'}</b></div>`));
+    container.appendChild(feat);
+  }
+
+  return { render };
+})();
+
+if (typeof module !== 'undefined') module.exports = UIAI;
 
 
 // ==== web/src/ui-check.js ====
@@ -5675,6 +6201,35 @@ const UIPlay = (() => {
     return box;
   }
 
+  // ---------------- 3층: 결과 서술 (명세 09 §2-(2)) ----------------
+  // **판정이 끝난 뒤에** 부른다. AI에게 "무슨 일이 일어났는지"를 묻지 않고,
+  // 이미 확정된 사실을 주고 "묘사하라"고만 시킨다. 씬 원문은 그대로 두고
+  // 아래에 덧붙이므로, 실패하면 원문만 남는다 — 그게 폴백이다.
+  //
+  // getTarget()은 함수다: 응답이 오는 사이 사용자가 다른 걸 눌렀으면
+  // lastResult가 바뀌어 있고, 그때는 낡은 서술을 붙이지 않는다.
+  async function narrateLater(ctx, getTarget, facts) {
+    if (!AI.available('narrate')) return;
+    const target = getTarget();
+    if (!target) return;
+    const stamp = target;
+    try {
+      // 프롬프트에 캐릭터 비밀이 섞이지 않게 마지막으로 한 번 더 훑는다
+      // (명세 09 §3). 씬 데이터에는 애초에 없지만, GM이 secrets.json을
+      // 불러온 브라우저에서는 런타임에 존재할 수 있다.
+      const secrets = (ctx.PREGENS || []).map((p) => p.secret).filter(Boolean);
+      const clean = {};
+      Object.keys(facts).forEach((k) => { clean[k] = AI.scrubSecrets(facts[k], secrets); });
+      const p = AI.narratePrompt(clean);
+      const r = await AI.complete({ ...p, maxTokens: 300 });
+      if (getTarget() !== stamp) return; // 그 사이 다른 판정이 일어남
+      if (r.text) stamp.aiNarrative = r.text.trim();
+    } catch (e) {
+      if (getTarget() === stamp) stamp.aiNarrativeFailed = true;
+    }
+    ctx.actions.render();
+  }
+
   // ---------------- 선택 실행 ----------------
   // shownDice: 화면에 굴려 보여줄 주사위(명세 10 §3). 판정 없는 선택지는
   // 비어 있다 — 굴리지 않았으니 보여줄 것도 없다.
@@ -5701,6 +6256,12 @@ const UIPlay = (() => {
       // 판정 d20에 더해 효과가 요구한 주사위(잔향 1d6 등)도 함께 굴러간다.
       dice: (shownDice || []).concat(dice.map((d, i) => ({ sides: d.sides, value: rolls[i] }))),
     };
+
+    const sceneNow = scenario.scenes[state.sceneId] || {};
+    narrateLater(ctx, () => lastResult, {
+      place: sceneNow.place || sceneNow.title, actor: actorName,
+      action: choice.label, tierLabel: tier ? TIER_LABEL[tier] : null, outcome: result.narrative,
+    });
 
     await ctx.actions.withRoom((s) => {
       const tierNote = tier ? ` → ${TIER_LABEL[tier] || tier}` : '';
@@ -5741,6 +6302,22 @@ const UIPlay = (() => {
     } else {
       box.appendChild(el(`<div style="font-size:13px;line-height:1.6;color:var(--amber)">${escapeHtml(result.reason || '이 장면의 요소로는 해석할 수 없습니다.')}</div>`));
       box.appendChild(el('<div class="small-note" style="margin-top:2px">룰북 1.4대로 직접 정해 주세요 — 판정은 해드립니다.</div>'));
+    }
+
+    // 3층(명세 09) — AI 제안이 오면 2층 위에 덧붙여 보여준다. **덮어쓴
+    // 것을 감추지 않는다**: 어느 층이 이 값을 냈는지 보여야 사람이
+    // 판단할 수 있다. 어느 쪽이든 아래 "이대로 판정"을 눌러야 굴러간다.
+    if (fa.aiPending) {
+      box.appendChild(el('<div class="small-note" style="margin-top:6px;color:var(--olive)">AI에게 물어보는 중… (기다리지 않고 지금 바로 판정해도 됩니다)</div>'));
+    }
+    if (fa.ai) {
+      const skillDef = (ctx.RULES.skills || []).find((x) => x.id === fa.ai.skill);
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--olive)">
+        <b style="color:var(--olive)">AI 제안</b> — ${escapeHtml(skillDef ? skillDef.name : fa.ai.skill)} · DC ${fa.ai.dc}${fa.ai.reason ? ': ' + escapeHtml(fa.ai.reason) : ''}
+      </div>`));
+    }
+    if (fa.aiNote) {
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--amber)">${escapeHtml(fa.aiNote)}</div>`));
     }
 
     const row = el('<div class="modrow" style="margin-top:8px"></div>');
@@ -5804,6 +6381,35 @@ const UIPlay = (() => {
     return box;
   }
 
+  // 3층 — AI에게 기술·DC를 물어본다(명세 09 §2-(1)). 실패는 전부 정상
+  // 경로다: 조용히 2층 결과를 그대로 둔다. 오류 팝업을 띄우지 않는다.
+  async function askAI(ctx, scene, text, sceneId) {
+    if (!AI.available('interpret')) return;
+    const fa = freeActionState;
+    if (fa) { fa.aiPending = true; ctx.actions.render(); }
+    try {
+      const p = AI.interpretPrompt(scene, text, ctx.RULES.skills);
+      const r = await AI.complete({ ...p, maxTokens: 200 });
+      const parsed = AI.parseInterpretation(r.text, ctx.RULES.skills);
+      // 그 사이 사용자가 취소했거나 다른 씬으로 갔으면 버린다.
+      if (!freeActionState || freeActionState.sceneId !== sceneId || freeActionState.text !== text) return;
+      freeActionState.aiPending = false;
+      if (parsed) {
+        freeActionState.ai = parsed;
+        freeActionState.skillOverride = parsed.skill;
+        freeActionState.dcOverride = parsed.dc;
+      } else {
+        freeActionState.aiNote = 'AI 응답을 해석하지 못해 키워드 파서(2층) 제안을 그대로 씁니다.';
+      }
+    } catch (e) {
+      if (freeActionState && freeActionState.sceneId === sceneId) {
+        freeActionState.aiPending = false;
+        freeActionState.aiNote = 'AI에 연결하지 못했습니다 — 키워드 파서(2층) 제안으로 진행합니다.';
+      }
+    }
+    ctx.actions.render();
+  }
+
   function renderFreeAction(ctx, scenario, state, party, scene) {
     const panel = el('<div class="panel"><h3>다른 행동을 시도한다</h3></div>');
     panel.appendChild(el(`<div class="small-note" style="margin-bottom:8px">
@@ -5820,7 +6426,7 @@ const UIPlay = (() => {
     inField.appendChild(input);
     panel.appendChild(inField);
 
-    const interpretBtn = el('<button style="margin-top:6px">해석</button>');
+    const interpretBtn = el(`<button style="margin-top:6px">해석${AI.available('interpret') ? ' (AI)' : ''}</button>`);
     interpretBtn.onclick = () => {
       const text = input.value.trim();
       if (!text) return;
@@ -5838,6 +6444,10 @@ const UIPlay = (() => {
         actorOverride: null,
       };
       ctx.actions.render();
+      // 3층(명세 09). 2층 결과를 이미 세워 뒀으므로, AI가 실패하든 느리든
+      // 사람은 바로 판정할 수 있다. AI가 돌아오면 제안만 덮어쓴다 —
+      // **여전히 사람이 확인을 눌러야** 굴러간다.
+      askAI(ctx, scene, text, state.sceneId);
     };
     panel.appendChild(interpretBtn);
 
@@ -5870,6 +6480,10 @@ const UIPlay = (() => {
     await saveGame(ctx, applied.state);
 
     lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative, dice: [{ sides: 20, value: natural }] };
+    narrateLater(ctx, () => lastFreeResult, {
+      place: scene.place || scene.title, actor: actorName,
+      action: fa.text, tierLabel: TIER_LABEL[tier], outcome: narrative,
+    });
     freeActionState = null;
 
     await ctx.actions.withRoom((s) => {
@@ -5913,6 +6527,10 @@ const UIPlay = (() => {
         resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
       }
       resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      // 3층 서술은 원문 **아래에 덧붙인다** — 대체하지 않는다(명세 09).
+      if (r.aiNarrative) {
+        resultPanel.appendChild(el(`<div style="margin-top:8px;padding-left:10px;border-left:2px solid var(--olive);color:var(--paper-dim);line-height:1.7;white-space:pre-wrap">${escapeHtml(r.aiNarrative)}</div>`));
+      }
       if (r.nextSceneMissing) {
         resultPanel.appendChild(el('<div style="margin-top:8px;color:var(--amber);font-weight:600">다음 씬은 아직 작성되지 않았습니다.</div>'));
       }
@@ -5928,6 +6546,9 @@ const UIPlay = (() => {
       resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
       resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
       resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      if (r.aiNarrative) {
+        resultPanel.appendChild(el(`<div style="margin-top:8px;padding-left:10px;border-left:2px solid var(--olive);color:var(--paper-dim);line-height:1.7;white-space:pre-wrap">${escapeHtml(r.aiNarrative)}</div>`));
+      }
       c.appendChild(resultPanel);
     }
 
