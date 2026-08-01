@@ -1323,3 +1323,56 @@ describe('AI 공급자 목록 — 확인하지 않은 것을 단정하지 않는
     assert.deepEqual([...kinds].sort(), ['anthropic', 'gemini', 'openai']);
   });
 });
+
+// ══════════════════════════════════════════════════════════════════════
+// 누가 굴릴 수 있는가 — 캐릭터 점유(ROOM.claims)
+//
+// 여럿이 함께 플레이할 때 아무나 남의 캐릭터로 판정을 굴릴 수 있으면
+// 이상하다. Game.rollPermission()이 그 규칙을 갖고, ui-play.js와
+// ui-combat.js가 버튼을 잠그는 데 쓴다.
+// ══════════════════════════════════════════════════════════════════════
+describe('Game.rollPermission — 남의 캐릭터를 대신 굴리지 못한다', () => {
+  test('점유자 본인은 굴릴 수 있다', () => {
+    const room = { claims: { 노아: '지훈' }, gm: '민서' };
+    assert.equal(Game.rollPermission(room, '지훈', '노아').allowed, true);
+  });
+
+  test('남의 캐릭터는 굴릴 수 없고 누구 것인지 알려준다', () => {
+    const room = { claims: { 노아: '지훈' }, gm: '민서' };
+    const r = Game.rollPermission(room, '민서', '노아');
+    assert.equal(r.allowed, false);
+    assert.equal(r.owner, '지훈');
+    assert.match(r.reason, /지훈/);
+  });
+
+  test('GM이라고 해서 남의 캐릭터를 대신 굴리지는 못한다', () => {
+    const room = { claims: { 노아: '지훈' }, gm: '민서' };
+    assert.equal(Game.rollPermission(room, '민서', '노아').allowed, false);
+  });
+
+  test('아무도 아무것도 점유하지 않았으면(혼자 플레이) 제한이 없다', () => {
+    const room = { claims: {}, gm: null };
+    ['노아', '이든', '준'].forEach((n) => {
+      assert.equal(Game.rollPermission(room, '나', n).allowed, true, n);
+    });
+  });
+
+  test('점유가 시작된 방에서 주인 없는 캐릭터는 GM이 맡는다', () => {
+    const room = { claims: { 노아: '지훈' }, gm: '민서' };
+    assert.equal(Game.rollPermission(room, '민서', '이든').allowed, true);
+    const other = Game.rollPermission(room, '지훈', '이든');
+    assert.equal(other.allowed, false);
+    assert.match(other.reason, /GM\(민서\)/);
+  });
+
+  test('GM이 없는 방이면 주인 없는 캐릭터는 아무나 — 진행이 멈추지 않는다', () => {
+    const room = { claims: { 노아: '지훈' }, gm: null };
+    assert.equal(Game.rollPermission(room, '지훈', '이든').allowed, true);
+    assert.equal(Game.rollPermission(room, '누구든', '이든').allowed, true);
+  });
+
+  test('room이 없거나 비어 있어도 죽지 않는다', () => {
+    assert.equal(Game.rollPermission(null, '나', '노아').allowed, true);
+    assert.equal(Game.rollPermission({}, '나', '노아').allowed, true);
+  });
+});

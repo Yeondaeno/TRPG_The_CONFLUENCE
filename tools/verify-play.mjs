@@ -281,7 +281,83 @@ check('실패한 선택지도 다시 고를 수 없음', !(await playSlot(p2).lo
 
 check('방 2: 페이지 에러 없음', errs2.length === 0, errs2.join('; '));
 
-await p1.close(); await p2.close();
+// ══════════════════════════════════════════════════════════════════════
+// 방 3: 캐릭터 점유(claims) — 남의 캐릭터로 판정을 굴리지 못한다
+//
+// 브라우저 둘을 띄워도 file:// 페이지끼리는 localStorage를 공유하지 않고
+// (P2P는 이 검증의 범위 밖이다), 확인하려는 것은 **한 화면이 점유 상태를
+// 어떻게 반영하는가**다. 그래서 점유 현황을 저장소에 직접 세우고 그 화면만
+// 본다.
+//
+// 세 경우가 한 화면에 다 나오게 방을 만든다. 점유 대상은 반드시 추천 8인
+// 파티 안에서 고른다 — 파티 밖 캐릭터를 잡으면 애초에 시도자 후보로 뜨지
+// 않아 아무것도 검사하지 못한다(처음에 소민을 잡았다가 겪었다). GM도 세
+// 번째 사람으로 둔다 — 점유자 이름과 GM 이름이 같으면 "남의 캐릭터라서"와
+// "주인이 없어서"를 문자열로 구분할 수 없다.
+//
+//   노아   → 지훈(나)  → 눌린다
+//   아이린 → 민서      → 남의 캐릭터라 잠긴다
+//   준     → 주인 없음 → GM(수현)의 몫이라 잠긴다
+// ══════════════════════════════════════════════════════════════════════
+const { page: p3, consoleErrors: errs3 } = await newPage();
+await joinRoom(p3, '지훈', 'PLAY03');
+await p3.evaluate(async () => {
+  await Store.set('hg:PLAY03:claims', { 노아: '지훈', 아이린: '민서' });
+  const meta = (await Store.get('hg:PLAY03:meta')) || {};
+  await Store.set('hg:PLAY03:meta', { ...meta, gm: '수현' });
+});
+await p3.reload();
+await p3.fill('#in-name', '지훈');
+await p3.fill('#in-code', 'PLAY03');
+await p3.click('#btn-join');
+await p3.waitForTimeout(700);
+
+await queueRandom(p3, [randFor(3, 6)]);
+await p3.click('button:has-text("플레이 시작")');
+await p3.waitForTimeout(400);
+await queueRandom(p3, [randFor(3, 6)]);
+await choiceBox(p3, '실종 현장으로 향한다').locator('button:has-text("선택")').click();
+await p3.waitForTimeout(400);
+
+// 진정시킨다(설득) — 최적 후보는 노아(CHA +3)이고 그건 내 캐릭터다.
+const persuadeBox3 = choiceBox(p3, '진정시킨다');
+check('내가 점유한 캐릭터(노아)의 판정 버튼은 눌린다',
+  await persuadeBox3.locator('button:has-text("판정")').isEnabled());
+check('내 캐릭터가 후보에 있으면 시도자 기본값이 내 캐릭터',
+  (await persuadeBox3.innerText()).includes('노아'));
+
+// 안정제를 놓는다(치유술) — 파티 안 최적 후보는 아이린, 즉 민서의 캐릭터다.
+const healBox3 = choiceBox(p3, '안정제를 놓는다');
+const healText = await healBox3.innerText();
+check('남이 점유한 캐릭터(아이린)가 시도자면 판정 버튼이 잠긴다',
+  await healBox3.locator('button:has-text("판정")').isDisabled(), healText.replace(/\n/g, ' ').slice(0, 160));
+check('잠긴 이유가 "민서님의 캐릭터입니다" — 점유자를 지목한다',
+  healText.includes('민서님의 캐릭터입니다') && healText.includes('그쪽 화면에서 굴립니다'),
+  healText.replace(/\n/g, ' ').slice(0, 200));
+
+// 막는 게 아니라 "누가 굴리는가"다 — 시도자를 내 캐릭터로 바꾸면 눌린다.
+await healBox3.locator('select').selectOption('노아');
+await p3.waitForTimeout(300);
+check('시도자를 내 캐릭터로 바꾸면 같은 선택지도 다시 눌린다',
+  await choiceBox(p3, '안정제를 놓는다').locator('button:has-text("판정")').isEnabled());
+
+// 주인 없는 캐릭터(준)는 GM(수현)의 몫이라 지훈은 못 굴린다 — 위의
+// "남의 캐릭터"와는 다른 이유이고, 화면도 다르게 말해야 한다.
+const exBox3 = choiceBox(p3, '잔향을 정화한다');
+const exText = await exBox3.innerText();
+check('점유자 없는 캐릭터(준)는 GM이 굴린다 — 나는 잠김',
+  await exBox3.locator('button:has-text("판정")').isDisabled(), exText.replace(/\n/g, ' ').slice(0, 160));
+check('그 이유는 점유자 지목이 아니라 "GM(수현)이 굴립니다"로 다르게 말한다',
+  exText.includes('GM(수현)') && !exText.includes('님의 캐릭터입니다'),
+  exText.replace(/\n/g, ' ').slice(0, 200));
+
+// 혼자 플레이(점유 0건)에서는 제한이 없었다 — 방 1·2가 그 경우다.
+check('혼자 플레이(점유 0건)에서는 제한이 없다(방 1·2가 그 상태로 전부 통과)',
+  results.filter((r) => r.name.startsWith('방 1') || r.name.startsWith('방 2')).every((r) => r.pass));
+
+check('방 3: 페이지 에러 없음', errs3.length === 0, errs3.join('; '));
+
+await p1.close(); await p2.close(); await p3.close();
 await browser.close();
 
 // ── 출력 ─────────────────────────────────────────────────────────────

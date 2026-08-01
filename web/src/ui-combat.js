@@ -15,6 +15,23 @@ const UICombat = (() => {
 
   function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
   function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }
+  // 전투에서도 남의 캐릭터를 대신 굴리지 못한다 — 씬 판정과 같은 규칙
+  // (Game.rollPermission). 적 차례는 누구나 진행시킬 수 있다(주인이 없다).
+  function perm(ctx, charName) {
+    return Game.rollPermission(ctx.ROOM, ctx.PLAYER_NAME, charName);
+  }
+  // 이번 차례를 내가 조작할 수 있는지. 못 하면 버튼을 잠그고 누가 굴려야
+  // 하는지 알린다 — 아무 일도 안 일어나는 것처럼 보이면 안 된다.
+  function turnGate(panel, ctx, actor) {
+    if (!actor || !actor.isPC) return { allowed: true };
+    const can = perm(ctx, actor.name);
+    if (!can.allowed) {
+      panel.appendChild(el(`<div class="small-note" style="color:var(--amber);margin-top:0">
+        ${escapeHtml(actor.name)} — ${escapeHtml(can.reason)}. 그쪽 화면에서 굴립니다.
+      </div>`));
+    }
+    return can;
+  }
 
   // 방금 굴린 주사위를 화면에 남긴다 — 다시 그려도 사라지지 않게 상태로 든다.
   // { dice: [{sides, value}], text } 모양.
@@ -122,6 +139,8 @@ const UICombat = (() => {
     const panel = el(`<div class="panel"><h3>라운드 ${cs.round} · ${escapeHtml(actor ? actor.name : '—')}의 차례</h3></div>`);
     if (!actor) { c.appendChild(panel); return; }
 
+    const gate = turnGate(panel, ctx, actor);
+
     // 빈사인 PC의 차례 — 행동 대신 사망 판정을 굴린다.
     if (actor.isPC && actor.hp <= 0 && !actor.dead) {
       if (actor.stable) {
@@ -132,6 +151,7 @@ const UICombat = (() => {
           (d20, ${(ctx.RULES.combat.dyingCheck || {}).dieOnBelow} 미만이면 사망).
         </div>`));
         const b = el('<button class="primary" style="width:100%;margin-top:8px">사망 판정을 굴린다</button>');
+        b.disabled = !gate.allowed;
         b.onclick = async () => {
           const roll = rollD(20);
           const r = Combat.dyingCheck(cs, actor.id, roll, ctx.RULES);
@@ -141,6 +161,7 @@ const UICombat = (() => {
         panel.appendChild(b);
       }
       const skip = el('<button class="ghost" style="width:100%;margin-top:6px">차례 넘기기</button>');
+      skip.disabled = !gate.allowed;
       skip.onclick = async () => { await api.save({ ...state, combat: Combat.endTurn(cs) }); };
       panel.appendChild(skip);
       c.appendChild(panel);
@@ -184,7 +205,7 @@ const UICombat = (() => {
       → ${target ? `${escapeHtml(target.name)} (AC ${target.ac})` : '오른쪽 "대상" 버튼으로 적을 고르세요'}</div>`));
 
     const atkBtn = el('<button class="primary" style="width:100%;padding:10px">공격 판정</button>');
-    atkBtn.disabled = !target;
+    atkBtn.disabled = !target || !gate.allowed;
     atkBtn.onclick = async () => {
       const natural = rollD(20);
       const spec = actor.weapon.damage;
@@ -212,6 +233,7 @@ const UICombat = (() => {
       panel.appendChild(sel);
       const cfg = ctx.RULES.combat.dyingCheck || {};
       const stabBtn = el(`<button style="width:100%;margin-top:6px">안정화 (${escapeHtml(ctx.Rules.skill(cfg.stabilizeSkill).name)} DC ${cfg.stabilizeDc})</button>`);
+      stabBtn.disabled = !gate.allowed;
       stabBtn.onclick = async () => {
         const src = party.find((p) => p.name === actor.name) || null;
         const m = ctx.Rules.modifiers(src, cfg.stabilizeSkill);
@@ -231,9 +253,10 @@ const UICombat = (() => {
     const freeBtn = el(`<button class="ghost" style="width:100%;margin-top:6px">${freeCheck.open ? '판정 접기' : '다른 행동을 판정한다 (룰북 1.4)'}</button>`);
     freeBtn.onclick = () => { freeCheck.open = !freeCheck.open; ctx.actions.render(); };
     panel.appendChild(freeBtn);
-    if (freeCheck.open) panel.appendChild(renderFreeCheck(ctx, state, party, actor, api));
+    if (freeCheck.open) panel.appendChild(renderFreeCheck(ctx, state, party, actor, api, gate));
 
     const pass = el('<button class="ghost" style="width:100%;margin-top:6px">차례 넘기기</button>');
+    pass.disabled = !gate.allowed;
     pass.onclick = async () => { pickedTarget = null; await api.save({ ...state, combat: Combat.endTurn(cs) }); };
     panel.appendChild(pass);
 
@@ -241,7 +264,7 @@ const UICombat = (() => {
   }
 
   // 임의 판정 폼 — ui-play.js의 자유 행동 폴백과 같은 모양이다.
-  function renderFreeCheck(ctx, state, party, actor, api) {
+  function renderFreeCheck(ctx, state, party, actor, api, gate) {
     const box = el('<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"></div>');
     box.appendChild(el('<div class="small-note" style="margin:0 0 6px">판정만 해 드립니다 — 결과 서술은 직접 하세요. 적의 note에 협상·정화 여지가 적혀 있습니다.</div>'));
     const skillSel = el('<select style="width:100%;margin-bottom:6px"></select>');
@@ -259,6 +282,7 @@ const UICombat = (() => {
     box.appendChild(dcSel);
 
     const go = el('<button style="width:100%">판정</button>');
+    go.disabled = !(gate && gate.allowed);
     go.onclick = async () => {
       const src = party.find((p) => p.name === actor.name) || null;
       const mods = ctx.Rules.modifiers(src, freeCheck.skill);

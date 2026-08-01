@@ -56,6 +56,17 @@ const UIPlay = (() => {
   }
 
   function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
+  // 이 캐릭터로 내가 굴릴 수 있는가 — Game.rollPermission()이 규칙을 갖고
+  // 있다. 여럿이 플레이할 때 아무나 남의 캐릭터를 굴리지 못하게 한다.
+  function perm(ctx, charName) {
+    return Game.rollPermission(ctx.ROOM, ctx.PLAYER_NAME, charName);
+  }
+  // 시도자 기본값 — 내가 점유한 캐릭터가 후보에 있으면 그 사람을 먼저
+  // 세운다. 없으면 기존대로 기술이 가장 좋은 후보.
+  function defaultActor(ctx, candidates) {
+    const mine = candidates.find((p) => (ctx.ROOM.claims || {})[p.name] === ctx.PLAYER_NAME);
+    return (mine || candidates[0] || {}).name;
+  }
   function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }
 
   function scenarioFor() {
@@ -240,7 +251,7 @@ const UIPlay = (() => {
     row.appendChild(field);
     box.appendChild(row);
 
-    const actorName = actorOverride[overrideKey] || (candidates[0] && candidates[0].name);
+    const actorName = actorOverride[overrideKey] || defaultActor(ctx, candidates);
     const actorChar = party.find((p) => p.name === actorName);
     const mods = actorChar ? ctx.Rules.modifiers(actorChar, choice.check.skill) : [];
     const modSum = mods.reduce((a, m) => a + m.value, 0);
@@ -256,7 +267,13 @@ const UIPlay = (() => {
     }
 
     const btn = el('<button class="primary" style="margin-top:8px">판정 (d20)</button>');
-    btn.disabled = !actorName;
+    const can = perm(ctx, actorName);
+    btn.disabled = !actorName || !can.allowed;
+    if (actorName && !can.allowed) {
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--amber)">
+        ${escapeHtml(actorName)} — ${escapeHtml(can.reason)}. 그쪽 화면에서 굴립니다.
+      </div>`));
+    }
     btn.onclick = () => {
       const natural = rollD(20);
       const total = natural + modSum;
@@ -416,7 +433,8 @@ const UIPlay = (() => {
 
     const actorField = el('<div class="field"><label>시도자</label></div>');
     const actorSel = document.createElement('select');
-    const suggested = fa.actorOverride || Game.bestActor({ check: { skill: fa.skillOverride }, actor: 'any' }, party) || (party[0] && party[0].name);
+    const suggested = fa.actorOverride || defaultActor(ctx, party.filter((p) => perm(ctx, p.name).allowed))
+      || Game.bestActor({ check: { skill: fa.skillOverride }, actor: 'any' }, party) || (party[0] && party[0].name);
     party.forEach((p) => {
       const o = document.createElement('option');
       o.value = p.name; o.textContent = p.name;
@@ -436,9 +454,16 @@ const UIPlay = (() => {
       <b style="color:var(--amber)">(${fmtSigned(modSum)})</b>
     </div>`));
 
+    const canFree = perm(ctx, suggested);
+    if (suggested && !canFree.allowed) {
+      box.appendChild(el(`<div class="small-note" style="margin-top:6px;color:var(--amber)">
+        ${escapeHtml(suggested)} — ${escapeHtml(canFree.reason)}. 그쪽 화면에서 굴립니다.
+      </div>`));
+    }
+
     const btnRow = el('<div style="margin-top:8px;display:flex;gap:8px"></div>');
     const okBtn = el('<button class="primary">이대로 판정</button>');
-    okBtn.disabled = !suggested;
+    okBtn.disabled = !suggested || !canFree.allowed;
     okBtn.onclick = () => resolveFreeAction(ctx, scenario, state, party, scene, suggested, mods, modSum);
     const cancelBtn = el('<button class="ghost">취소</button>');
     cancelBtn.onclick = () => { freeActionState = null; ctx.actions.render(); };

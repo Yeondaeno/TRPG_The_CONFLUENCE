@@ -127,6 +127,34 @@ const Game = (() => {
       };
     },
 
+    // ── 누가 이 캐릭터로 굴릴 수 있는가 (캐릭터 점유 = ROOM.claims) ──
+    // 여럿이 함께 플레이할 때 아무나 남의 캐릭터로 판정을 굴릴 수 있는 건
+    // 이상하다 — 점유한 사람이 자기 캐릭터를 굴려야 한다. 규칙은 셋뿐이다.
+    //
+    //   1) 점유자가 있는 캐릭터 → 그 사람만
+    //   2) 아무도 아무것도 점유하지 않았다(혼자 플레이) → 제한 없음
+    //   3) 점유가 시작된 방에서 주인 없는 캐릭터 → GM이 맡는다
+    //      (GM도 없으면 아무나 — 아무도 못 굴려 진행이 멈추는 것보다 낫다)
+    //
+    // 순수 함수라 tools/test.mjs가 직접 검사한다. room은 { claims, gm }만
+    // 보면 되고, UI(ui-play.js·ui-combat.js)가 버튼을 잠그는 데 쓴다.
+    rollPermission(room, playerName, charName) {
+      const claims = (room && room.claims) || {};
+      const owner = claims[charName] || null;
+      if (owner) {
+        return owner === playerName
+          ? { allowed: true, owner }
+          : { allowed: false, owner, reason: `${owner}님의 캐릭터입니다` };
+      }
+      const anyClaims = Object.keys(claims).length > 0;
+      if (!anyClaims) return { allowed: true, owner: null }; // 혼자 플레이
+      const gm = (room && room.gm) || null;
+      if (!gm) return { allowed: true, owner: null }; // GM이 없으면 아무나
+      return gm === playerName
+        ? { allowed: true, owner: null }
+        : { allowed: false, owner: null, reason: `점유자가 없는 캐릭터입니다 — GM(${gm})이 굴립니다` };
+    },
+
     // ------------------------------------------------------------------
     // 자유 행동 파서(명세 08 B-2)가 쓰는 최소 상태 — "이 씬에서 이 장면
     // 요소(affordance)를 이미 써먹었는가". 미리 쓰인 선택지(usedChoices)와는
