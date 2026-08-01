@@ -36,14 +36,15 @@ const UIPlay = (() => {
   // 이 표를 손으로 계속 채워야 한다는 게 이 구현에서 드러난 스키마의 빈
   // 자리다(보고서 참고). 매핑에 없는 id는 그대로 보여준다(누락돼도 죽지
   // 않게).
-  const REVEAL_LABELS = {
-    'witness-full': '노점상의 증언 (전부)',
-    'witness-half': '노점상의 증언 (일부)',
-    'witness-gesture': '노점상의 증언 (몸짓뿐)',
-    'living-ward': "벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'",
-    terminal: '선환그룹 조사 단말 (아직 열지 않음)',
-  };
-  function revealLabel(id) { return REVEAL_LABELS[id] || id; }
+  // reveal id → 사람이 읽을 라벨. 데이터(scenes.revealCatalog)에서 읽는다 —
+  // 예전에는 이 파일에 손으로 표를 들고 있었는데, 씬이 10개 더 늘어나면
+  // 새 id를 추가할 때마다 이 파일을 같이 고쳐야 해서 반드시 빠뜨린다.
+  // 카탈로그에 없으면 id를 그대로 보여준다(감추는 것보다 낫다).
+  function revealLabel(id) {
+    const sc = scenarioFor();
+    const catalog = (sc && sc.revealCatalog) || {};
+    return catalog[id] || id;
+  }
 
   function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
   function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }

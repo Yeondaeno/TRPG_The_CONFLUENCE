@@ -365,13 +365,14 @@ describe('Rules.parseLinearFormula / computeLinearFormula — 부록 A 공식 �
 
 describe('Rules.parseDiceNotation — "2d6" 같은 주사위 표기 (docs/specs/06)', () => {
   test('"2d6" → count 2, sides 6 (부록 A 시작 결정편)', () => {
-    assert.deepEqual(Rules.parseDiceNotation(RULES.characterCreation.startingShards), { count: 2, sides: 6 });
+    assert.deepEqual(Rules.parseDiceNotation(RULES.characterCreation.startingShards), { count: 2, sides: 6, sign: 1 });
   });
   test('굴림(Math.random)은 하지 않는다 — 순수 파서일 뿐', () => {
     assert.equal(typeof Rules.parseDiceNotation('2d6').count, 'number');
-    // 반환값에 굴림 결과 필드가 없어야 한다(예: value/roll/total 등)
+    // 반환값에 굴림 결과 필드가 없어야 한다(예: value/roll/total 등).
+    // sign은 표기를 읽은 결과일 뿐 굴림이 아니다.
     const r = Rules.parseDiceNotation('2d6');
-    assert.deepEqual(Object.keys(r).sort(), ['count', 'sides']);
+    assert.deepEqual(Object.keys(r).sort(), ['count', 'sides', 'sign']);
   });
   test('형식이 다르면 null', () => {
     assert.equal(Rules.parseDiceNotation('d6'), null);
@@ -431,7 +432,7 @@ describe('Game.enterScene — onEnter 효과 (잔향 +1d6 파티 전원)', () =>
     const party = makeParty();
     const state = Game.newGame(SCENES, party);
     const dice = Game.diceNeededForEnter(SCENES, state.sceneId);
-    assert.deepEqual(dice, [{ count: 1, sides: 6 }]); // 1d6 하나
+    assert.deepEqual(dice, [{ count: 1, sides: 6, sign: 1 }]); // 1d6 하나
     const { state: s2, party: p2 } = Game.enterScene(state, SCENES, party, [4]);
     assert.ok(s2.visitedScenes.includes('1-1'));
     p2.forEach((c) => assert.equal(c.radiation, 4));
@@ -519,7 +520,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
     const party = makeParty();
     const state = Game.newGame(SCENES, party);
     const dice = Game.diceNeededForChoice(SCENES, state.sceneId, 'heal', 'partial');
-    assert.deepEqual(dice, [{ count: 1, sides: 6 }]);
+    assert.deepEqual(dice, [{ count: 1, sides: 6, sign: 1 }]);
     const res = Game.applyChoice(state, SCENES, party, 'heal', '아이린', 'partial', [5]);
     const actor = res.party.find((c) => c.name === '아이린');
     const others = res.party.filter((c) => c.name !== '아이린');

@@ -68,28 +68,45 @@ const Game = (() => {
     return (party || []).some((c) => isSkillProficient(c, skillId));
   }
 
+  // 대성공(crit) 칸이 없으면 성공(success)으로 떨어진다.
+  // 원본 시나리오 문서의 표는 "성공 / 부분 성공 / 실패" 3열뿐인데
+  // Rules.resolve()는 항상 4단계를 돌려준다. 씬 작가가 매번 success 텍스트를
+  // crit에 복사하게 만들면 10개 씬에서 그대로 실수가 난다 — 엔진이 대신
+  // 떨어뜨린다. 대성공만의 서술을 쓰고 싶으면 crit을 명시하면 된다.
   function outcomeFor(choice, tier) {
     if (!choice || !choice.outcomes) return null;
-    if (choice.check) return choice.outcomes[tier] || choice.outcomes.fail || null;
-    return choice.outcomes.always || null;
+    if (!choice.check) return choice.outcomes.always || null;
+    const o = choice.outcomes;
+    if (tier === 'crit') return o.crit || o.success || null;
+    return o[tier] || o.fail || null;
   }
 
-  // anyFlag는 이름과 달리 state.flags뿐 아니라 state.revealed도 함께 본다.
-  // 명세 07 §1의 스키마 예시 자체가 그렇게 쓴다 — "leave" 선택지의
-  // requires.anyFlag가 ["witness-full", "witness-half", "terminal"]인데,
-  // 이 셋은 전부 reveals다(§1 "reveals — 정보 획득" 항목, "플래그는 '이
-  // 일이 일어났다', reveals는 '플레이어가 이걸 알게 됐다'"). 두 개념을
-  // 엄격히 분리하면 이 예시가 절대 참이 될 수 없으므로, requires는
-  // "무엇이든 하나 알거나 일어났으면"으로 읽어 flags∪revealed 합집합을
-  // 본다. 보고서 참고 — 스키마 필드 이름과 예시가 어긋나는 지점이다.
+  // 조건 검사는 flags 와 revealed 의 **합집합**을 본다.
+  //
+  // 둘은 뜻이 다르다 — flag는 "이 일이 일어났다", reveal은 "플레이어가 이걸
+  // 알게 됐다". 그 구분은 화면 표시("알아낸 것" 목록)에서 의미가 있다.
+  // 하지만 문을 여는 조건으로 물을 때는 둘 다 그냥 "지금 참인 것"이라,
+  // 나누면 씬 작가가 매번 어느 쪽인지 기억해야 한다. 그래서 게이팅에서는
+  // 한 네임스페이스로 합친다 — 대신 **id는 flags와 reveals를 통틀어 유일해야
+  // 한다**(같은 id를 양쪽에 쓰면 어느 쪽인지 구분할 수 없다).
+  //
+  // 명세 07 초판은 이 필드를 `anyFlag`라 부르면서 예시에는 reveal id를 넣어
+  // 자기모순이었다. `any`로 이름을 바꿨다.
+  function knownSet(state) {
+    return new Set([...(state.flags || []), ...(state.revealed || [])]);
+  }
+
   function requiresOk(choice, state, party) {
     const req = choice.requires;
     if (!req) return true;
     if (req.partyHasSkill && !partyHasSkill(party, req.partyHasSkill)) return false;
-    if (req.anyFlag) {
-      const known = new Set([...(state.flags || []), ...(state.revealed || [])]);
-      if (!req.anyFlag.some((f) => known.has(f))) return false;
-    }
+    const known = knownSet(state);
+    // any: 하나라도 참이면 통과 / all: 전부 참이어야 / none: 하나라도 참이면 막힘
+    if (req.any && !req.any.some((f) => known.has(f))) return false;
+    if (req.all && !req.all.every((f) => known.has(f))) return false;
+    if (req.none && req.none.some((f) => known.has(f))) return false;
+    // 옛 이름 — 이미 쓰인 데이터를 깨지 않기 위해 남긴다. 새 씬은 any를 쓸 것.
+    if (req.anyFlag && !req.anyFlag.some((f) => known.has(f))) return false;
     return true;
   }
 

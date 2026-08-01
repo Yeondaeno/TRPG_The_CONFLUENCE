@@ -227,10 +227,18 @@ const Rules = (() => {
     // 뽑는다. 실제 굴림(Math.random)은 이 함수의 몫이 아니다 — 이 파일은
     // "부수효과 없는 순수 함수"만 담는다(파일 맨 위 주석). 굴림 자체는
     // 호출부(ui-builder.js)가 한다.
+    // "2d6" / "-1d10" / "+1d6" 을 받는다. sign은 -1 또는 1.
+    // 부호를 받는 이유: 씬 효과가 "잔향 -1d10"처럼 감소를 표기하기 때문이다
+    // (명세 07 구현 보고 8번). 부호가 없으면 sign은 1이라, 기존 호출부는
+    // count/sides만 쓰면 그대로 동작한다.
     parseDiceNotation(str) {
-      const m = /^\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
+      const m = /^\s*([+-]?)\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
       if (!m) return null;
-      return { count: parseInt(m[1], 10), sides: parseInt(m[2], 10) };
+      return {
+        count: parseInt(m[2], 10),
+        sides: parseInt(m[3], 10),
+        sign: m[1] === '-' ? -1 : 1,
+      };
     },
 
     // 부록 A 표준 배열(RULES.characterCreation.abilityArray, 보통

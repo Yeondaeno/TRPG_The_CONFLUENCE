@@ -2,47 +2,70 @@
   "$comment": "docs/specs/07-play-engine.md — 플레이용 씬 콘텐츠. GM용 진행 데이터(Act·시간·NPC·잔향 곡선, data/scenarios/station-0.json)와는 별개 파일이다. GM 전용 진상·캐릭터 비밀은 여기 없다(명세 04가 분리해 낸 것을 다시 새게 하지 않는다) — tools/build.mjs가 최종 HTML을 검사해 확인한다.",
   "scenarioId": "station-0",
   "startScene": "1-1",
+  "revealCatalog": {
+    "witness-full": "노점상의 증언 (전부)",
+    "witness-half": "노점상의 증언 (일부)",
+    "witness-gesture": "노점상의 증언 (몸짓뿐)",
+    "living-ward": "벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'",
+    "terminal": "선환그룹 조사 단말 (아직 열지 않음)"
+  },
   "source": "docs/scenario-station-0.md 4장(씬 1-1)",
   "scenes": {
     "1-1": {
       "title": "사라진 사람들",
       "place": "교환장 뒷골목 창고",
-
       "narrative": [
         "바닥의 발자국이 벽 앞에서 뚝 끊긴다.",
         "벽에는 희미하게 남은 개찰구 모양의 그을음. 구석에 노점상이 웅크린 채 떨고 있다. 피부 아래로 결정 같은 것이 비친다. 유일한 목격자다."
       ],
-
       "onEnter": [
-        { "type": "resonance", "target": "party", "amount": "1d6", "text": "역참의 잔향이 골목에 고여 있다." }
+        {
+          "type": "resonance",
+          "target": "party",
+          "amount": "1d6",
+          "text": "역참의 잔향이 골목에 고여 있다."
+        }
       ],
-
       "choices": [
         {
           "id": "persuade",
           "label": "진정시킨다",
           "detail": "천천히 다가가 말을 건다",
-          "check": { "skill": "persuade", "dc": 12 },
+          "check": {
+            "skill": "persuade",
+            "dc": 12
+          },
           "actor": "any",
           "outcomes": {
             "crit": {
               "text": "노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"",
               "effects": [],
-              "reveals": ["witness-full"]
+              "reveals": [
+                "witness-full"
+              ]
             },
             "success": {
               "text": "노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"",
               "effects": [],
-              "reveals": ["witness-full"]
+              "reveals": [
+                "witness-full"
+              ]
             },
             "partial": {
               "text": "노점상이 띄엄띄엄 증언을 잇다가, 못 견디고 발작을 일으킨다. 절반쯤 들은 이야기만 남았다.",
               "effects": [],
-              "reveals": ["witness-half"]
+              "reveals": [
+                "witness-half"
+              ]
             },
             "fail": {
               "text": "노점상이 갑자기 발작한다 — 전투 태세. 제압하거나 달래야 한다.",
-              "effects": [{ "type": "flag", "set": "witness-panic" }]
+              "effects": [
+                {
+                  "type": "flag",
+                  "set": "witness-panic"
+                }
+              ]
             }
           }
         },
@@ -50,27 +73,47 @@
           "id": "heal",
           "label": "안정제를 놓는다",
           "detail": "치유 도구로 노점상을 진정시킨다",
-          "check": { "skill": "heal", "dc": 12 },
+          "check": {
+            "skill": "heal",
+            "dc": 12
+          },
           "actor": "any",
           "outcomes": {
             "crit": {
               "text": "안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.",
               "effects": [],
-              "reveals": ["witness-full"]
+              "reveals": [
+                "witness-full"
+              ]
             },
             "success": {
               "text": "안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.",
               "effects": [],
-              "reveals": ["witness-full"]
+              "reveals": [
+                "witness-full"
+              ]
             },
             "partial": {
               "text": "증언 전부를 얻어내지만, 처치 과정에서 무리한 대가가 남는다.",
-              "effects": [{ "type": "resonance", "target": "actor", "amount": "1d6" }],
-              "reveals": ["witness-full"]
+              "effects": [
+                {
+                  "type": "resonance",
+                  "target": "actor",
+                  "amount": "1d6"
+                }
+              ],
+              "reveals": [
+                "witness-full"
+              ]
             },
             "fail": {
               "text": "안정제가 듣지 않는다. 노점상이 발작한다 — 전투 태세. 제압하거나 달래야 한다.",
-              "effects": [{ "type": "flag", "set": "witness-panic" }]
+              "effects": [
+                {
+                  "type": "flag",
+                  "set": "witness-panic"
+                }
+              ]
             }
           }
         },
@@ -78,29 +121,50 @@
           "id": "exorcise",
           "label": "잔향을 정화한다",
           "detail": "씐 잔향을 정화 술식으로 씻어낸다",
-          "check": { "skill": "exorcise", "dc": 12 },
+          "check": {
+            "skill": "exorcise",
+            "dc": 12
+          },
           "actor": "any",
-          "requires": { "partyHasSkill": "exorcise" },
+          "requires": {
+            "partyHasSkill": "exorcise"
+          },
           "outcomes": {
             "crit": {
               "text": "정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.",
               "effects": [],
-              "reveals": ["witness-full", "living-ward"]
+              "reveals": [
+                "witness-full",
+                "living-ward"
+              ]
             },
             "success": {
               "text": "정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.",
               "effects": [],
-              "reveals": ["witness-full", "living-ward"]
+              "reveals": [
+                "witness-full",
+                "living-ward"
+              ]
             },
             "partial": {
               "text": "정화가 절반만 먹힌다. 증언은 얻지만 그을음의 정체까지는 알아내지 못한다.",
               "effects": [],
-              "reveals": ["witness-full"]
+              "reveals": [
+                "witness-full"
+              ]
             },
             "fail": {
               "text": "정화가 역류한다. 노점상은 겨우 몸짓으로만 뜻을 전한다.",
-              "effects": [{ "type": "resonance", "target": "actor", "amount": "1d6" }],
-              "reveals": ["witness-gesture"]
+              "effects": [
+                {
+                  "type": "resonance",
+                  "target": "actor",
+                  "amount": "1d6"
+                }
+              ],
+              "reveals": [
+                "witness-gesture"
+              ]
             }
           }
         },
@@ -112,7 +176,9 @@
             "always": {
               "text": "구석을 살피다 노점상이 흘린 선환그룹 조사 단말을 발견한다. 표면에 옅게 서린 결계가 열기 전에는 무엇이 담겼는지 알 수 없게 막고 있다.",
               "effects": [],
-              "reveals": ["terminal"]
+              "reveals": [
+                "terminal"
+              ]
             }
           }
         },
@@ -120,7 +186,13 @@
           "id": "leave",
           "label": "개찰구로 향한다",
           "detail": "여기서 알아낸 것을 들고 다음으로 넘어간다",
-          "requires": { "anyFlag": ["witness-full", "witness-half", "terminal"] },
+          "requires": {
+            "any": [
+              "witness-full",
+              "witness-half",
+              "terminal"
+            ]
+          },
           "outcomes": {
             "always": {
               "text": "충분히 알아냈다. 이제 개찰구로 향할 시간이다.",

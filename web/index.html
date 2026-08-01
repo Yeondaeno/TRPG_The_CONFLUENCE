@@ -212,7 +212,7 @@ const MONSTERS = [{"name":"결함 드론 (다수)","hp":6,"ac":11,"atk":"d20+2, 
 // SCENARIOS: data/scenarios/*.json을 id로 인덱싱 (docs/specs/05-scenario-data.md, GM 전용 진행 데이터).
 const SCENARIOS = {"station-0":{"id":"station-0","title":"역참-0","logline":"차원을 잇던 옛 역참이 수십 년 만에 눈을 떠 \"정상 운행 재개\"를 선언한다 — 뒤섞인 도시를 원래 세계로 '반송'하기 전에, 표를 받은 여덟 명이 자정의 개찰구를 넘는다.","targetMinutes":210,"source":"docs/scenario-station-0.md","districts":["교환장","강선지구","심야회랑","무영가"],"acts":[{"id":"act0","title":"오프닝","minutes":20,"scenes":[{"id":"0","title":"표가 도착한 밤 (교환장)","minutes":20,"resonance":"1d6"}]},{"id":"act1","title":"조사","minutes":55,"scenes":[{"id":"1-1","title":"사라진 사람들","minutes":15,"resonance":"1d6","optional":true,"npcs":[{"name":"여파에 물든 시민","count":1,"note":"반쯤 여파화된 노점상 — 목격자, 반드시 적대적이지는 않음"}]},{"id":"1-2","title":"세 갈래 조사 (분기)","minutes":25,"resonance":"A조 1d6 / B·C조 2d6","branches":[{"id":"1-2A","title":"선환그룹 지사","district":"강선지구","npcs":[{"name":"결함 드론 (다수)","count":4,"note":"잠입 실패 시 경보 전투"},{"name":"수금원 '창'","count":1,"note":"돌발 — 미행하던 도경의 감시자"}]},{"id":"1-2B","title":"흔적 서가","district":"심야회랑"},{"id":"1-2C","title":"옛 개찰구 골목","district":"무영가","npcs":[{"name":"여파에 물든 시민","count":1,"note":"실종된 등불 장인의 아들 — 설득/치유로 아군화 가능"}]}]},{"id":"1-3","title":"자정의 개찰구","minutes":15,"resonance":"2d6"}]},{"id":"act2","title":"역참 진입","minutes":70,"scenes":[{"id":"2-1","title":"검표","minutes":15,"resonance":"2d6","npcs":[{"name":"개찰기 7호","count":1},{"name":"결함 드론 (다수)","count":4}]},{"id":"2-2","title":"승강장 — 경비와 차장","minutes":20,"resonance":"2d6","optional":true,"npcs":[{"name":"무경 (선환 경비대장)","count":1},{"name":"헌터 길드 정찰병","count":2,"instanceNames":["마르코","단"]},{"name":"결함 드론 (다수)","count":4},{"name":"탈선한 차장","count":1}]},{"id":"2-3","title":"대합실 (분기 가능)","minutes":20,"resonance":"2d6","npcs":[{"name":"여파에 물든 시민","count":1,"note":"치유술로 각성시킨 승객이 폭주하는 경우"},{"name":"결함 드론 (다수)","count":2,"note":"좌석 결계 강제 해제 실패 시 출현"}]},{"id":"2-4","title":"정차 시간 — 휴식과 여파화","minutes":15,"resonance":"1d6"}]},{"id":"act3","title":"관제실","minutes":45,"scenes":[{"id":"3-1","title":"관제실 진입","minutes":10,"resonance":"2d6~3d6 (다이얼)","npcs":[{"name":"차은성 (발굴 책임자)","count":1}]},{"id":"3-2","title":"길잡이 — 발차까지 6","minutes":35,"resonance":"피격·펄스마다 1d6","npcs":[{"name":"역참 인격체 코어 '길잡이'","count":1}]}]},{"id":"epilogue","title":"에필로그","minutes":20,"scenes":[{"id":"epilogue","title":"결말 정산 + 개인 에필로그","minutes":20}]}],"npcs":[{"name":"개찰기 7호","hp":20,"ac":14,"atk":"d20+4, 1d8 (구속 사슬)","note":"기계 — 설득 불가. 규정의 허점(지식)·결계 해석에 취약. 파괴 시 경보 + 드론 호출"},{"name":"탈선한 차장","hp":26,"ac":13,"atk":"d20+4, 1d8 (위상 갈고리, 명중 시 잔향 +2)","note":"퇴마술 성공 시 1라운드 정지, DC 15 정화 2회 성공으로 비전투 해소. 융합 그날의 기억 보유"},{"name":"무경 (선환 경비대장)","hp":22,"ac":14,"atk":"d20+4, 2d6 (결계 산탄포, 근거리)","note":"무경이 물러나면 경비 전원 철수. '재해 시 철수' 조항이 설득의 급소"},{"name":"수금원 '창'","hp":14,"ac":12,"atk":"d20+3, 1d6 (결정탄)","note":"돈이 최우선 — 결정편 5개 또는 채무 정보로 매수 가능. 전투보다 도주를 택한다"},{"name":"차은성 (발굴 책임자)","hp":10,"ac":10,"atk":"비무장 (d20+0, 1d4)","note":"전투 불가. 중단할 명분을 주면 협조 — 코어 기억 봉인 코드 소지"}],"resonanceCurve":[{"checkpoint":"act1-end","label":"Act 1 종료 (씬 1-3 후)","target":[20,25],"autoAverage":19},{"checkpoint":"act2-end","label":"Act 2 종료 (씬 2-4 후)","target":[45,55],"autoAverage":44},{"checkpoint":"climax-start","label":"클라이맥스 진입 (씬 3-2 시작)","target":[65,75],"autoAverage":55}]}};
 // SCENES: data/scenarios/*.scenes.json을 scenarioId로 인덱싱 (docs/specs/07-play-engine.md, 플레이어용 씬 콘텐츠).
-const SCENES = {"station-0":{"$comment":"docs/specs/07-play-engine.md — 플레이용 씬 콘텐츠. GM용 진행 데이터(Act·시간·NPC·잔향 곡선, data/scenarios/station-0.json)와는 별개 파일이다. GM 전용 진상·캐릭터 비밀은 여기 없다(명세 04가 분리해 낸 것을 다시 새게 하지 않는다) — tools/build.mjs가 최종 HTML을 검사해 확인한다.","scenarioId":"station-0","startScene":"1-1","source":"docs/scenario-station-0.md 4장(씬 1-1)","scenes":{"1-1":{"title":"사라진 사람들","place":"교환장 뒷골목 창고","narrative":["바닥의 발자국이 벽 앞에서 뚝 끊긴다.","벽에는 희미하게 남은 개찰구 모양의 그을음. 구석에 노점상이 웅크린 채 떨고 있다. 피부 아래로 결정 같은 것이 비친다. 유일한 목격자다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"역참의 잔향이 골목에 고여 있다."}],"choices":[{"id":"persuade","label":"진정시킨다","detail":"천천히 다가가 말을 건다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"crit":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"success":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"partial":{"text":"노점상이 띄엄띄엄 증언을 잇다가, 못 견디고 발작을 일으킨다. 절반쯤 들은 이야기만 남았다.","effects":[],"reveals":["witness-half"]},"fail":{"text":"노점상이 갑자기 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"heal","label":"안정제를 놓는다","detail":"치유 도구로 노점상을 진정시킨다","check":{"skill":"heal","dc":12},"actor":"any","outcomes":{"crit":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"success":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"partial":{"text":"증언 전부를 얻어내지만, 처치 과정에서 무리한 대가가 남는다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-full"]},"fail":{"text":"안정제가 듣지 않는다. 노점상이 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"exorcise","label":"잔향을 정화한다","detail":"씐 잔향을 정화 술식으로 씻어낸다","check":{"skill":"exorcise","dc":12},"actor":"any","requires":{"partyHasSkill":"exorcise"},"outcomes":{"crit":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"success":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"partial":{"text":"정화가 절반만 먹힌다. 증언은 얻지만 그을음의 정체까지는 알아내지 못한다.","effects":[],"reveals":["witness-full"]},"fail":{"text":"정화가 역류한다. 노점상은 겨우 몸짓으로만 뜻을 전한다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-gesture"]}}},{"id":"search","label":"주변을 살핀다","detail":"판정 없이 — 시간만 든다","outcomes":{"always":{"text":"구석을 살피다 노점상이 흘린 선환그룹 조사 단말을 발견한다. 표면에 옅게 서린 결계가 열기 전에는 무엇이 담겼는지 알 수 없게 막고 있다.","effects":[],"reveals":["terminal"]}}},{"id":"leave","label":"개찰구로 향한다","detail":"여기서 알아낸 것을 들고 다음으로 넘어간다","requires":{"anyFlag":["witness-full","witness-half","terminal"]},"outcomes":{"always":{"text":"충분히 알아냈다. 이제 개찰구로 향할 시간이다.","effects":[],"goto":"1-2"}}}]}}}};
+const SCENES = {"station-0":{"$comment":"docs/specs/07-play-engine.md — 플레이용 씬 콘텐츠. GM용 진행 데이터(Act·시간·NPC·잔향 곡선, data/scenarios/station-0.json)와는 별개 파일이다. GM 전용 진상·캐릭터 비밀은 여기 없다(명세 04가 분리해 낸 것을 다시 새게 하지 않는다) — tools/build.mjs가 최종 HTML을 검사해 확인한다.","scenarioId":"station-0","startScene":"1-1","revealCatalog":{"witness-full":"노점상의 증언 (전부)","witness-half":"노점상의 증언 (일부)","witness-gesture":"노점상의 증언 (몸짓뿐)","living-ward":"벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'","terminal":"선환그룹 조사 단말 (아직 열지 않음)"},"source":"docs/scenario-station-0.md 4장(씬 1-1)","scenes":{"1-1":{"title":"사라진 사람들","place":"교환장 뒷골목 창고","narrative":["바닥의 발자국이 벽 앞에서 뚝 끊긴다.","벽에는 희미하게 남은 개찰구 모양의 그을음. 구석에 노점상이 웅크린 채 떨고 있다. 피부 아래로 결정 같은 것이 비친다. 유일한 목격자다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"역참의 잔향이 골목에 고여 있다."}],"choices":[{"id":"persuade","label":"진정시킨다","detail":"천천히 다가가 말을 건다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"crit":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"success":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"partial":{"text":"노점상이 띄엄띄엄 증언을 잇다가, 못 견디고 발작을 일으킨다. 절반쯤 들은 이야기만 남았다.","effects":[],"reveals":["witness-half"]},"fail":{"text":"노점상이 갑자기 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"heal","label":"안정제를 놓는다","detail":"치유 도구로 노점상을 진정시킨다","check":{"skill":"heal","dc":12},"actor":"any","outcomes":{"crit":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"success":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"partial":{"text":"증언 전부를 얻어내지만, 처치 과정에서 무리한 대가가 남는다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-full"]},"fail":{"text":"안정제가 듣지 않는다. 노점상이 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"exorcise","label":"잔향을 정화한다","detail":"씐 잔향을 정화 술식으로 씻어낸다","check":{"skill":"exorcise","dc":12},"actor":"any","requires":{"partyHasSkill":"exorcise"},"outcomes":{"crit":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"success":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"partial":{"text":"정화가 절반만 먹힌다. 증언은 얻지만 그을음의 정체까지는 알아내지 못한다.","effects":[],"reveals":["witness-full"]},"fail":{"text":"정화가 역류한다. 노점상은 겨우 몸짓으로만 뜻을 전한다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-gesture"]}}},{"id":"search","label":"주변을 살핀다","detail":"판정 없이 — 시간만 든다","outcomes":{"always":{"text":"구석을 살피다 노점상이 흘린 선환그룹 조사 단말을 발견한다. 표면에 옅게 서린 결계가 열기 전에는 무엇이 담겼는지 알 수 없게 막고 있다.","effects":[],"reveals":["terminal"]}}},{"id":"leave","label":"개찰구로 향한다","detail":"여기서 알아낸 것을 들고 다음으로 넘어간다","requires":{"any":["witness-full","witness-half","terminal"]},"outcomes":{"always":{"text":"충분히 알아냈다. 이제 개찰구로 향할 시간이다.","effects":[],"goto":"1-2"}}}]}}}};
 
 // ==== web/vendor/peerjs.min.js ====
 // web/vendor/peerjs.min.js — vendored PeerJS 1.5.5 (MIT License, https://peerjs.com)
@@ -655,10 +655,18 @@ const Rules = (() => {
     // 뽑는다. 실제 굴림(Math.random)은 이 함수의 몫이 아니다 — 이 파일은
     // "부수효과 없는 순수 함수"만 담는다(파일 맨 위 주석). 굴림 자체는
     // 호출부(ui-builder.js)가 한다.
+    // "2d6" / "-1d10" / "+1d6" 을 받는다. sign은 -1 또는 1.
+    // 부호를 받는 이유: 씬 효과가 "잔향 -1d10"처럼 감소를 표기하기 때문이다
+    // (명세 07 구현 보고 8번). 부호가 없으면 sign은 1이라, 기존 호출부는
+    // count/sides만 쓰면 그대로 동작한다.
     parseDiceNotation(str) {
-      const m = /^\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
+      const m = /^\s*([+-]?)\s*(\d+)\s*d\s*(\d+)\s*$/i.exec(str || '');
       if (!m) return null;
-      return { count: parseInt(m[1], 10), sides: parseInt(m[2], 10) };
+      return {
+        count: parseInt(m[2], 10),
+        sides: parseInt(m[3], 10),
+        sign: m[1] === '-' ? -1 : 1,
+      };
     },
 
     // 부록 A 표준 배열(RULES.characterCreation.abilityArray, 보통
@@ -1386,28 +1394,45 @@ const Game = (() => {
     return (party || []).some((c) => isSkillProficient(c, skillId));
   }
 
+  // 대성공(crit) 칸이 없으면 성공(success)으로 떨어진다.
+  // 원본 시나리오 문서의 표는 "성공 / 부분 성공 / 실패" 3열뿐인데
+  // Rules.resolve()는 항상 4단계를 돌려준다. 씬 작가가 매번 success 텍스트를
+  // crit에 복사하게 만들면 10개 씬에서 그대로 실수가 난다 — 엔진이 대신
+  // 떨어뜨린다. 대성공만의 서술을 쓰고 싶으면 crit을 명시하면 된다.
   function outcomeFor(choice, tier) {
     if (!choice || !choice.outcomes) return null;
-    if (choice.check) return choice.outcomes[tier] || choice.outcomes.fail || null;
-    return choice.outcomes.always || null;
+    if (!choice.check) return choice.outcomes.always || null;
+    const o = choice.outcomes;
+    if (tier === 'crit') return o.crit || o.success || null;
+    return o[tier] || o.fail || null;
   }
 
-  // anyFlag는 이름과 달리 state.flags뿐 아니라 state.revealed도 함께 본다.
-  // 명세 07 §1의 스키마 예시 자체가 그렇게 쓴다 — "leave" 선택지의
-  // requires.anyFlag가 ["witness-full", "witness-half", "terminal"]인데,
-  // 이 셋은 전부 reveals다(§1 "reveals — 정보 획득" 항목, "플래그는 '이
-  // 일이 일어났다', reveals는 '플레이어가 이걸 알게 됐다'"). 두 개념을
-  // 엄격히 분리하면 이 예시가 절대 참이 될 수 없으므로, requires는
-  // "무엇이든 하나 알거나 일어났으면"으로 읽어 flags∪revealed 합집합을
-  // 본다. 보고서 참고 — 스키마 필드 이름과 예시가 어긋나는 지점이다.
+  // 조건 검사는 flags 와 revealed 의 **합집합**을 본다.
+  //
+  // 둘은 뜻이 다르다 — flag는 "이 일이 일어났다", reveal은 "플레이어가 이걸
+  // 알게 됐다". 그 구분은 화면 표시("알아낸 것" 목록)에서 의미가 있다.
+  // 하지만 문을 여는 조건으로 물을 때는 둘 다 그냥 "지금 참인 것"이라,
+  // 나누면 씬 작가가 매번 어느 쪽인지 기억해야 한다. 그래서 게이팅에서는
+  // 한 네임스페이스로 합친다 — 대신 **id는 flags와 reveals를 통틀어 유일해야
+  // 한다**(같은 id를 양쪽에 쓰면 어느 쪽인지 구분할 수 없다).
+  //
+  // 명세 07 초판은 이 필드를 `anyFlag`라 부르면서 예시에는 reveal id를 넣어
+  // 자기모순이었다. `any`로 이름을 바꿨다.
+  function knownSet(state) {
+    return new Set([...(state.flags || []), ...(state.revealed || [])]);
+  }
+
   function requiresOk(choice, state, party) {
     const req = choice.requires;
     if (!req) return true;
     if (req.partyHasSkill && !partyHasSkill(party, req.partyHasSkill)) return false;
-    if (req.anyFlag) {
-      const known = new Set([...(state.flags || []), ...(state.revealed || [])]);
-      if (!req.anyFlag.some((f) => known.has(f))) return false;
-    }
+    const known = knownSet(state);
+    // any: 하나라도 참이면 통과 / all: 전부 참이어야 / none: 하나라도 참이면 막힘
+    if (req.any && !req.any.some((f) => known.has(f))) return false;
+    if (req.all && !req.all.every((f) => known.has(f))) return false;
+    if (req.none && req.none.some((f) => known.has(f))) return false;
+    // 옛 이름 — 이미 쓰인 데이터를 깨지 않기 위해 남긴다. 새 씬은 any를 쓸 것.
+    if (req.anyFlag && !req.anyFlag.some((f) => known.has(f))) return false;
     return true;
   }
 
@@ -4117,14 +4142,15 @@ const UIPlay = (() => {
   // 이 표를 손으로 계속 채워야 한다는 게 이 구현에서 드러난 스키마의 빈
   // 자리다(보고서 참고). 매핑에 없는 id는 그대로 보여준다(누락돼도 죽지
   // 않게).
-  const REVEAL_LABELS = {
-    'witness-full': '노점상의 증언 (전부)',
-    'witness-half': '노점상의 증언 (일부)',
-    'witness-gesture': '노점상의 증언 (몸짓뿐)',
-    'living-ward': "벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'",
-    terminal: '선환그룹 조사 단말 (아직 열지 않음)',
-  };
-  function revealLabel(id) { return REVEAL_LABELS[id] || id; }
+  // reveal id → 사람이 읽을 라벨. 데이터(scenes.revealCatalog)에서 읽는다 —
+  // 예전에는 이 파일에 손으로 표를 들고 있었는데, 씬이 10개 더 늘어나면
+  // 새 id를 추가할 때마다 이 파일을 같이 고쳐야 해서 반드시 빠뜨린다.
+  // 카탈로그에 없으면 id를 그대로 보여준다(감추는 것보다 낫다).
+  function revealLabel(id) {
+    const sc = scenarioFor();
+    const catalog = (sc && sc.revealCatalog) || {};
+    return catalog[id] || id;
+  }
 
   function rollD(sides) { return 1 + Math.floor(Math.random() * sides); }
   function fmtSigned(n) { return (n >= 0 ? '+' : '−') + Math.abs(n); }

@@ -67,8 +67,10 @@
           // 또는 특정 캐릭터 이름 배열
           "actor": "any",
 
+          // crit을 생략하면 엔진이 success로 떨어뜨린다. 원본 문서의 표는
+          // "성공/부분 성공/실패" 3열뿐이라 대부분의 씬에서 crit은 생략한다.
+          // 대성공만의 서술을 쓰고 싶을 때만 crit을 명시한다.
           "outcomes": {
-            "crit":    { "text": "…", "effects": [], "reveals": ["witness-full", "senhwan"] },
             "success": { "text": "…", "effects": [], "reveals": ["witness-full"] },
             "partial": { "text": "…", "effects": [{ "type": "resonance", "target": "actor", "amount": "1d6" }],
                          "reveals": ["witness-half"] },
@@ -94,7 +96,7 @@
         {
           "id": "leave",
           "label": "개찰구로 향한다",
-          "requires": { "anyFlag": ["witness-full", "witness-half", "terminal"] },
+          "requires": { "any": ["witness-full", "witness-half", "terminal"] },
           "outcomes": { "always": { "text": "…", "goto": "1-2" } }
         }
       ]
@@ -123,6 +125,35 @@
 플래그는 "이 일이 일어났다", reveals는 "플레이어가 이걸 알게 됐다"입니다.
 알게 된 것은 **단서 목록**으로 화면에 쌓여야 합니다 — 3시간짜리를 하다 보면
 "내가 뭘 알아냈더라"를 반드시 잊습니다.
+
+라벨은 파일 최상단 `revealCatalog`에 모읍니다:
+
+```jsonc
+"revealCatalog": {
+  "witness-full": "노점상의 증언 (전부)",
+  "terminal": "선환그룹 조사 단말 (아직 열지 않음)"
+}
+```
+
+**id를 새로 만들면 반드시 여기 라벨을 추가하세요.** 없으면 화면에 id가
+그대로 나옵니다(감추는 것보다 낫다고 판단했습니다).
+
+### `requires` — 선택지 조건
+
+| 필드 | 뜻 |
+|---|---|
+| `any: [...]` | 하나라도 참이면 통과 |
+| `all: [...]` | 전부 참이어야 통과 |
+| `none: [...]` | 하나라도 참이면 막힘 |
+| `partyHasSkill: "id"` | 파티에 그 기술 숙련자가 있어야 |
+
+**flags와 reveals는 조건 검사에서 한 네임스페이스로 합쳐집니다.** 문을 여는
+조건으로 물을 때는 둘 다 그냥 "지금 참인 것"이라, 나누면 씬 작가가 매번
+어느 쪽인지 기억해야 합니다. 대신 **id는 flags와 reveals를 통틀어 유일해야
+합니다.**
+
+> 이 명세 초판은 이 필드를 `anyFlag`라 부르면서 예시에는 reveal id를 넣어
+> 자기모순이었습니다(명세 07 구현이 잡아냄). `any`로 고쳤습니다.
 
 ### 스키마에 없어야 하는 것
 
@@ -157,9 +188,21 @@ const Game = (() => {
 
     // 효과 하나를 적용 (테스트하기 쉽게 분리)
     applyEffect(state, party, effect, actorName, rollValue) { /* → { state, party } */ },
+
+    // 씬에 들어갈 때 onEnter를 적용. visitedScenes로 멱등.
+    // newGame()과 goto 직후에 호출한다.
+    enterScene(state, scenesData, party, rolls) { /* → { state, party, log } */ },
+
+    // 호출자가 굴릴 주사위를 미리 알려주는 질의 — 없으면 UI가 game.js의
+    // 효과 파싱 로직을 그대로 복제해야 한다.
+    diceNeededForChoice(scenesData, choiceId, tier) { /* → [{count,sides,sign}] */ },
+    diceNeededForEnter(state, scenesData) { /* → [{count,sides,sign}] */ },
   };
 })();
 ```
+
+`enterScene`과 `dice*` 질의는 초판 명세에 없었습니다 — 구현하면서 없으면
+순수성을 지킬 수 없다는 게 드러나 추가됐습니다.
 
 `GameState`:
 ```js
