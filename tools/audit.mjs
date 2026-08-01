@@ -17,9 +17,14 @@ const rules = read('data/rules.json');
 
 // data/scenarios/*.json — 명세 05(docs/specs/05-scenario-data.md). 파일이
 // 아직 없어도(예: 이 명세 전) 조용히 빈 배열로 넘어간다.
+// *.scenes.json(명세 07, docs/specs/07-play-engine.md)은 뺀다 — 그건 GM
+// 진행 데이터(acts/districts/npcs)가 아니라 플레이어용 씬 콘텐츠라 스키마가
+// 전혀 달라서, 여기 섞으면 R-1/S-1/S-3 같은 검사가 "acts 없음"·"districts
+// 없음"을 엉뚱하게 새 불일치로 잡아낸다(37+2건 유지가 데이터 무변경의
+// 증거이므로 이 카운트가 흔들리면 안 된다).
 const scenarioDir = 'data/scenarios';
 const scenarios = existsSync(join(root, scenarioDir))
-  ? readdirSync(join(root, scenarioDir)).filter((f) => f.endsWith('.json')).map((f) => read(join(scenarioDir, f)))
+  ? readdirSync(join(root, scenarioDir)).filter((f) => f.endsWith('.json') && !f.endsWith('.scenes.json')).map((f) => read(join(scenarioDir, f)))
   : [];
 
 const STANDARD_ARRAY = [3, 2, 1, 1, 0, -1];

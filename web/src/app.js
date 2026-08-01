@@ -8,7 +8,9 @@
 
 let ROOM_CODE = '';
 let PLAYER_NAME = '';
-let activeTab = 'char';
+// 명세 07(ADR-002) — 플레이 모드가 앱의 새 진입점이라 기본 탭을 '플레이'로
+// 바꾼다. 기존 탭(캐릭터시트·주사위·GM·로그)은 그대로 남아 있다.
+let activeTab = 'play';
 let selectedChar = null;
 let lastRoll = null;
 let ROOM = null;
@@ -212,7 +214,7 @@ document.getElementById('btn-join').onclick = async () => {
   addLog(ROOM, `${PLAYER_NAME}님이 접속했습니다.`, 'sys');
   await persistRoom(ROOM);
   refreshAutoHints(ROOM);
-  switchTab('char');
+  switchTab('play');
   startPolling();
 };
 

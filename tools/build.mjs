@@ -28,31 +28,53 @@ const SCRIPT_ORDER = [
   'store.js',
   'rules.js',
   'net.js',
+  'game.js',
   'ui.js',
   'ui-check.js',
   'ui-net.js',
   'ui-scenario.js',
   'ui-craft.js',
   'ui-builder.js',
+  'ui-play.js',
   'app.js',
 ];
 
-// data/scenarios/*.json → { "station-0": {...}, ... }. 명세 05
+// data/scenarios/*.json (단, *.scenes.json은 제외 — 아래 buildScenesBlock()
+// 이 따로 다룬다) → { "station-0": {...}, ... }. 명세 05
 // (docs/specs/05-scenario-data.md) — 시나리오 파일은 전부 스탯·구조만
 // 담는다는 게 그 명세의 전제라 characters.json의 secret처럼 걸러낼 필드가
 // 없다(진상·비밀은 애초에 docs/scenario-station-0.md 문서에만 남긴다).
 // 그래도 findLeakedSecrets()는 최종 HTML 문자열 전체를 다시 훑으므로,
 // 여기서 실수로 무언가를 새게 만들어도 빌드가 잡아낸다.
+function isScenesFile(f) { return f.endsWith('.scenes.json'); }
+
 function buildScenariosBlock() {
   const dir = 'data/scenarios';
   const scenarios = {};
   if (existsSync(p(dir))) {
-    for (const f of readdirSync(p(dir)).filter((f) => f.endsWith('.json')).sort()) {
+    for (const f of readdirSync(p(dir)).filter((f) => f.endsWith('.json') && !isScenesFile(f)).sort()) {
       const s = readJson(join(dir, f));
       scenarios[s.id] = s;
     }
   }
   return scenarios;
+}
+
+// data/scenarios/*.scenes.json → { "station-0": {...}, ... }, scenarioId로
+// 인덱싱(GM용 station-0.json은 id로 인덱싱하는 것과 대비된다 — 명세 07,
+// docs/specs/07-play-engine.md §1: 이 파일은 플레이어에게 그대로 보여줄
+// 씬 콘텐츠라 GM 진행 데이터와는 다른 스키마·다른 정본이다). game.js/
+// ui-play.js가 전역 SCENES를 읽는다.
+function buildScenesBlock() {
+  const dir = 'data/scenarios';
+  const scenes = {};
+  if (existsSync(p(dir))) {
+    for (const f of readdirSync(p(dir)).filter(isScenesFile).sort()) {
+      const s = readJson(join(dir, f));
+      scenes[s.scenarioId] = s;
+    }
+  }
+  return scenes;
 }
 
 function buildDataBlock() {
@@ -64,14 +86,17 @@ function buildDataBlock() {
   const characters = readJson('data/characters.json').map(({ secret, ...rest }) => rest);
   const monsters = readJson('data/monsters.json');
   const scenarios = buildScenariosBlock();
+  const scenes = buildScenesBlock();
   return [
     '// ---- data/*.json 인라인 주입 (tools/build.mjs) ----',
     '// PREGENS[].secret은 의도적으로 없음 (docs/specs/04-secret-split.md) — web/secrets.json 참고.',
     `const RULES = ${JSON.stringify(rules)};`,
     `const PREGENS = ${JSON.stringify(characters)};`,
     `const MONSTERS = ${JSON.stringify(monsters)};`,
-    '// SCENARIOS: data/scenarios/*.json을 id로 인덱싱 (docs/specs/05-scenario-data.md).',
+    '// SCENARIOS: data/scenarios/*.json을 id로 인덱싱 (docs/specs/05-scenario-data.md, GM 전용 진행 데이터).',
     `const SCENARIOS = ${JSON.stringify(scenarios)};`,
+    '// SCENES: data/scenarios/*.scenes.json을 scenarioId로 인덱싱 (docs/specs/07-play-engine.md, 플레이어용 씬 콘텐츠).',
+    `const SCENES = ${JSON.stringify(scenes)};`,
     '',
   ].join('\n');
 }

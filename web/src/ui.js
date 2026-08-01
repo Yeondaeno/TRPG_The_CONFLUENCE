@@ -491,7 +491,8 @@ const UI = (() => {
     if (!c) return;
     c.innerHTML = '';
     if (!ctx.ROOM) return;
-    if (ctx.activeTab === 'char') renderChar(c, ctx);
+    if (ctx.activeTab === 'play') UIPlay.render(c, ctx);
+    else if (ctx.activeTab === 'char') renderChar(c, ctx);
     else if (ctx.activeTab === 'dice') renderDice(c, ctx);
     else if (ctx.activeTab === 'gm') renderGM(c, ctx);
     else if (ctx.activeTab === 'log') renderLog(c, ctx);

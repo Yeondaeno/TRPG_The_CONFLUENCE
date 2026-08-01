@@ -21,6 +21,9 @@ const { createStore, Store } = require(join(root, 'web/src/store.js'));
 const Rules = require(join(root, 'web/src/rules.js'));
 const Net = require(join(root, 'web/src/net.js'));
 const RULES = require(join(root, 'data/rules.json'));
+const Game = require(join(root, 'web/src/game.js'));
+const SCENES = require(join(root, 'data/scenarios/station-0.scenes.json'));
+const CHARACTERS = require(join(root, 'data/characters.json'));
 
 // ---- 테스트용 가짜 백엔드 ----
 function makeFakeLocalStorage({ throwOnKey } = {}) {
@@ -392,5 +395,249 @@ describe('Rules.isValidAbilityAssignment — 배열 [3,2,1,1,0,-1] 벗어난 배
   test('능력치가 비어 있으면 무효', () => {
     assert.equal(Rules.isValidAbilityAssignment({}), false);
     assert.equal(Rules.isValidAbilityAssignment(null), false);
+  });
+});
+
+// ==========================================================================
+// Game — 진행 상태 머신 (명세 07, docs/specs/07-play-engine.md §2)
+// game.js는 rules.js처럼 부수효과가 없다 — 주사위는 여기서 전부 미리
+// 정해서 넘긴다(호출자가 굴린다는 계약을 그대로 재현). 데이터는 실제
+// data/scenarios/station-0.scenes.json(씬 1-1)을 그대로 쓴다 — 가짜
+// 시나리오를 새로 만들지 않는 이유는, 스키마를 검증하는 것도 이 명세의
+// 목적이라 실제 파일이 game.js의 가정과 어긋나면 여기서 바로 드러나야
+// 하기 때문이다.
+// ==========================================================================
+function makeParty() {
+  return CHARACTERS.map((c) => ({
+    name: c.name, stats: c.stats, skills: c.skills,
+    hp: c.maxHp, maxHp: c.maxHp, radiation: 0, parts: c.startParts,
+  }));
+}
+
+describe('Game.newGame — 초기 상태 (docs/specs/07-play-engine.md §2)', () => {
+  test('startScene으로 시작하고 모든 컬렉션이 빈 상태', () => {
+    const s = Game.newGame(SCENES, makeParty());
+    assert.equal(s.sceneId, SCENES.startScene);
+    assert.deepEqual(s.flags, []);
+    assert.deepEqual(s.revealed, []);
+    assert.deepEqual(s.visitedScenes, []);
+    assert.deepEqual(s.usedChoices, {});
+    assert.deepEqual(s.history, []);
+  });
+});
+
+describe('Game.enterScene — onEnter 효과 (잔향 +1d6 파티 전원)', () => {
+  test('파티 전원의 radiation이 굴린 값만큼 증가한다', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const dice = Game.diceNeededForEnter(SCENES, state.sceneId);
+    assert.deepEqual(dice, [{ count: 1, sides: 6 }]); // 1d6 하나
+    const { state: s2, party: p2 } = Game.enterScene(state, SCENES, party, [4]);
+    assert.ok(s2.visitedScenes.includes('1-1'));
+    p2.forEach((c) => assert.equal(c.radiation, 4));
+  });
+
+  test('같은 씬에 다시 들어가도(새로고침 재렌더) 두 번 적용되지 않는다', () => {
+    const party = makeParty();
+    let state = Game.newGame(SCENES, party);
+    const first = Game.enterScene(state, SCENES, party, [4]);
+    const second = Game.enterScene(first.state, SCENES, first.party, [999]); // 다른 값을 줘도
+    assert.deepEqual(second.log, []); // 아무 로그도 안 남고
+    second.party.forEach((c) => assert.equal(c.radiation, 4)); // 값도 그대로
+  });
+});
+
+describe('Game.bestActor — 보정 합이 가장 큰 캐릭터 (docs/specs/07-play-engine.md §2)', () => {
+  const party = makeParty();
+  test('설득(persuade) — 노아(CHA 숙련)가 최적', () => {
+    const choice = SCENES.scenes['1-1'].choices.find((c) => c.id === 'persuade');
+    assert.equal(Game.bestActor(choice, party), '노아');
+  });
+  test('퇴마술(exorcise) — 준(WIS 숙련)이 최적', () => {
+    const choice = SCENES.scenes['1-1'].choices.find((c) => c.id === 'exorcise');
+    assert.equal(Game.bestActor(choice, party), '준');
+  });
+  test('check가 없는 선택지(판정 없음)는 null', () => {
+    const choice = SCENES.scenes['1-1'].choices.find((c) => c.id === 'search');
+    assert.equal(Game.bestActor(choice, party), null);
+  });
+});
+
+describe('Game.availableChoices — requires 평가 + 이미 쓴 선택지 제외', () => {
+  test('퇴마술 숙련자가 파티에 없으면 exorcise 선택지가 안 보인다(requires.partyHasSkill)', () => {
+    const party = makeParty().filter((c) => c.name !== '준'); // 유일한 퇴마술 숙련자
+    const state = Game.newGame(SCENES, party);
+    const ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
+    assert.ok(!ids.includes('exorcise'));
+    assert.ok(ids.includes('persuade')); // 다른 선택지는 그대로
+  });
+
+  test('leave는 witness-full/witness-half/terminal 중 아무것도 모르면 안 보인다(requires.anyFlag)', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
+    assert.ok(!ids.includes('leave'));
+  });
+
+  test('search로 terminal을 알아내면(reveals) leave가 보인다 — anyFlag는 flags뿐 아니라 revealed도 본다', () => {
+    const party = makeParty();
+    let state = Game.newGame(SCENES, party);
+    const res = Game.applyChoice(state, SCENES, party, 'search', null, null, []);
+    const ids = Game.availableChoices(res.state, SCENES, res.party).map((c) => c.id);
+    assert.ok(ids.includes('leave'));
+  });
+
+  test('같은 선택지를 두 번 고를 수 없다(usedChoices)', () => {
+    const party = makeParty();
+    let state = Game.newGame(SCENES, party);
+    let ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
+    assert.ok(ids.includes('persuade'));
+    const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
+    ids = Game.availableChoices(res.state, SCENES, res.party).map((c) => c.id);
+    assert.ok(!ids.includes('persuade'));
+  });
+});
+
+describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 데이터)', () => {
+  test('설득 성공 — witness-full이 밝혀지고 효과 없음', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
+    assert.deepEqual(res.state.revealed, ['witness-full']);
+    assert.equal(res.moved, false);
+  });
+
+  test('설득 실패 — witness-panic 플래그가 켜지고 아무것도 안 밝혀진다', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'fail', []);
+    assert.deepEqual(res.state.flags, ['witness-panic']);
+    assert.deepEqual(res.state.revealed, []);
+  });
+
+  test('치유술 부분 성공 — 시술자 잔향 +1d6 (target: actor)', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const dice = Game.diceNeededForChoice(SCENES, state.sceneId, 'heal', 'partial');
+    assert.deepEqual(dice, [{ count: 1, sides: 6 }]);
+    const res = Game.applyChoice(state, SCENES, party, 'heal', '아이린', 'partial', [5]);
+    const actor = res.party.find((c) => c.name === '아이린');
+    const others = res.party.filter((c) => c.name !== '아이린');
+    assert.equal(actor.radiation, 5);
+    others.forEach((c) => assert.equal(c.radiation, 0)); // target:actor는 다른 캐릭터를 건드리지 않는다
+  });
+
+  test('퇴마술 실패 — 시술자 잔향 +1d6 + witness-gesture만 밝혀짐(전투태세 플래그는 없음)', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const res = Game.applyChoice(state, SCENES, party, 'exorcise', '준', 'fail', [3]);
+    assert.equal(res.party.find((c) => c.name === '준').radiation, 3);
+    assert.deepEqual(res.state.revealed, ['witness-gesture']);
+    assert.deepEqual(res.state.flags, []);
+  });
+
+  test('crit은 문서에 없는 결과를 지어내지 않고 success와 같은 결과를 낸다(스키마 피드백 참고)', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const successRes = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
+    const critRes = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'crit', []);
+    assert.equal(critRes.narrative, successRes.narrative);
+    assert.deepEqual(critRes.state.revealed, successRes.state.revealed);
+  });
+
+  test('판정 없는 선택지(search)는 tier를 무시하고 outcomes.always를 쓴다', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    const res = Game.applyChoice(state, SCENES, party, 'search', null, null, []);
+    assert.deepEqual(res.state.revealed, ['terminal']);
+  });
+
+  test('goto 대상 씬이 아직 없으면(1-2 미작성) 이동하지 않고 정직하게 알린다', () => {
+    const party = makeParty();
+    let state = Game.newGame(SCENES, party);
+    state = Game.applyChoice(state, SCENES, party, 'search', null, null, []).state;
+    const res = Game.applyChoice(state, SCENES, party, 'leave', null, null, []);
+    assert.equal(res.moved, false);
+    assert.equal(res.nextSceneMissing, true);
+    assert.equal(res.state.sceneId, '1-1'); // 제자리
+  });
+
+  test('goto 대상 씬이 있으면 실제로 이동한다', () => {
+    const scenesData = {
+      scenarioId: 'test', startScene: 'a',
+      scenes: {
+        a: { title: 'A', place: '', narrative: [], choices: [
+          { id: 'go', label: '가기', outcomes: { always: { text: '이동', goto: 'b' } } },
+        ] },
+        b: { title: 'B', place: '', narrative: [], choices: [] },
+      },
+    };
+    const party = makeParty();
+    const state = Game.newGame(scenesData, party);
+    const res = Game.applyChoice(state, scenesData, party, 'go', null, null, []);
+    assert.equal(res.moved, true);
+    assert.equal(res.nextSceneMissing, false);
+    assert.equal(res.state.sceneId, 'b');
+  });
+
+  test('알 수 없는 씬/선택지는 조용히 무시하지 않고 에러를 던진다', () => {
+    const party = makeParty();
+    const state = Game.newGame(SCENES, party);
+    assert.throws(() => Game.applyChoice({ ...state, sceneId: '없는씬' }, SCENES, party, 'persuade', '노아', 'success', []));
+    assert.throws(() => Game.applyChoice(state, SCENES, party, '없는선택지', '노아', 'success', []));
+  });
+});
+
+describe('Game.applyEffect — 효과 타입별 (docs/specs/07-play-engine.md §1 표)', () => {
+  const baseState = { flags: [], revealed: [] };
+  function onePartyOf(fields) { return [{ name: 'X', hp: 10, maxHp: 10, radiation: 0, parts: 0, ...fields }]; }
+
+  test('resonance는 0~100으로 clamp된다', () => {
+    const p = onePartyOf({ radiation: 98 });
+    const r = Game.applyEffect(baseState, p, { type: 'resonance', target: 'party', amount: '1d10' }, null, 10);
+    assert.equal(r.party[0].radiation, 100);
+  });
+
+  test('음수 다이스 표기("-1d10")도 지원한다 — Rules.parseDiceNotation은 부호가 없으므로 game.js가 따로 뗀다', () => {
+    const p = onePartyOf({ radiation: 50 });
+    const r = Game.applyEffect(baseState, p, { type: 'resonance', target: 'party', amount: '-1d10' }, null, 7);
+    assert.equal(r.party[0].radiation, 43);
+  });
+
+  test('hp는 0~maxHp로 clamp된다', () => {
+    const p = onePartyOf({ hp: 9, maxHp: 10 });
+    const r = Game.applyEffect(baseState, p, { type: 'hp', target: 'party', amount: 5 }, null, null);
+    assert.equal(r.party[0].hp, 10);
+    const r2 = Game.applyEffect(baseState, p, { type: 'hp', target: 'party', amount: -50 }, null, null);
+    assert.equal(r2.party[0].hp, 0);
+  });
+
+  test('shards(결정편)는 음수로 0 밑으로 안 내려간다', () => {
+    const p = onePartyOf({ parts: 2 });
+    const r = Game.applyEffect(baseState, p, { type: 'shards', target: 'party', amount: -5 }, null, null);
+    assert.equal(r.party[0].parts, 0);
+  });
+
+  test('flag set/clear', () => {
+    const r1 = Game.applyEffect(baseState, onePartyOf({}), { type: 'flag', set: 'a' }, null, null);
+    assert.deepEqual(r1.state.flags, ['a']);
+    const r2 = Game.applyEffect(r1.state, onePartyOf({}), { type: 'flag', set: 'a' }, null, null); // 중복 set은 한 번만
+    assert.deepEqual(r2.state.flags, ['a']);
+    const r3 = Game.applyEffect(r1.state, onePartyOf({}), { type: 'flag', clear: 'a' }, null, null);
+    assert.deepEqual(r3.state.flags, []);
+  });
+
+  test('combat은 자리만 잡는다(명세 09 예정) — 상태에 pendingCombat만 남기고 party는 그대로', () => {
+    const p = onePartyOf({});
+    const r = Game.applyEffect(baseState, p, { type: 'combat', npcs: ['여파에 물든 시민'] }, null, null);
+    assert.deepEqual(r.state.pendingCombat, ['여파에 물든 시민']);
+    assert.deepEqual(r.party, p);
+  });
+
+  test('target:"actor"는 actorName으로 지정된 캐릭터만 바꾼다', () => {
+    const p = [onePartyOf({ radiation: 0 })[0], { name: 'Y', hp: 10, maxHp: 10, radiation: 0, parts: 0 }];
+    const r = Game.applyEffect(baseState, p, { type: 'resonance', target: 'actor', amount: 3 }, 'Y', null);
+    assert.equal(r.party.find((c) => c.name === 'X').radiation, 0);
+    assert.equal(r.party.find((c) => c.name === 'Y').radiation, 3);
   });
 });
