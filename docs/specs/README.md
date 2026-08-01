@@ -6,29 +6,25 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 ## 순서와 의존성
 
 ```
-01-foundation   모듈 분리 · 빌드 · 스토리지 · 이스케이프 · 비밀 차단   ✅
-      │         ← 여기서 rules.js / net.js의 인터페이스를 확정한다
-      ├──────────────┬──────────────
-      ▼              ▼
-02-check-engine   03-p2p-sync                                        ✅
-판정 엔진·그룹판정   P2P 동기화
-      │               │
-      │               ▼
-      │           04-secret-split      비밀 분리 빌드          ← 진행 중
-      │               │
-      │               ▼
-      │           05-scenario-data     시나리오 데이터화        ← 남음
-      ▼
-  06-crafting-and-builder   즉석 조합 · 캐릭터 빌더            ← 남음
+01-foundation ✅   02-check-engine ✅   03-p2p-sync ✅
+04-secret-split ✅  05-scenario-data ✅  06-crafting-and-builder ✅
+        │
+        ▼  ADR-002 — 방향 전환: GM 보조 도구 → 플레이 가능한 게임
+        │
+07-play-engine        씬 스키마 · 진행 엔진 · 플레이 화면   ← 진행 중
+        │             (씬 하나로 스키마를 먼저 증명한다)
+        ▼
+08 시나리오 콘텐츠     나머지 10개 씬 (07이 스키마를 검증한 뒤)
+09 전투               적이 실제로 행동하는 턴제
+10 AI GM 모드         선택 기능 — 오프라인 동작을 깨지 않는 층
 ```
 
-04는 03을 구현하고 나서야 필요성이 드러났습니다. P2P가 비밀 노출을 자동으로
-풀어줄 거라 봤는데, 실제로는 빌드 산출물에 비밀이 박히는 게 원인이라
-배포 방식을 고쳐야 합니다. [ADR-001의 단서](../adr/001-p2p-sync.md#단서--비밀-차단은-아직-절반만-이뤄졌다) 참고.
+**명세 07부터는 성격이 다릅니다.** 01~06은 사람 GM이 진행하는 전제 위에서
+도구를 다듬는 일이었습니다. 07부터는 **게임 자체**를 만듭니다 —
+[ADR-002](../adr/002-playable-game.md)를 먼저 읽으세요.
 
-05는 04 뒤에 해야 합니다 — 둘 다 `tools/build.mjs`를 만지고, 05가 시나리오를
-인라인할 때 04의 secret 필터를 우회하면 안 되기 때문입니다.
-06은 02에만 의존하므로 04·05와 **병렬로 진행해도 됩니다**(소유 파일이 겹치지 않습니다).
+01~06의 결과물은 버리지 않습니다. 판정 엔진·캐릭터·NPC·잔향·조합·P2P·
+비밀 분리가 전부 CRPG의 하부 구조로 그대로 쓰입니다.
 
 **01이 반드시 먼저입니다.** 01은 `rules.js`와 `net.js`를 *빈 껍데기로 생성하고
 `app.js`에서 호출까지 연결*합니다. 그래야 02와 03이 서로 다른 파일만 만지면서
@@ -44,6 +40,7 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 | 04 | `tools/build.mjs`, `web/template.html`, `web/src/data.js`, `web/src/net.js`, `web/src/ui-net.js` |
 | 05 | `data/scenarios/**`, `web/src/ui-scenario.js`, `tools/build.mjs`, `tools/audit.mjs` |
 | 06 | `web/src/ui-craft.js`, `web/src/ui-builder.js`, `web/src/rules.js`(추가만), `tools/verify-craft.mjs` |
+| 07 | `web/src/game.js`, `ui-play.js`, `data/scenarios/*.scenes.json`, `tools/verify-play.mjs` + **공용 파일 허용** (새 진입점이라 슬롯으로 우회 불가) |
 
 02와 03은 **`app.js`·`ui.js`·`store.js`를 수정하지 않습니다.** 01이 미리
 호출 지점을 만들어 두기 때문입니다. 만약 수정이 꼭 필요하다고 판단되면
