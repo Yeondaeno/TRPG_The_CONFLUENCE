@@ -122,8 +122,49 @@ const Game = (() => {
         revealed: [],
         visitedScenes: [],
         usedChoices: {},
+        usedAffordances: {},
         history: [],
       };
+    },
+
+    // ------------------------------------------------------------------
+    // 자유 행동 파서(명세 08 B-2)가 쓰는 최소 상태 — "이 씬에서 이 장면
+    // 요소(affordance)를 이미 써먹었는가". 미리 쓰인 선택지(usedChoices)와는
+    // 별개 네임스페이스다 — 자유 행동은 usedChoices에 걸리지 않는다
+    // (docs/specs/08-content-and-parser.md B-2 "반드시 지킬 것"). 대신
+    // affordance당 1회로 여기서 따로 막는다.
+    affordanceUsed(state, sceneId, affordanceId) {
+      if (!affordanceId) return false;
+      const used = (state.usedAffordances && state.usedAffordances[sceneId]) || [];
+      return used.includes(affordanceId);
+    },
+
+    // 자유 행동 판정 결과를 상태에 남긴다. 미리 쓰인 선택지(applyChoice)와
+    // 달리 씬 데이터에 outcomes가 없으므로(즉흥 판정이라 애초에 정의될 수
+    // 없다) 기계적 효과는 만들어내지 않는다 — 판정 결과(tier)와 서술만
+    // 기록한다. 캐릭터 시트에 직접 영향을 주고 싶으면(예: 실패 시 잔향
+    // 획득) 호출부가 effect를 넘기면 그때 적용한다. affordanceId가 없으면
+    // (파서가 아무것도 못 짚어서 완전 수동으로 판정한 경우) 재사용 방지
+    // 목록에는 아무것도 남기지 않는다 — 애초에 대상이 없었으므로.
+    applyFreeAction(state, party, action) {
+      const { sceneId, affordanceId, actorName, skillId, dc, tier, narrative, effect } = action || {};
+      const used = { ...(state.usedAffordances || {}) };
+      if (affordanceId) {
+        const list = used[sceneId] || [];
+        if (!list.includes(affordanceId)) used[sceneId] = [...list, affordanceId];
+        else used[sceneId] = list;
+      }
+      let nextParty = party;
+      if (effect) {
+        const applied = this.applyEffect(state, party, effect, actorName, action.rollValue);
+        nextParty = applied.party;
+      }
+      const history = [...(state.history || []), {
+        sceneId, choiceId: null, freeAction: true, affordanceId: affordanceId || null,
+        actorName: actorName || null, skillId: skillId || null, dc: dc || null,
+        tier: tier || null, text: narrative || '',
+      }];
+      return { state: { ...state, usedAffordances: used, history }, party: nextParty };
     },
 
     // 지금 씬에서 고를 수 있는 선택지 — requires 평가 + 이미 쓴 선택지 제외.

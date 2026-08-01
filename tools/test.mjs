@@ -22,6 +22,8 @@ const Rules = require(join(root, 'web/src/rules.js'));
 const Net = require(join(root, 'web/src/net.js'));
 const RULES = require(join(root, 'data/rules.json'));
 const Game = require(join(root, 'web/src/game.js'));
+const Parser = require(join(root, 'web/src/parser.js'));
+const UIParty = require(join(root, 'web/src/ui-party.js'));
 const SCENES = require(join(root, 'data/scenarios/station-0.scenes.json'));
 const CHARACTERS = require(join(root, 'data/characters.json'));
 
@@ -415,6 +417,12 @@ function makeParty() {
   }));
 }
 
+// 정본의 startScene은 도입 씬 0이다. 아래 대부분의 테스트는 씬 1-1의
+// 선택지·결과를 검사하므로 여기서 바로 1-1에 앉힌다 — newGame은 onEnter를
+// 실행하지 않으므로 sceneId만 바꿔도 상태가 어긋나지 않는다(enterScene이
+// 따로 방문 처리를 한다).
+const newGameAt11 = (party) => ({ ...Game.newGame(SCENES, party), sceneId: '1-1' });
+
 describe('Game.newGame — 초기 상태 (docs/specs/07-play-engine.md §2)', () => {
   test('startScene으로 시작하고 모든 컬렉션이 빈 상태', () => {
     const s = Game.newGame(SCENES, makeParty());
@@ -430,7 +438,7 @@ describe('Game.newGame — 초기 상태 (docs/specs/07-play-engine.md §2)', ()
 describe('Game.enterScene — onEnter 효과 (잔향 +1d6 파티 전원)', () => {
   test('파티 전원의 radiation이 굴린 값만큼 증가한다', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const dice = Game.diceNeededForEnter(SCENES, state.sceneId);
     assert.deepEqual(dice, [{ count: 1, sides: 6, sign: 1 }]); // 1d6 하나
     const { state: s2, party: p2 } = Game.enterScene(state, SCENES, party, [4]);
@@ -440,7 +448,7 @@ describe('Game.enterScene — onEnter 효과 (잔향 +1d6 파티 전원)', () =>
 
   test('같은 씬에 다시 들어가도(새로고침 재렌더) 두 번 적용되지 않는다', () => {
     const party = makeParty();
-    let state = Game.newGame(SCENES, party);
+    let state = newGameAt11(party);
     const first = Game.enterScene(state, SCENES, party, [4]);
     const second = Game.enterScene(first.state, SCENES, first.party, [999]); // 다른 값을 줘도
     assert.deepEqual(second.log, []); // 아무 로그도 안 남고
@@ -467,7 +475,7 @@ describe('Game.bestActor — 보정 합이 가장 큰 캐릭터 (docs/specs/07-p
 describe('Game.availableChoices — requires 평가 + 이미 쓴 선택지 제외', () => {
   test('퇴마술 숙련자가 파티에 없으면 exorcise 선택지가 안 보인다(requires.partyHasSkill)', () => {
     const party = makeParty().filter((c) => c.name !== '준'); // 유일한 퇴마술 숙련자
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
     assert.ok(!ids.includes('exorcise'));
     assert.ok(ids.includes('persuade')); // 다른 선택지는 그대로
@@ -475,14 +483,14 @@ describe('Game.availableChoices — requires 평가 + 이미 쓴 선택지 제�
 
   test('leave는 witness-full/witness-half/terminal 중 아무것도 모르면 안 보인다(requires.anyFlag)', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
     assert.ok(!ids.includes('leave'));
   });
 
   test('search로 terminal을 알아내면(reveals) leave가 보인다 — anyFlag는 flags뿐 아니라 revealed도 본다', () => {
     const party = makeParty();
-    let state = Game.newGame(SCENES, party);
+    let state = newGameAt11(party);
     const res = Game.applyChoice(state, SCENES, party, 'search', null, null, []);
     const ids = Game.availableChoices(res.state, SCENES, res.party).map((c) => c.id);
     assert.ok(ids.includes('leave'));
@@ -490,7 +498,7 @@ describe('Game.availableChoices — requires 평가 + 이미 쓴 선택지 제�
 
   test('같은 선택지를 두 번 고를 수 없다(usedChoices)', () => {
     const party = makeParty();
-    let state = Game.newGame(SCENES, party);
+    let state = newGameAt11(party);
     let ids = Game.availableChoices(state, SCENES, party).map((c) => c.id);
     assert.ok(ids.includes('persuade'));
     const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
@@ -502,7 +510,7 @@ describe('Game.availableChoices — requires 평가 + 이미 쓴 선택지 제�
 describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 데이터)', () => {
   test('설득 성공 — witness-full이 밝혀지고 효과 없음', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
     assert.deepEqual(res.state.revealed, ['witness-full']);
     assert.equal(res.moved, false);
@@ -510,7 +518,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('설득 실패 — witness-panic 플래그가 켜지고 아무것도 안 밝혀진다', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const res = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'fail', []);
     assert.deepEqual(res.state.flags, ['witness-panic']);
     assert.deepEqual(res.state.revealed, []);
@@ -518,7 +526,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('치유술 부분 성공 — 시술자 잔향 +1d6 (target: actor)', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const dice = Game.diceNeededForChoice(SCENES, state.sceneId, 'heal', 'partial');
     assert.deepEqual(dice, [{ count: 1, sides: 6, sign: 1 }]);
     const res = Game.applyChoice(state, SCENES, party, 'heal', '아이린', 'partial', [5]);
@@ -530,7 +538,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('퇴마술 실패 — 시술자 잔향 +1d6 + witness-gesture만 밝혀짐(전투태세 플래그는 없음)', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const res = Game.applyChoice(state, SCENES, party, 'exorcise', '준', 'fail', [3]);
     assert.equal(res.party.find((c) => c.name === '준').radiation, 3);
     assert.deepEqual(res.state.revealed, ['witness-gesture']);
@@ -539,7 +547,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('crit은 문서에 없는 결과를 지어내지 않고 success와 같은 결과를 낸다(스키마 피드백 참고)', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const successRes = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'success', []);
     const critRes = Game.applyChoice(state, SCENES, party, 'persuade', '노아', 'crit', []);
     assert.equal(critRes.narrative, successRes.narrative);
@@ -548,19 +556,40 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('판정 없는 선택지(search)는 tier를 무시하고 outcomes.always를 쓴다', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     const res = Game.applyChoice(state, SCENES, party, 'search', null, null, []);
     assert.deepEqual(res.state.revealed, ['terminal']);
   });
 
-  test('goto 대상 씬이 아직 없으면(1-2 미작성) 이동하지 않고 정직하게 알린다', () => {
+  test('goto 대상 씬이 없으면 이동하지 않고 정직하게 알린다', () => {
+    // 정본 씬 데이터에는 대상 없는 goto가 하나도 없다(명세 08-A가 씬 0~
+    // 에필로그를 전부 채웠고, tools/verify-play.mjs가 그걸 검사한다). 그래서
+    // 이 경로는 합성 데이터로 확인한다 — 코드가 조용히 제자리에 머무르지
+    // 않고 nextSceneMissing으로 알리는지가 요점이다.
+    const scenesData = {
+      scenarioId: 'test', startScene: 'a',
+      scenes: {
+        a: { title: 'A', place: '', narrative: [], choices: [
+          { id: 'go', label: '가기', outcomes: { always: { text: '이동', goto: '없는씬' } } },
+        ] },
+      },
+    };
     const party = makeParty();
-    let state = Game.newGame(SCENES, party);
-    state = Game.applyChoice(state, SCENES, party, 'search', null, null, []).state;
-    const res = Game.applyChoice(state, SCENES, party, 'leave', null, null, []);
+    const state = Game.newGame(scenesData, party);
+    const res = Game.applyChoice(state, scenesData, party, 'go', null, null, []);
     assert.equal(res.moved, false);
     assert.equal(res.nextSceneMissing, true);
-    assert.equal(res.state.sceneId, '1-1'); // 제자리
+    assert.equal(res.state.sceneId, 'a'); // 제자리
+  });
+
+  test('정본 씬 데이터의 leave는 실제로 씬 1-2로 이어진다', () => {
+    const party = makeParty();
+    let state = newGameAt11(party);
+    state = Game.applyChoice(state, SCENES, party, 'search', null, null, []).state;
+    const res = Game.applyChoice(state, SCENES, party, 'leave', null, null, []);
+    assert.equal(res.moved, true);
+    assert.equal(res.nextSceneMissing, false);
+    assert.equal(res.state.sceneId, '1-2');
   });
 
   test('goto 대상 씬이 있으면 실제로 이동한다', () => {
@@ -583,7 +612,7 @@ describe('Game.applyChoice — 4단계 결과와 효과 적용 (씬 1-1 실제 �
 
   test('알 수 없는 씬/선택지는 조용히 무시하지 않고 에러를 던진다', () => {
     const party = makeParty();
-    const state = Game.newGame(SCENES, party);
+    const state = newGameAt11(party);
     assert.throws(() => Game.applyChoice({ ...state, sceneId: '없는씬' }, SCENES, party, 'persuade', '노아', 'success', []));
     assert.throws(() => Game.applyChoice(state, SCENES, party, '없는선택지', '노아', 'success', []));
   });
@@ -640,5 +669,224 @@ describe('Game.applyEffect — 효과 타입별 (docs/specs/07-play-engine.md §
     const r = Game.applyEffect(baseState, p, { type: 'resonance', target: 'actor', amount: 3 }, 'Y', null);
     assert.equal(r.party.find((c) => c.name === 'X').radiation, 0);
     assert.equal(r.party.find((c) => c.name === 'Y').radiation, 3);
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// 명세 08 B-1 — 8인 파티 선택 (docs/specs/08-content-and-parser.md)
+// ══════════════════════════════════════════════════════════════════════
+
+describe('UIParty.recommend — 역할이 겹치지 않는 8명 추천 (명세 08 B-1)', () => {
+  test('정확히 8명, 전부 서로 다름', () => {
+    const rec = UIParty.recommend(CHARACTERS);
+    assert.equal(rec.length, 8);
+    assert.equal(new Set(rec).size, 8);
+  });
+
+  test('전투/지원/기술/사교 4대 계열이 전부 대표된다("골고루" — B-1)', () => {
+    const rec = UIParty.recommend(CHARACTERS);
+    const cats = new Set(rec.map((name) => UIParty.macroOf(CHARACTERS.find((c) => c.name === name))));
+    ['전투', '지원', '기술', '사교'].forEach((m) => assert.ok(cats.has(m), `${m} 계열이 추천 구성에 없음`));
+  });
+
+  test('결정적이다 — 몇 번을 불러도 같은 8명', () => {
+    const a = UIParty.recommend(CHARACTERS);
+    const b = UIParty.recommend(CHARACTERS);
+    assert.deepEqual(a, b);
+  });
+
+  test('빈 목록에는 빈 배열', () => {
+    assert.deepEqual(UIParty.recommend([]), []);
+  });
+});
+
+describe('requires.partyHasSkill — 8인 파티가 들어가야 처음으로 실제 동작 (ADR-002, 명세 08 B-1 완료 조건)', () => {
+  function partyFrom(names) {
+    return CHARACTERS.filter((c) => names.includes(c.name)).map((c) => ({
+      name: c.name, stats: c.stats, skills: c.skills, hp: c.maxHp, maxHp: c.maxHp, radiation: 0, parts: c.startParts,
+    }));
+  }
+
+  test('추천 구성(준 포함) 8명이면 씬 1-1의 exorcise 선택지가 보인다', () => {
+    const eight = UIParty.recommend(CHARACTERS);
+    assert.ok(eight.includes('준'));
+    const state = newGameAt11(partyFrom(eight));
+    const ids = Game.availableChoices(state, SCENES, partyFrom(eight)).map((c) => c.id);
+    assert.ok(ids.includes('exorcise'));
+  });
+
+  test('8명 중 준을 빼면(다른 8번째로 교체) exorcise 선택지가 사라진다 — partyHasSkill이 실제로 거른다', () => {
+    const eight = UIParty.recommend(CHARACTERS);
+    assert.ok(eight.includes('준'));
+    // 준을 빼고, 파티에 없던 아무나(퇴마술 비숙련) 하나로 채운다 — 여전히 8명.
+    const replacement = CHARACTERS.map((c) => c.name).find((n) => n !== '준' && !eight.includes(n));
+    const withoutJun = eight.filter((n) => n !== '준').concat([replacement]);
+    assert.equal(withoutJun.length, 8);
+    assert.ok(!withoutJun.includes('준'));
+    const state = newGameAt11(partyFrom(withoutJun));
+    const ids = Game.availableChoices(state, SCENES, partyFrom(withoutJun)).map((c) => c.id);
+    assert.ok(!ids.includes('exorcise'), 'exorcise가 여전히 보임 — partyHasSkill이 걸러내지 못함');
+    // 그 외 선택지(판정/무판정 불문)는 그대로 있어야 한다 — partyHasSkill이
+    // 없는 선택지까지 건드리면 안 된다.
+    assert.ok(ids.includes('persuade'));
+    assert.ok(ids.includes('search'));
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// 명세 08 B-2 — 자유 행동 파서 (docs/specs/08-content-and-parser.md)
+// ══════════════════════════════════════════════════════════════════════
+
+describe('Parser.interpret — 자유 행동 해석 (명세 08 B-2)', () => {
+  // 씬 작가(A)가 아직 안 채웠을 수도 있는 affordances를 흉내내는 합성
+  // 씬이다 — 실제 station-0.scenes.json에 의존하지 않아 A의 동시 작업과
+  // 무관하게 결정적으로 테스트할 수 있다.
+  const scene = {
+    affordances: [
+      { id: 'streetlamp', noun: ['가로등', '등불', '조명', '배선', '전선'], tags: ['전기', '결계', '높은곳', '금속'], hint: '골목 위로 낡은 결계 가로등이 늘어서 있다' },
+      { id: 'curtain', noun: ['커튼'], tags: ['가연성'], hint: '창가에 낡은 커튼이 걸려 있다' },
+      { id: 'yokai', noun: ['이형체', '요괴'], tags: ['이형'], hint: '구석에 이형의 기척이 남아 있다' },
+      { id: 'crate', noun: ['궤짝', '상자'], tags: ['무거움'], hint: '무거운 궤짝이 쌓여 있다' },
+      { id: 'alcove', noun: ['틈새', '구석'], tags: ['어둠', '좁은곳'], hint: '어두운 틈새가 있다' },
+    ],
+  };
+
+  test('명사+태그+동사가 맞으면 대상·동사·기술·DC를 제안한다(끊다 → 전기 → tinker DC15)', () => {
+    const r = Parser.interpret('가로등 배선을 끊어서 감전시킬래', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.affordance, 'streetlamp');
+    assert.equal(r.skill, 'tinker');
+    assert.equal(r.dc, 15);
+    assert.equal(r.tag, '전기');
+  });
+
+  test('조사·어미가 달라도 매칭 — 끊어서/끊고/끊을래(완료 조건 B)', () => {
+    ['가로등을 끊어서 감전시킨다', '가로등을 끊고 지나간다', '가로등을 끊을래'].forEach((text) => {
+      const r = Parser.interpret(text, scene, []);
+      assert.equal(r.confidence, 1, `실패: "${text}"`);
+      assert.equal(r.affordance, 'streetlamp');
+      assert.equal(r.skill, 'tinker');
+    });
+  });
+
+  test('오르다 → 높은곳 → stealth DC12', () => {
+    const r = Parser.interpret('가로등에 오르고 싶다', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.skill, 'stealth');
+    assert.equal(r.dc, 12);
+  });
+
+  test('정화하다 → 이형 → exorcise DC12', () => {
+    const r = Parser.interpret('이형체를 정화하고 물러난다', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.skill, 'exorcise');
+    assert.equal(r.dc, 12);
+  });
+
+  test('밀다 → 무거움 → melee DC12', () => {
+    const r = Parser.interpret('궤짝을 밀고 지나간다', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.skill, 'melee');
+    assert.equal(r.dc, 12);
+  });
+
+  test('숨다 → 어둠/좁은곳 → stealth DC12', () => {
+    const r = Parser.interpret('틈새에 숨고 기다린다', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.skill, 'stealth');
+    assert.equal(r.dc, 12);
+  });
+
+  test('살피다는 태그와 무관하게(와일드카드) 항상 survival DC12', () => {
+    const r = Parser.interpret('가로등을 살피고 조사한다', scene, []);
+    assert.equal(r.confidence, 1);
+    assert.equal(r.skill, 'survival');
+    assert.equal(r.dc, 12);
+  });
+
+  test('대상은 맞지만 그 조합에 정의된 효과가 없으면 confidence 0 — 그래도 대상은 알려준다', () => {
+    const r = Parser.interpret('가로등을 태우고 도망친다', scene, []); // 가로등엔 가연성 태그가 없음
+    assert.equal(r.confidence, 0);
+    assert.equal(r.affordance, 'streetlamp');
+    assert.ok(/특별한 효과가 없습니다/.test(r.reason));
+  });
+
+  test('룰북 1.4 두 번째 예시 — 서사적 도박은 원리적으로 해석 불가(정상 경로)', () => {
+    const r = Parser.interpret('요괴에게 빌린 부적을 도박에 건다', scene, []);
+    assert.equal(r.confidence, 0);
+    assert.ok(r.reason);
+  });
+
+  test('빈 입력은 confidence 0', () => {
+    assert.equal(Parser.interpret('', scene, []).confidence, 0);
+    assert.equal(Parser.interpret('   ', scene, []).confidence, 0);
+  });
+
+  test('scene.affordances가 없어도(씬 작가가 아직 안 채운 씬) 죽지 않고 confidence 0 — 빈 배열로 취급', () => {
+    assert.doesNotThrow(() => Parser.interpret('아무거나 시도한다', {}, []));
+    assert.equal(Parser.interpret('아무거나 시도한다', {}, []).confidence, 0);
+    assert.doesNotThrow(() => Parser.interpret('아무거나 시도한다', undefined, []));
+    assert.equal(Parser.interpret('아무거나 시도한다', undefined, []).confidence, 0);
+    assert.doesNotThrow(() => Parser.interpret('아무거나 시도한다', { affordances: [] }, []));
+  });
+
+  test('verbs()는 배열 복사본을 돌려준다(원본 사전을 오염시키지 않음)', () => {
+    const v1 = Parser.verbs();
+    v1[0].dc = 999;
+    v1[0].tags.push('오염');
+    const v2 = Parser.verbs();
+    assert.notEqual(v2[0].dc, 999);
+    assert.ok(!v2[0].tags.includes('오염'));
+  });
+
+  test('ALLOWED_TAGS는 명세 08 B-1의 15개 태그와 정확히 같다', () => {
+    const expected = ['전기', '가연성', '물', '무거움', '날카로움', '금속', '유리', '결계', '이형', '기계', '높은곳', '좁은곳', '어둠', '소음원', '생명'];
+    assert.deepEqual(Parser.ALLOWED_TAGS, expected);
+    assert.equal(Parser.ALLOWED_TAGS.length, 15);
+  });
+
+  test('파서 사전(verbs())이 참조하는 태그는 전부 ALLOWED_TAGS 안에 있다', () => {
+    const allowed = new Set(Parser.ALLOWED_TAGS);
+    Parser.verbs().forEach((rule) => {
+      rule.tags.forEach((t) => { if (t !== '*') assert.ok(allowed.has(t), `허용 안 된 태그: ${t}`); });
+    });
+  });
+});
+
+describe('Game.affordanceUsed / applyFreeAction — affordance당 1회 (명세 08 B-2)', () => {
+  function party() {
+    return CHARACTERS.filter((c) => c.name === '노아').map((c) => ({
+      name: c.name, stats: c.stats, skills: c.skills, hp: c.maxHp, maxHp: c.maxHp, radiation: 0, parts: c.startParts,
+    }));
+  }
+
+  test('처음에는 어떤 affordance도 사용된 적 없다', () => {
+    const state = newGameAt11(party());
+    assert.equal(Game.affordanceUsed(state, '1-1', 'streetlamp'), false);
+  });
+
+  test('applyFreeAction 후 같은 affordance는 used로 표시된다', () => {
+    const state = newGameAt11(party());
+    const r = Game.applyFreeAction(state, party(), {
+      sceneId: '1-1', affordanceId: 'streetlamp', actorName: '노아', skillId: 'tinker', dc: 15, tier: 'success', narrative: '감전시켰다',
+    });
+    assert.equal(Game.affordanceUsed(r.state, '1-1', 'streetlamp'), true);
+    assert.equal(Game.affordanceUsed(r.state, '1-2', 'streetlamp'), false); // 씬 단위로만 막는다
+    assert.equal(r.state.history[r.state.history.length - 1].text, '감전시켰다');
+    assert.equal(r.state.history[r.state.history.length - 1].freeAction, true);
+  });
+
+  test('affordanceId가 없으면(완전 수동 판정) 재사용 방지 목록에 아무것도 안 남는다', () => {
+    const state = newGameAt11(party());
+    const r = Game.applyFreeAction(state, party(), {
+      sceneId: '1-1', affordanceId: null, actorName: '노아', skillId: 'lore', dc: 12, tier: 'partial', narrative: '직접 판정',
+    });
+    assert.deepEqual(r.state.usedAffordances['1-1'] || [], []);
+  });
+
+  test('usedChoices와는 별개 네임스페이스 — 자유 행동이 선택지 소모 목록을 건드리지 않는다', () => {
+    const state = newGameAt11(party());
+    const r = Game.applyFreeAction(state, party(), { sceneId: '1-1', affordanceId: 'streetlamp', tier: 'success' });
+    assert.deepEqual(r.state.usedChoices, {});
   });
 });

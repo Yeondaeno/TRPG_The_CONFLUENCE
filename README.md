@@ -100,6 +100,8 @@ npm run build       # web/src/* + data/*.json → web/index.html + web/secrets.j
 npm run verify        # build + 단위 테스트 + 데이터 정합성 검사
 npm run verify:ui     # 브라우저 검증
 npm run verify:craft  # 조합·빌더 브라우저 검증
+npm run verify:play   # 플레이 엔진(씬 진행·판정·저장) 브라우저 검증
+npm run verify:parser # 8인 파티 편성 + 자유 행동 파서 브라우저 검증
 npm run demo          # 시나리오 오프닝을 실제로 굴려 영상으로 녹화 (약 2분)
 ```
 

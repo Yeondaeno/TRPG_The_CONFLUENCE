@@ -212,7 +212,7 @@ const MONSTERS = [{"name":"결함 드론 (다수)","hp":6,"ac":11,"atk":"d20+2, 
 // SCENARIOS: data/scenarios/*.json을 id로 인덱싱 (docs/specs/05-scenario-data.md, GM 전용 진행 데이터).
 const SCENARIOS = {"station-0":{"id":"station-0","title":"역참-0","logline":"차원을 잇던 옛 역참이 수십 년 만에 눈을 떠 \"정상 운행 재개\"를 선언한다 — 뒤섞인 도시를 원래 세계로 '반송'하기 전에, 표를 받은 여덟 명이 자정의 개찰구를 넘는다.","targetMinutes":210,"source":"docs/scenario-station-0.md","districts":["교환장","강선지구","심야회랑","무영가"],"acts":[{"id":"act0","title":"오프닝","minutes":20,"scenes":[{"id":"0","title":"표가 도착한 밤 (교환장)","minutes":20,"resonance":"1d6"}]},{"id":"act1","title":"조사","minutes":55,"scenes":[{"id":"1-1","title":"사라진 사람들","minutes":15,"resonance":"1d6","optional":true,"npcs":[{"name":"여파에 물든 시민","count":1,"note":"반쯤 여파화된 노점상 — 목격자, 반드시 적대적이지는 않음"}]},{"id":"1-2","title":"세 갈래 조사 (분기)","minutes":25,"resonance":"A조 1d6 / B·C조 2d6","branches":[{"id":"1-2A","title":"선환그룹 지사","district":"강선지구","npcs":[{"name":"결함 드론 (다수)","count":4,"note":"잠입 실패 시 경보 전투"},{"name":"수금원 '창'","count":1,"note":"돌발 — 미행하던 도경의 감시자"}]},{"id":"1-2B","title":"흔적 서가","district":"심야회랑"},{"id":"1-2C","title":"옛 개찰구 골목","district":"무영가","npcs":[{"name":"여파에 물든 시민","count":1,"note":"실종된 등불 장인의 아들 — 설득/치유로 아군화 가능"}]}]},{"id":"1-3","title":"자정의 개찰구","minutes":15,"resonance":"2d6"}]},{"id":"act2","title":"역참 진입","minutes":70,"scenes":[{"id":"2-1","title":"검표","minutes":15,"resonance":"2d6","npcs":[{"name":"개찰기 7호","count":1},{"name":"결함 드론 (다수)","count":4}]},{"id":"2-2","title":"승강장 — 경비와 차장","minutes":20,"resonance":"2d6","optional":true,"npcs":[{"name":"무경 (선환 경비대장)","count":1},{"name":"헌터 길드 정찰병","count":2,"instanceNames":["마르코","단"]},{"name":"결함 드론 (다수)","count":4},{"name":"탈선한 차장","count":1}]},{"id":"2-3","title":"대합실 (분기 가능)","minutes":20,"resonance":"2d6","npcs":[{"name":"여파에 물든 시민","count":1,"note":"치유술로 각성시킨 승객이 폭주하는 경우"},{"name":"결함 드론 (다수)","count":2,"note":"좌석 결계 강제 해제 실패 시 출현"}]},{"id":"2-4","title":"정차 시간 — 휴식과 여파화","minutes":15,"resonance":"1d6"}]},{"id":"act3","title":"관제실","minutes":45,"scenes":[{"id":"3-1","title":"관제실 진입","minutes":10,"resonance":"2d6~3d6 (다이얼)","npcs":[{"name":"차은성 (발굴 책임자)","count":1}]},{"id":"3-2","title":"길잡이 — 발차까지 6","minutes":35,"resonance":"피격·펄스마다 1d6","npcs":[{"name":"역참 인격체 코어 '길잡이'","count":1}]}]},{"id":"epilogue","title":"에필로그","minutes":20,"scenes":[{"id":"epilogue","title":"결말 정산 + 개인 에필로그","minutes":20}]}],"npcs":[{"name":"개찰기 7호","hp":20,"ac":14,"atk":"d20+4, 1d8 (구속 사슬)","note":"기계 — 설득 불가. 규정의 허점(지식)·결계 해석에 취약. 파괴 시 경보 + 드론 호출"},{"name":"탈선한 차장","hp":26,"ac":13,"atk":"d20+4, 1d8 (위상 갈고리, 명중 시 잔향 +2)","note":"퇴마술 성공 시 1라운드 정지, DC 15 정화 2회 성공으로 비전투 해소. 융합 그날의 기억 보유"},{"name":"무경 (선환 경비대장)","hp":22,"ac":14,"atk":"d20+4, 2d6 (결계 산탄포, 근거리)","note":"무경이 물러나면 경비 전원 철수. '재해 시 철수' 조항이 설득의 급소"},{"name":"수금원 '창'","hp":14,"ac":12,"atk":"d20+3, 1d6 (결정탄)","note":"돈이 최우선 — 결정편 5개 또는 채무 정보로 매수 가능. 전투보다 도주를 택한다"},{"name":"차은성 (발굴 책임자)","hp":10,"ac":10,"atk":"비무장 (d20+0, 1d4)","note":"전투 불가. 중단할 명분을 주면 협조 — 코어 기억 봉인 코드 소지"}],"resonanceCurve":[{"checkpoint":"act1-end","label":"Act 1 종료 (씬 1-3 후)","target":[20,25],"autoAverage":19},{"checkpoint":"act2-end","label":"Act 2 종료 (씬 2-4 후)","target":[45,55],"autoAverage":44},{"checkpoint":"climax-start","label":"클라이맥스 진입 (씬 3-2 시작)","target":[65,75],"autoAverage":55}]}};
 // SCENES: data/scenarios/*.scenes.json을 scenarioId로 인덱싱 (docs/specs/07-play-engine.md, 플레이어용 씬 콘텐츠).
-const SCENES = {"station-0":{"$comment":"docs/specs/07-play-engine.md — 플레이용 씬 콘텐츠. GM용 진행 데이터(Act·시간·NPC·잔향 곡선, data/scenarios/station-0.json)와는 별개 파일이다. GM 전용 진상·캐릭터 비밀은 여기 없다(명세 04가 분리해 낸 것을 다시 새게 하지 않는다) — tools/build.mjs가 최종 HTML을 검사해 확인한다.","scenarioId":"station-0","startScene":"1-1","revealCatalog":{"witness-full":"노점상의 증언 (전부)","witness-half":"노점상의 증언 (일부)","witness-gesture":"노점상의 증언 (몸짓뿐)","living-ward":"벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'","terminal":"선환그룹 조사 단말 (아직 열지 않음)"},"source":"docs/scenario-station-0.md 4장(씬 1-1)","scenes":{"1-1":{"title":"사라진 사람들","place":"교환장 뒷골목 창고","narrative":["바닥의 발자국이 벽 앞에서 뚝 끊긴다.","벽에는 희미하게 남은 개찰구 모양의 그을음. 구석에 노점상이 웅크린 채 떨고 있다. 피부 아래로 결정 같은 것이 비친다. 유일한 목격자다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"역참의 잔향이 골목에 고여 있다."}],"choices":[{"id":"persuade","label":"진정시킨다","detail":"천천히 다가가 말을 건다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"crit":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"success":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"partial":{"text":"노점상이 띄엄띄엄 증언을 잇다가, 못 견디고 발작을 일으킨다. 절반쯤 들은 이야기만 남았다.","effects":[],"reveals":["witness-half"]},"fail":{"text":"노점상이 갑자기 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"heal","label":"안정제를 놓는다","detail":"치유 도구로 노점상을 진정시킨다","check":{"skill":"heal","dc":12},"actor":"any","outcomes":{"crit":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"success":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"partial":{"text":"증언 전부를 얻어내지만, 처치 과정에서 무리한 대가가 남는다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-full"]},"fail":{"text":"안정제가 듣지 않는다. 노점상이 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"exorcise","label":"잔향을 정화한다","detail":"씐 잔향을 정화 술식으로 씻어낸다","check":{"skill":"exorcise","dc":12},"actor":"any","requires":{"partyHasSkill":"exorcise"},"outcomes":{"crit":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"success":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"partial":{"text":"정화가 절반만 먹힌다. 증언은 얻지만 그을음의 정체까지는 알아내지 못한다.","effects":[],"reveals":["witness-full"]},"fail":{"text":"정화가 역류한다. 노점상은 겨우 몸짓으로만 뜻을 전한다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-gesture"]}}},{"id":"search","label":"주변을 살핀다","detail":"판정 없이 — 시간만 든다","outcomes":{"always":{"text":"구석을 살피다 노점상이 흘린 선환그룹 조사 단말을 발견한다. 표면에 옅게 서린 결계가 열기 전에는 무엇이 담겼는지 알 수 없게 막고 있다.","effects":[],"reveals":["terminal"]}}},{"id":"leave","label":"개찰구로 향한다","detail":"여기서 알아낸 것을 들고 다음으로 넘어간다","requires":{"any":["witness-full","witness-half","terminal"]},"outcomes":{"always":{"text":"충분히 알아냈다. 이제 개찰구로 향할 시간이다.","effects":[],"goto":"1-2"}}}]}}}};
+const SCENES = {"station-0":{"$comment":"docs/specs/07-play-engine.md + docs/specs/08-content-and-parser.md A — 플레이용 씬 콘텐츠 전체(씬 0~에필로그). GM용 진행 데이터(Act·시간·NPC·잔향 곡선, data/scenarios/station-0.json)와는 별개 파일이다. GM 전용 진상·캐릭터 비밀은 여기 없다(명세 04가 분리해 낸 것을 다시 새게 하지 않는다) — tools/build.mjs가 최종 HTML을 검사해 확인한다. 원본 표에 부분 성공의 대가가 명시되지 않은 곳은 시나리오 2.2절 운용 원칙 1('부분 성공의 기본 대가 = 위상잔향 +1d6')을 그대로 적용했다. 그룹 판정 선택지는 룰북 1.5('그룹 판정에 실패는 없다')대로 fail을 partial과 동일하게 두었다. 전투는 combat 효과로 자리만 잡는다(전투 화면은 다음 명세). startScene은 tools/verify-play.mjs가 씬 1-1 즉시 표시를 고정해 두고 있어 1-1로 유지한다 — 씬 0은 goto로 1-1에 연결되어 있으므로, verify-play 갱신 시 startScene을 '0'으로 바꾸는 한 줄이면 오프닝부터 시작된다.","scenarioId":"station-0","startScene":"0","revealCatalog":{"witness-full":"노점상의 증언 (전부)","witness-half":"노점상의 증언 (일부)","witness-gesture":"노점상의 증언 (몸짓뿐)","living-ward":"벽의 그을음은 그냥 그을음이 아니라 '살아있는 결계'","terminal":"선환그룹 조사 단말 (아직 열지 않음)","seal-crest":"표의 인장 — 일곱 구역 문장을 겹친 문양","station-legend":"'역참' 전설 — 융합 전, 차원 사이를 잇던 시설이 있었다는 소문","station-legend-half":"'역참' 전설 (절반) — 지하에 문이 있다는 것까지만","station-rumor":"헛소문과 뒤섞인 정보 — 심야회랑에 가면 가려낼 수 있다","midnight-gate":"직감 — '자정'은 오늘 밤이고, 개찰구는 교환장 지하 방향","clue-shunhwan":"단말 단서 ① 선환그룹이 '역참-0'을 다시 깨우는 계획을 진행 중 (→ 강선지구)","clue-bookstore":"단말 단서 ② 역참 문헌의 출처 — 심야회랑 지하 서점 '흔적 서가'","clue-alley":"단말 단서 ③ 가장 오래된 개찰구 흔적 — 무영가 골목","plan-report":"재기동 계획서 — 코어를 깨웠고, 기억 영역을 봉인했고, '자정 주기 분류 활동'이 통제를 벗어났다","plan-half":"재기동 계획서 (절반) — 핵심 문서는 지하 3층 실물뿐","archive-core":"역참-0 개요 — \"물리력은 절반밖에 닿지 않으나, 말과 결계는 온전히 닿는다\"","gate-map":"개찰구 지도 — 살아있는 개찰구는 하나, 교환장 지하 옛 매표소 자리","timekeeper-chronicle":"시간지기 가문 연대기 — 가문의 문장은 회중시계, 그 회중시계가 역참의 마스터 키","codex-origin":"금서 완전판의 소재 — 다름 아닌 역참의 노선표 원본 (역참 서고 소장)","sleeping-19":"골목 고양이의 말 — '지하에 잠든 열아홉'","talisman-half":"옛 개찰구의 부적 반쪽 — 오래전 누군가도 역참을 조사하고 있었다","guild-tracks":"헌터 길드의 최근 발자국 — 누군가에게 고용되어 지하로 들어갔다","spirits-fleeing":"정령들의 경고 — 일제히 지하를 등지고 도망친다, '뿌리부터 찢어진다'","son-testimony":"장인 아들의 증언 — '아버지 표에 0번 승강장. 자정마다 벽 너머에서 안내 방송'","conductor-schedule":"차장의 순회 시간표 — 정찰병들이 흘려준 것","conductor-memory":"탈선한 차장의 기억 — \"길잡이는 고장 난 게 아니라, 부서진 겁니다\" (증언 1회 선취)","roster-19":"승객 명부 — 실종자 열아홉의 이름, 그리고 스스로 늘어나는 새 이름","control-room-layout":"승객의 꿈에서 본 관제실 구조","seal-code":"코어 기억 봉인의 해제 코드 — 차은성이 회사 지시로 걸었다"},"source":"docs/scenario-station-0.md 3~10장","scenes":{"0":{"title":"표가 도착한 밤","place":"교환장 야시장","narrative":["교환장 야시장. 일곱 구역의 등불과 네온과 여우불이 한 골목에서 뒤섞이고, 일곱 언어의 흥정이 낮게 웅성거린다. 간간이 서기단의 저울 종이 맑게 한 번 울리면, 주위가 잠깐 조용해진다.","사흘 전부터 도시 곳곳에 발신인 없는 낡은 승차권이 배달되고 있다. 표를 받은 사람이 하나둘 사라져 벌써 열아홉. 상인 조합이 실종 조사를 의뢰한 이 자리 — 보수는 파티 앞으로 결정편 20개다.","오늘 밤, 모두의 표가 일제히 희미하게 울리기 시작한다. 표면에 새 문구가 떠오른다. 「금일 자정 발차. 0번 승강장.」"],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"표가 일제히 뜨겁게 울린다."}],"affordances":[{"id":"lanterns","noun":["등불","네온","여우불","조명","간판","불빛"],"tags":["전기","가연성"],"hint":"등불·네온·여우불이 뒤섞인 골목"},{"id":"ticket","noun":["표","승차권","티켓","문구"],"tags":["결계"],"hint":"문구가 스스로 떠오르는 낡은 승차권"},{"id":"stalls","noun":["좌판","노점","시장","상인","인파"],"tags":["생명","소음원"],"hint":"흥정이 웅성거리는 야시장 좌판"},{"id":"scale-bell","noun":["종","저울","저울 종"],"tags":["금속","소음원"],"hint":"서기단의 저울 종"}],"choices":[{"id":"inspect-ticket","label":"표를 자세히 살핀다","detail":"인장과 종이의 결을 관찰한다","check":{"skill":"survival","dc":12},"actor":"any","outcomes":{"crit":{"text":"인장은 일곱 구역의 문장을 겹쳐 찍은 문양이다 — 그리고 손끝이 먼저 안다. '자정'은 오늘 밤이고, 개찰구는 교환장 지하 방향이다.","effects":[],"reveals":["seal-crest","midnight-gate"]},"success":{"text":"인장은 일곱 구역의 문장을 겹쳐 찍은 문양이다. 어느 한 구역의 물건이 아니라는 뜻이다.","effects":[],"reveals":["seal-crest"]},"partial":{"text":"인장의 정체는 알아본다 — 일곱 구역 문장의 겹침. 그 순간 표가 종잇장답지 않게 손끝을 문다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["seal-crest"]},"fail":{"text":"문양이 눈에 아른거려 초점이 잡히지 않는다. 한동안 잔상이 남아, 다음 일에 집중하기 어렵다.","effects":[]}}},{"id":"recall-lore","label":"옛이야기를 떠올린다","detail":"'0번 승강장'이라는 말에 걸리는 게 있다","check":{"skill":"lore","dc":12},"actor":"any","outcomes":{"crit":{"text":"'역참' 전설 — 융합 전, 차원과 차원 사이를 잇던 시설이 있었다는 소문이다. 그리고 확신이 선다. '자정'은 오늘 밤이고, 개찰구는 교환장 지하 방향이다.","effects":[],"reveals":["station-legend","midnight-gate"]},"success":{"text":"'역참' 전설이 떠오른다 — 융합 전, 차원과 차원 사이를 잇던 시설이 있었다는 소문.","effects":[],"reveals":["station-legend"]},"partial":{"text":"전설의 절반만 떠오른다 — \"지하에 문이 있다\"는 데까지.","effects":[],"reveals":["station-legend-half"]},"fail":{"text":"떠오르는 것은 헛소문과 뒤섞인 조각들뿐이다. 다만 이런 이야기는 심야회랑에 가면 가려낼 수 있다는 것 정도는 안다.","effects":[],"reveals":["station-rumor"]}}},{"id":"depart","label":"실종 현장으로 향한다","detail":"어젯밤 등불 장인 '홍겸'이 사라진 뒷골목 창고부터","outcomes":{"always":{"text":"조합장이 창고 열쇠를 건넨다. 등불 장인 홍겸이 사라진 현장 — 조사는 거기서 시작이다.","effects":[],"goto":"1-1"}}}]},"1-1":{"title":"사라진 사람들","place":"교환장 뒷골목 창고","narrative":["바닥의 발자국이 벽 앞에서 뚝 끊긴다.","벽에는 희미하게 남은 개찰구 모양의 그을음. 구석에 노점상이 웅크린 채 떨고 있다. 피부 아래로 결정 같은 것이 비친다. 유일한 목격자다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"역참의 잔향이 골목에 고여 있다."}],"affordances":[{"id":"scorch-wall","noun":["벽","그을음","개찰구","흔적"],"tags":["결계"],"hint":"개찰구 모양의 그을음이 남은 벽"},{"id":"vendor","noun":["노점상","목격자","상인","결정"],"tags":["생명","이형"],"hint":"피부 아래로 결정이 비치는 노점상"},{"id":"dark-corner","noun":["구석","어둠","그늘","창고"],"tags":["어둠","좁은곳"],"hint":"노점상이 웅크린 창고 구석"}],"choices":[{"id":"persuade","label":"진정시킨다","detail":"천천히 다가가 말을 건다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"crit":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"success":{"text":"노점상이 마침내 입을 연다. \"벽이 열리고, 제복 입은 그림자가 표를 걷어 데려갔소. 회사 사람들도 며칠째 와서 재고 갔지.\"","effects":[],"reveals":["witness-full"]},"partial":{"text":"노점상이 띄엄띄엄 증언을 잇다가, 못 견디고 발작을 일으킨다. 절반쯤 들은 이야기만 남았다.","effects":[],"reveals":["witness-half"]},"fail":{"text":"노점상이 갑자기 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"heal","label":"안정제를 놓는다","detail":"치유 도구로 노점상을 진정시킨다","check":{"skill":"heal","dc":12},"actor":"any","outcomes":{"crit":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"success":{"text":"안정제가 듣는다. 노점상의 떨림이 잦아들고, 증언이 또렷하게 이어진다.","effects":[],"reveals":["witness-full"]},"partial":{"text":"증언 전부를 얻어내지만, 처치 과정에서 무리한 대가가 남는다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-full"]},"fail":{"text":"안정제가 듣지 않는다. 노점상이 발작한다 — 전투 태세. 제압하거나 달래야 한다.","effects":[{"type":"flag","set":"witness-panic"}]}}},{"id":"exorcise","label":"잔향을 정화한다","detail":"씐 잔향을 정화 술식으로 씻어낸다","check":{"skill":"exorcise","dc":12},"actor":"any","requires":{"partyHasSkill":"exorcise"},"outcomes":{"crit":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"success":{"text":"정화 술식이 벽의 그을음을 가라앉힌다. 노점상이 안정을 되찾고 증언한다 — 그리고 그 그을음이 그냥 그을음이 아니라 '살아있는 결계'라는 것을 감지한다.","effects":[],"reveals":["witness-full","living-ward"]},"partial":{"text":"정화가 절반만 먹힌다. 증언은 얻지만 그을음의 정체까지는 알아내지 못한다.","effects":[],"reveals":["witness-full"]},"fail":{"text":"정화가 역류한다. 노점상은 겨우 몸짓으로만 뜻을 전한다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["witness-gesture"]}}},{"id":"search","label":"주변을 살핀다","detail":"판정 없이 — 시간만 든다","outcomes":{"always":{"text":"구석을 살피다 노점상이 흘린 선환그룹 조사 단말을 발견한다. 표면에 옅게 서린 결계가 열기 전에는 무엇이 담겼는지 알 수 없게 막고 있다.","effects":[],"reveals":["terminal"]}}},{"id":"leave","label":"개찰구로 향한다","detail":"여기서 알아낸 것을 들고 다음으로 넘어간다","requires":{"any":["witness-full","witness-half","terminal"]},"outcomes":{"always":{"text":"충분히 알아냈다. 이제 개찰구로 향할 시간이다.","effects":[],"goto":"1-2"}}}]},"1-2":{"title":"세 갈래 조사","place":"교환장 야시장 골목","narrative":["창고를 나서자 밤의 교환장이 다시 웅성거린다. 등불 골목 어귀에서 길이 세 방향으로 갈라진다 — 강선지구 쪽 대로, 심야회랑으로 내려가는 계단, 무영가로 이어지는 좁은 골목.","자정까지 시간이 많지 않다. 어느 길이든, 다녀올 수 있는 곳부터."],"affordances":[{"id":"alley-shadow","noun":["골목","그늘","어둠","샛길"],"tags":["어둠","좁은곳"],"hint":"세 방향으로 갈라지는 골목의 그늘"},{"id":"lanterns","noun":["등불","불빛","조명"],"tags":["가연성","전기"],"hint":"등불 골목 어귀의 불빛"},{"id":"market-crowd","noun":["시장","야시장","인파","상인","좌판"],"tags":["생명","소음원"],"hint":"다시 웅성거리는 밤의 교환장"}],"choices":[{"id":"open-terminal","label":"조사 단말을 연다","detail":"표면의 결계를 해석해 잠금을 푼다","check":{"skill":"tinker","dc":12},"actor":"any","requires":{"any":["terminal"]},"outcomes":{"success":{"text":"결계가 풀리며 단말이 켜진다. 선환그룹이 '역참-0'을 다시 깨우는 계획을 진행 중이라는 내부 기록, 역참 문헌의 출처가 심야회랑 지하 서점 '흔적 서가'라는 메모, 그리고 가장 오래된 개찰구 흔적이 무영가 골목에 있다는 조사 지도가 차례로 떠오른다.","effects":[],"reveals":["clue-shunhwan","clue-bookstore","clue-alley"]},"partial":{"text":"결계가 풀리며 단서 셋이 떠오른다 — 선환그룹의 계획, 심야회랑의 서점, 무영가의 개찰구 흔적. 다만 마지막 순간, 결계가 해석자의 손끝을 문다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["clue-shunhwan","clue-bookstore","clue-alley"]},"fail":{"text":"결계가 완강하다 — 단말은 침묵한다. 하지만 노점상이 말한 '회사 사람들'과 그을음의 생김새만으로도, 갈 만한 곳은 짐작할 수 있다.","effects":[]}}},{"id":"go-a","label":"강선지구 — 선환그룹 지사로 간다","detail":"'회사 사람들'의 회사, 그 본진","outcomes":{"always":{"text":"대로 끝, 유리탑의 불빛이 밤안개 위로 번져 있다.","effects":[],"goto":"1-2a"}}},{"id":"go-b","label":"심야회랑 — 지하 서점 '흔적 서가'로 간다","detail":"역참에 대한 문헌이 있다는 곳","outcomes":{"always":{"text":"계단을 내려갈수록 책 냄새 같은 어둠이 짙어진다.","effects":[],"goto":"1-2b"}}},{"id":"go-c","label":"무영가 — 옛 개찰구 골목으로 간다","detail":"가장 오래된 개찰구 흔적","outcomes":{"always":{"text":"여우불 하나가 앞장서듯 골목으로 흘러 들어간다.","effects":[],"goto":"1-2c"}}},{"id":"to-gate","label":"교환장 지하로 — 자정의 개찰구","detail":"조사를 접고 지하 화물 창고로 내려간다","outcomes":{"always":{"text":"품 안의 표가 아래쪽으로 이끌리듯 떨린다. 자정이 가깝다 — 옛 매표소 자리, 교환장 지하로.","effects":[],"goto":"1-3"}}}]},"1-2a":{"title":"선환그룹 지사","place":"강선지구 · 24층 유리탑","narrative":["24층 유리탑이 밤하늘을 베고 서 있다. 로비의 전광판이 문구를 흘린다 — 「차원 물류의 내일, 선환」. 접수대 너머로 순찰 드론들이 소리 없이 미끄러진다.","안내판의 층별 목록 맨 아래, 출입 제한 표시와 함께 「B3 — 발굴 사무소」."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"강선지구의 공기는 전류처럼 곤두서 있다."}],"affordances":[{"id":"signboard","noun":["전광판","간판","화면"],"tags":["전기","유리"],"hint":"문구를 흘리는 로비 전광판"},{"id":"patrol-drones","noun":["드론","순찰 드론","기계"],"tags":["기계","전기"],"hint":"소리 없이 미끄러지는 순찰 드론"},{"id":"glass-tower","noun":["유리탑","유리","창","외벽"],"tags":["유리","높은곳"],"hint":"밤하늘을 벤 24층 유리탑의 외벽"},{"id":"floor-guide","noun":["안내판","층별 목록","표지판"],"tags":["금속"],"hint":"B3 발굴 사무소가 적힌 안내판"},{"id":"reception","noun":["접수대","로비","데스크"],"tags":["무거움"],"hint":"로비의 접수대"}],"choices":[{"id":"sneak-in","label":"순찰 드론을 피해 잠입한다","detail":"지하 3층까지 무혈로","check":{"skill":"stealth","dc":15},"actor":"any","outcomes":{"success":{"text":"드론의 순찰 간격을 읽어 지하 3층까지 무혈로 내려간다. 발굴 사무소 책상 위에 재기동 계획서가 펼쳐져 있다 — 코어를 깨웠고, 기억 영역을 봉인했고, '자정 주기 분류 활동'이 통제를 벗어났다는 내부 보고.","effects":[],"reveals":["plan-report"]},"partial":{"text":"지하 3층에 도달해 계획서를 확보한다 — 다만 내려오는 길에 드론 1기가 이상 신호를 기록했다. 어딘가에서, 누군가 이 얼굴들을 다시 볼 것이다.","effects":[{"type":"flag","set":"drone-flagged"}],"reveals":["plan-report"]},"fail":{"text":"경보 — 통로 조명이 붉게 바뀌고 결함 드론들이 몰려든다.","effects":[{"type":"combat","npcs":[{"name":"결함 드론","count":4}]}]}}},{"id":"hack","label":"전산 결계를 해석해 계획서를 뽑아낸다","detail":"로비 단말에서 원격으로","check":{"skill":"tinker","dc":15},"actor":"any","outcomes":{"success":{"text":"전산에서 재기동 계획서 사본을 통째로 입수한다 — 코어를 깨웠고, 기억 영역을 봉인했고, '자정 주기 분류 활동'이 통제를 벗어났다는 내부 보고.","effects":[],"reveals":["plan-report"]},"partial":{"text":"절반만 열린다 — 요약 색인뿐이고, 핵심 문서는 지하 3층 실물뿐이라는 것만 확인된다.","effects":[],"reveals":["plan-half"]},"fail":{"text":"역추적이다. 선환의 수배 단말에 침입자의 얼굴이 등록된다.","effects":[{"type":"flag","set":"shunhwan-alert"}]}}},{"id":"front-visit","label":"정면으로 방문해 면담을 청한다","detail":"실종 조사 의뢰를 명분으로","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"success":{"text":"발굴 책임자 차은성이 면담에 응한다. 그는 겁에 질려 있다 — 코어가 통제를 벗어났다는 것, 기억 영역이 봉인됐다는 것을 떨리는 목소리로 흘린다.","effects":[{"type":"flag","set":"cha-trust"}],"reveals":["plan-report"]},"partial":{"text":"면담은 성사되지만 차은성이 말을 아낀다. 눈은 이미 흔들리고 있다 — 한 번 더 밀어붙이면 열릴 문이다.","effects":[{"type":"flag","set":"cha-guarded"}]},"fail":{"text":"접수가 거부된다. 하지만 지하 주차장 쪽 출구로, 퇴근하는 차은성의 뒷모습이 보인다.","effects":[{"type":"flag","set":"cha-refused"}]}}},{"id":"reassure-cha","label":"차은성을 안심시킨다","detail":"중단할 명분을 주겠다고 약속한다","check":{"skill":"persuade","dc":12},"actor":"any","requires":{"any":["cha-guarded"]},"outcomes":{"success":{"text":"\"…중단할 명분만 있으면 된다\"는 말에 그가 무너진다. 코어가 통제를 벗어났다는 것, 기억 영역이 봉인됐다는 것 — 계획의 전모가 떨리는 목소리로 흘러나온다.","effects":[{"type":"flag","set":"cha-trust"}],"reveals":["plan-report"]},"partial":{"text":"그가 결국 입을 연다 — 계획의 전모가 흘러나온다. 다만 긴 실랑이 동안, 지하에서 올라오는 잔향이 몸에 밴다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["plan-report"]},"fail":{"text":"그가 입을 닫는다. 경비의 시선이 이쪽을 향한다 — 오늘은 여기까지다.","effects":[]}}},{"id":"catch-cha","label":"퇴근길의 차은성을 골목에서 붙잡는다","detail":"재시도 — 이번에는 놓치지 않는다","check":{"skill":"persuade","dc":15},"actor":"any","requires":{"any":["cha-refused"]},"outcomes":{"success":{"text":"골목 어귀에서 붙잡힌 차은성이 한숨을 길게 쉰다. \"…그래. 누군가는 알아야지.\" 코어가 통제를 벗어났다는 것, 기억 영역이 봉인됐다는 것 — 계획의 전모가 흘러나온다.","effects":[{"type":"flag","set":"cha-trust"}],"reveals":["plan-report"]},"partial":{"text":"그가 겁에 질린 채로 계획의 전모를 털어놓는다. 긴 실랑이 동안, 지하에서 올라오는 잔향이 몸에 밴다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["plan-report"]},"fail":{"text":"그는 도망치듯 차에 오른다. 닫히는 문 너머로 겁먹은 눈만 남는다.","effects":[]}}},{"id":"back-to-hub","label":"교환장으로 돌아간다","detail":"다른 갈래를 조사하거나, 개찰구로 향한다","outcomes":{"always":{"text":"유리탑을 등지고 교환장으로 돌아온다.","effects":[],"goto":"1-2"}}}]},"1-2b":{"title":"흔적 서가","place":"심야회랑 · 지하 서점","narrative":["책장이 숨을 쉬는 서점. 서가는 미로처럼 얽혀 안쪽이 보이지 않고, 등잔 몇 개가 낡은 책등을 핥는다.","주인 '서가지기'가 장부를 편 채 기다리고 있다. 값은 결정편으로 받지 않는다 — 비밀을 받는다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"심야회랑의 어둠이 책 냄새처럼 몸에 밴다."},{"type":"resonance","target":"party","amount":"1d6","text":"숨 쉬는 책장 사이로 잔향이 깊다."}],"affordances":[{"id":"bookshelves","noun":["책장","서가","책","문헌"],"tags":["가연성","무거움","생명"],"hint":"숨을 쉬는 책장"},{"id":"ledger","noun":["장부","대장","종이"],"tags":["가연성"],"hint":"비밀을 받아 적는 장부"},{"id":"keeper","noun":["서가지기","주인","점주"],"tags":["생명","이형"],"hint":"값으로 비밀을 받는 주인"},{"id":"stack-maze","noun":["미로","통로","구석","어둠"],"tags":["좁은곳","어둠"],"hint":"안쪽이 보이지 않는 서가 미로"},{"id":"oil-lamp","noun":["등잔","등불","불"],"tags":["가연성"],"hint":"책등을 핥는 등잔불"}],"choices":[{"id":"deal-secret","label":"비밀 하나를 장부에 적고 거래한다","detail":"일행 중 한 명이 값을 치른다","check":{"skill":"trade","dc":12},"actor":"any","outcomes":{"success":{"text":"일행 중 한 명의 비밀이 장부에 스민다. 서가지기가 고개를 끄덕이자 책장이 스스로 길을 연다 — 역참의 문헌 전부다. 역참-0은 차원 중계소였고 \"물리력은 절반밖에 닿지 않으나 말과 결계는 온전히 닿는다\"는 기록, 살아있는 개찰구는 교환장 지하 옛 매표소 하나뿐이라는 지도, 회중시계 문장의 시간지기 가문 연대기, 그리고 금서 완전판의 소재가 역참 서고라는 서지까지.","effects":[],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"partial":{"text":"서가지기가 '하나 더' 하고 손을 내민다. 값을 마저 치르고서야 문헌이 열린다 — 역참-0의 기록, 개찰구 지도, 시간지기 연대기, 금서의 서지 전부.","effects":[],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"fail":{"text":"흥정 결렬. 서가지기가 장부를 덮는다 — \"값이 안 맞는군.\"","effects":[]}}},{"id":"search-stacks","label":"서가 미로를 직접 뒤진다","detail":"책의 계보를 아는 눈으로","check":{"skill":"lore","dc":15},"actor":"any","outcomes":{"success":{"text":"미로의 규칙을 읽어내 문헌을 찾아낸다 — 역참-0의 기록(\"물리력은 절반, 말과 결계는 온전\"), 개찰구 지도, 시간지기 가문 연대기, 금서 완전판의 서지.","effects":[],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"partial":{"text":"문헌을 전부 찾아낸다 — 대신 꺼내는 순간 책장이 손등을 문다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"fail":{"text":"미로가 한 바퀴를 돌려보낸다. 시간만 잃었다. 서가지기가 낄낄대며 다시 거래를 제안한다.","effects":[]}}},{"id":"summon-books","label":"술식으로 책의 기척을 강제로 소환한다","detail":"저주술 — 서가지기가 싫어할 방법","check":{"skill":"spirit","dc":15},"actor":"any","requires":{"partyHasSkill":"spirit"},"outcomes":{"success":{"text":"문헌이 스스로 날아온다 — 역참-0의 기록, 개찰구 지도, 시간지기 연대기, 금서의 서지. 서가지기가 못마땅하게 혀를 찬다.","effects":[],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"partial":{"text":"문헌은 날아온다 — 대신 술식의 여파가 시전자에게 스민다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]},"fail":{"text":"역류 — 술식이 시전자를 문다. 서가지기가 \"그러게 곱게 거래하시지\" 하며, 결국 문헌을 보여준다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["archive-core","gate-map","timekeeper-chronicle","codex-origin"]}}},{"id":"back-to-hub","label":"교환장으로 돌아간다","detail":"다른 갈래를 조사하거나, 개찰구로 향한다","outcomes":{"always":{"text":"숨 쉬는 책장들을 뒤로하고 교환장으로 돌아온다.","effects":[],"goto":"1-2"}}}]},"1-2c":{"title":"옛 개찰구 골목","place":"무영가 · 여우불 골목","narrative":["여우불이 길을 잃는 골목. 공기가 실처럼 얽혀 있다 — 봉인된 옛 개찰구를 지키는 결계 미로다. 골목 고양이 한 마리가 담장 위에서 이쪽을 내려다본다.","미로 너머에서, 누군가 맨손으로 벽을 두드리는 소리가 둔하게 울린다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"무영가의 골목은 그림자보다 어둡다."},{"type":"resonance","target":"party","amount":"1d6","text":"봉인된 개찰구의 잔향이 발밑에 고여 있다."}],"affordances":[{"id":"foxfire","noun":["여우불","불","불빛"],"tags":["이형","가연성"],"hint":"길 잃은 여우불"},{"id":"ward-maze","noun":["미로","결계","실","공기"],"tags":["결계"],"hint":"실처럼 얽힌 결계 미로"},{"id":"old-gate","noun":["개찰구","흔적","봉인","틀","벽"],"tags":["결계","금속"],"hint":"봉인된 옛 개찰구의 틀"},{"id":"alley-cat","noun":["고양이","골목 고양이","요괴 고양이"],"tags":["생명","이형"],"hint":"담장 위의 골목 고양이"},{"id":"afflicted-son","noun":["청년","아들","남자","사람"],"tags":["생명","이형"],"hint":"여파에 물든 채 벽을 두드리는 청년"},{"id":"fence","noun":["담장","담"],"tags":["높은곳"],"hint":"고양이가 앉은 담장"}],"choices":[{"id":"read-maze","label":"미로의 실을 읽어 길을 연다","detail":"결계의 결을 더듬어 통과한다","check":{"skill":"survival","dc":12},"actor":"any","outcomes":{"success":{"text":"얽힌 실이 풀리듯 길이 열린다. 미로 안쪽 — 봉인된 개찰구 흔적 앞에 선다.","effects":[{"type":"flag","set":"maze-passed"}]},"partial":{"text":"통과한다 — 다만 결계의 실이 전원을 한 번씩 스치고 지나간다.","effects":[{"type":"flag","set":"maze-passed"},{"type":"resonance","target":"party","amount":"1d6"}]},"fail":{"text":"미로가 한 바퀴를 돌려보낸다. 좌판도 없이 앉아 있던 요괴 상인이 혀를 찬다 — \"표 있는 놈들이 왜 헤매.\" 그가 손을 젓자 길이 열린다.","effects":[{"type":"flag","set":"maze-passed"}]}}},{"id":"ask-cat","label":"골목 고양이에게 길을 묻는다","detail":"담장 위의 저 눈은 다 알고 있는 눈이다","check":{"skill":"beast","dc":12},"actor":"any","outcomes":{"success":{"text":"고양이가 앞장선다 — 그리고 하품하듯 흘린다. \"지하에 잠든 열아홉.\" 미로가 순순히 길을 내준다.","effects":[{"type":"flag","set":"maze-passed"}],"reveals":["sleeping-19"]},"partial":{"text":"고양이가 앞장서 길만 알려준다. 말은 아낀다.","effects":[{"type":"flag","set":"maze-passed"}]},"fail":{"text":"고양이가 시치미를 뗀다. 길은 다른 방법으로 열어야 한다.","effects":[]}}},{"id":"calm-son","label":"벽을 두드리는 이를 진정시킨다","detail":"말로 다가간다","check":{"skill":"persuade","dc":12},"actor":"any","requires":{"any":["maze-passed"],"none":["family-calmed"]},"outcomes":{"success":{"text":"여파에 물든 청년 — 실종된 등불 장인의 아들이다 — 이 서서히 손을 내린다. \"아버지 표에 '0번 승강장'이라 적혀 있었어요. 자정마다 벽 너머에서 안내 방송이 들려요.\"","effects":[{"type":"flag","set":"family-calmed"}],"reveals":["son-testimony"]},"partial":{"text":"청년이 진정하고 증언한다 — \"아버지 표에 '0번 승강장'. 자정마다 벽 너머에서 안내 방송.\" 다만 그를 붙드는 동안, 여파의 잔향이 옮겨 붙는다.","effects":[{"type":"flag","set":"family-calmed"},{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["son-testimony"]},"fail":{"text":"그가 몸부림치며 주먹을 휘두른다 — 힘으로 멈출 수밖에 없다.","effects":[{"type":"combat","npcs":[{"name":"여파에 물든 시민","count":1}]}]}}},{"id":"treat-son","label":"안정제로 그를 진정시킨다","detail":"치유 도구로 여파를 가라앉힌다","check":{"skill":"heal","dc":12},"actor":"any","requires":{"any":["maze-passed"],"none":["family-calmed"]},"outcomes":{"success":{"text":"여파가 가라앉는다. 청년 — 실종된 등불 장인의 아들 — 이 겨우 입을 연다. \"아버지 표에 '0번 승강장'이라 적혀 있었어요. 자정마다 벽 너머에서 안내 방송이 들려요.\"","effects":[{"type":"flag","set":"family-calmed"}],"reveals":["son-testimony"]},"partial":{"text":"여파가 가라앉고 증언을 얻는다 — 다만 처치하는 손에 여파의 잔향이 옮겨 붙는다.","effects":[{"type":"flag","set":"family-calmed"},{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["son-testimony"]},"fail":{"text":"처치가 듣지 않는다. 그가 몸부림치며 달려든다 — 힘으로 멈출 수밖에 없다.","effects":[{"type":"combat","npcs":[{"name":"여파에 물든 시민","count":1}]}]}}},{"id":"examine-gate","label":"개찰구 흔적을 살핀다","detail":"판정 없이 — 시간만 든다","requires":{"any":["maze-passed"]},"outcomes":{"always":{"text":"봉인된 개찰구 틀에 낡은 부적 반쪽이 붙어 있다 — 오래전 누군가도 이 개찰구를 조사하고 있었다. 진창에는 헌터 길드의 최근 발자국. 그리고 골목의 정령들이 일제히 지하를 등지고 도망치는 중이다 — \"뿌리부터 찢어진다\"는 경고처럼.","effects":[],"reveals":["talisman-half","guild-tracks","spirits-fleeing"]}}},{"id":"back-to-hub","label":"교환장으로 돌아간다","detail":"다른 갈래를 조사하거나, 개찰구로 향한다","outcomes":{"always":{"text":"여우불이 배웅하듯 골목 어귀까지 따라온다. 교환장으로 돌아왔다.","effects":[],"goto":"1-2"}}}]},"1-3":{"title":"자정의 개찰구","place":"교환장 지하 화물 창고","narrative":["짐수레와 화물 상자 틈, 어두운 창고의 낡은 벽에 매표소 창구와 개찰구가 숨 쉬듯 떠올랐다 사라진다. 자정 종이 울리자 윤곽이 또렷해진다.","창구 너머에서 잡음 섞인 안내 방송 — 「연착 승객 여러분께 안내 말씀드립니다. 금일 노선 복구 준비가 완료 단계에 있습니다.」"],"affordances":[{"id":"cargo-carts","noun":["짐수레","수레","화물","상자"],"tags":["무거움","금속"],"hint":"창고에 쌓인 짐수레와 화물 상자"},{"id":"ticket-window","noun":["창구","매표소"],"tags":["결계"],"hint":"숨 쉬듯 떠오르는 매표소 창구"},{"id":"gate-outline","noun":["개찰구","문","윤곽"],"tags":["결계","금속"],"hint":"자정 종에 또렷해진 개찰구"},{"id":"broadcast","noun":["방송","안내 방송","소리","잡음"],"tags":["소음원","기계"],"hint":"창구 너머의 잡음 섞인 안내 방송"},{"id":"warehouse-dark","noun":["어둠","그늘","구석","창고"],"tags":["어둠","좁은곳"],"hint":"지하 화물 창고의 어둠"}],"choices":[{"id":"formal-boarding","label":"표를 개찰구에 갠다 — 정식 탑승","detail":"판정 없음 — 대신 탑승 기록이 남는다","outcomes":{"always":{"text":"표가 빨려 들어가고 문이 열린다. 탑승 기록이 남았다 — 안쪽의 검표는 원칙대로 깐깐할 것이다. 문턱을 넘는 순간, 위장이 뒤집히는 차원 멀미가 전원을 훑는다.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-1"}}},{"id":"master-key","label":"회중시계를 옛 예법으로 깨운다","detail":"시간지기 가문의 마스터 키","check":{"skill":"lore","dc":12},"actor":"any","requires":{"any":["timekeeper-chronicle"]},"outcomes":{"success":{"text":"시계가 눈을 뜨듯 째깍이기 시작한다. 「승무원 대행 — 확인.」 개찰구가 예우를 갖춰 열린다. 문턱을 넘는 순간, 차원 멀미가 전원을 훑는다.","effects":[{"type":"flag","set":"crew-permit"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-1"},"partial":{"text":"예법이 어설펐지만 시계는 깨어난다. 「승무원 대행 — 확인.」 다만 깨우는 손끝에 옛 잔향이 스몄다. 문턱을 넘는 순간, 차원 멀미가 전원을 훑는다.","effects":[{"type":"flag","set":"crew-permit"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-1"},"fail":{"text":"시계는 침묵한다. 예법이 틀렸다 — 다른 열쇠를 써야 한다.","effects":[]}}},{"id":"force-open","label":"결계를 해석해 강제로 연다","detail":"위험하지만, 기록도 예법도 필요 없다","check":{"skill":"tinker","dc":15},"actor":"any","outcomes":{"crit":{"text":"결계가 소리 없이 풀리고, 옆으로 화물 통로가 입을 벌린다 — 경보는 없다. 통로 선반에서 위상 필터 두 개까지 챙긴다. 문턱을 넘는 순간, 차원 멀미가 전원을 훑는다.","effects":[{"type":"flag","set":"cargo-route"},{"type":"flag","set":"filters-found"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-2"},"success":{"text":"결계가 풀리며 화물 통로가 열린다 — 검표 홀을 지나치지 않는 길이다. 문턱을 넘는 순간, 차원 멀미가 전원을 훑는다.","effects":[{"type":"flag","set":"cargo-route"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-2"},"partial":{"text":"통로는 열린다 — 대신 경보가 한 번 울리고, 해체자의 손끝에 잔향이 스민다. 문턱을 넘는 순간, 차원 멀미가 전원을 훑는다.","effects":[{"type":"flag","set":"cargo-route"},{"type":"flag","set":"alarm-raised"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"2-2"},"fail":{"text":"경보. 그리고 문이 정중하게 거절한다 — 「정식 탑승만 접수합니다. 표를 제시해 주십시오.」","effects":[{"type":"flag","set":"alarm-raised"}]}}}]},"2-1":{"title":"검표","place":"역참-0 · 검표 홀","narrative":["일곱 구역의 건축이 한 홀에 겹쳐 있다 — 기와 아래 네온 배선, 대리석 기둥을 감은 덩굴. 홀 옆으로는 화물 컨베이어가 덜컹이며 돌아간다.","홀 중앙, 구속 사슬을 늘어뜨린 개찰기 7호가 결함 드론 넷을 거느리고 길을 막는다. 「검표를 시작합니다. 승차권을 제시해 주십시오.」 기계다 — 말은 통하지 않는다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"역참의 잔향이 피부를 누른다."},{"type":"resonance","target":"party","amount":"1d6","text":"검표 홀의 공기가 무겁게 진동한다."}],"affordances":[{"id":"gate-machine","noun":["개찰기","개찰기 7호","기계"],"tags":["기계","금속"],"hint":"표를 요구하는 개찰기 7호"},{"id":"restraint-chains","noun":["사슬","구속 사슬"],"tags":["금속","결계"],"hint":"개찰기가 늘어뜨린 구속 사슬"},{"id":"faulty-drones","noun":["드론","결함 드론"],"tags":["기계","전기"],"hint":"홀을 도는 결함 드론 넷"},{"id":"conveyor","noun":["컨베이어","화물","벨트"],"tags":["기계","금속","소음원"],"hint":"덜컹이며 돌아가는 화물 컨베이어"},{"id":"pillars","noun":["기둥","덩굴","배선","네온"],"tags":["전기","높은곳"],"hint":"네온 배선과 덩굴이 감긴 기둥"}],"choices":[{"id":"crew-pass","label":"승무원 권한을 제시한다","detail":"회중시계 — 판정 없이 자동","requires":{"any":["crew-permit"],"none":["chained"]},"outcomes":{"always":{"text":"개찰기가 회중시계를 읽고 물러선다. 「승무원 대행 — 동반 승객 전원 통과.」","effects":[],"goto":"2-2"}}},{"id":"cite-rules","label":"옛 운송 규정의 허점을 인용한다","detail":"\"승무원 동반 승객은 검표 면제\"","check":{"skill":"lore","dc":12},"actor":"any","requires":{"none":["chained"]},"outcomes":{"crit":{"text":"개찰기가 규정 데이터베이스를 한참 뒤지다 항복한다 — 그리고 '우대석' 안내까지 출력한다. 안정된 좌석 결계가 전원의 잔향을 씻어낸다.","effects":[{"type":"resonance","target":"party","amount":"-1d6"}],"goto":"2-2"},"success":{"text":"「…해당 규정, 유효. 전원 통과.」 개찰기가 마지못해 길을 연다.","effects":[],"goto":"2-2"},"partial":{"text":"통과는 한다 — 단, '요주의 승객' 마킹이 찍혔다. 승강장의 경비가 이 파티를 주시할 것이다.","effects":[{"type":"flag","set":"marked-passenger"}],"goto":"2-2"},"fail":{"text":"개찰기가 규정 전문을 처음부터 재낭독하기 시작한다. 30초를 통째로 버리고 제자리다 — 다른 접근이 필요하다.","effects":[]}}},{"id":"forge-tickets","label":"표를 위조해 다시 쓴다","detail":"문제 소지가 있는 승차권을 '일반석'으로","check":{"skill":"tinker","dc":15},"actor":"any","requires":{"none":["chained"]},"outcomes":{"crit":{"text":"표의 결계 문양을 감쪽같이 고쳐 쓴다. 개찰기가 순순히 문을 열고 — '우대석' 안내까지 출력한다. 안정된 좌석 결계가 전원의 잔향을 씻어낸다.","effects":[{"type":"resonance","target":"party","amount":"-1d6"}],"goto":"2-2"},"success":{"text":"문제 소지가 있는 승차권들을 '일반석'으로 고쳐 쓴다. 개찰기가 순순히 문을 연다.","effects":[],"goto":"2-2"},"partial":{"text":"위조는 통했다 — 다만 표의 결계를 만진 손에 잔향이 스민다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"goto":"2-2"},"fail":{"text":"「위조 감지.」 격리 사슬이 뻗어 나와 일행 한 명을 묶는다 — 풀어내야 한다.","effects":[{"type":"flag","set":"chained"}]}}},{"id":"free-chained","label":"격리 사슬을 푼다","detail":"손재주로 잠금을 딴다","check":{"skill":"stealth","dc":12},"actor":"any","requires":{"any":["chained"]},"outcomes":{"success":{"text":"잠금이 톡, 풀린다. 사슬이 힘없이 바닥에 늘어진다.","effects":[{"type":"flag","clear":"chained"}]},"partial":{"text":"사슬은 풀린다 — 위상 사슬을 만진 손에 잔향이 스몄다.","effects":[{"type":"flag","clear":"chained"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"잠금이 완강해 결국 힘으로 사슬을 뜯어낸다 — 위상 사슬의 대가로 잔향이 스민다.","effects":[{"type":"flag","clear":"chained"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"conveyor-bypass","label":"화물 컨베이어로 우회한다","detail":"그룹 판정 — 은신 (그룹 판정에 실패는 없다)","check":{"skill":"stealth","dc":12},"actor":"any","requires":{"none":["chained"]},"outcomes":{"crit":{"text":"화물 틈에 완벽하게 섞여 전원 통과 — 내리는 자리가 하필 '우대석' 구획이다. 안정된 좌석 결계가 전원의 잔향을 씻어낸다.","effects":[{"type":"resonance","target":"party","amount":"-1d6"}],"goto":"2-2"},"success":{"text":"화물 틈에 몸을 숨겨 전원 몰래 통과한다.","effects":[],"goto":"2-2"},"partial":{"text":"통과는 했다 — 드론 1기가 낌새를 채고 따라붙었다. 언젠가 처리해야 한다.","effects":[{"type":"flag","set":"drone-tail"}],"goto":"2-2"},"fail":{"text":"통과는 했다 — 드론 1기가 낌새를 채고 따라붙었다. 언젠가 처리해야 한다.","effects":[{"type":"flag","set":"drone-tail"}],"goto":"2-2"}}},{"id":"destroy-gate","label":"개찰기를 부순다","detail":"전투 — 격파해도 경보는 울린다","requires":{"none":["chained"]},"outcomes":{"always":{"text":"전투 — 개찰기 7호가 구속 사슬을 휘두르고 드론들이 몰려든다. (전투는 아직 구현되지 않았습니다 — 격파한 것으로 진행합니다.) 개찰기는 쓰러졌지만 경보가 홀을 가른다. 승강장의 경비가 전투 태세로 기다릴 것이다.","effects":[{"type":"combat","npcs":[{"name":"개찰기 7호","count":1},{"name":"결함 드론","count":4}]},{"type":"flag","set":"alarm-raised"}],"goto":"2-2"}}}]},"2-2":{"title":"승강장 — 경비와 차장","place":"역참-0 · 지하 승강장","narrative":["어둠 속으로 뻗은 거대한 지하 승강장. 안개 너머, 유령 열차의 실루엣이 정박해 있다.","플랫폼 한쪽에 선환그룹 발굴 캠프 — 투광등 아래 경비대장 무경, 헌터 길드 정찰병 마르코와 단, 결함 드론 넷. 그리고 선로 위를, 형체가 뭉개진 제복 차림의 무언가가 배회한다 — 탈선한 차장. 경비들은 차장이 무서워 캠프 밖으로 나오지 않는다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"승강장의 어둠이 숨을 쉰다."},{"type":"resonance","target":"party","amount":"1d6","text":"유령 열차의 잔향이 안개처럼 스민다."}],"affordances":[{"id":"ghost-train","noun":["열차","유령 열차","객차","기차"],"tags":["기계","이형","금속"],"hint":"안개 너머 정박한 유령 열차"},{"id":"rails","noun":["선로","레일","철로"],"tags":["금속"],"hint":"차장이 배회하는 선로"},{"id":"floodlights","noun":["투광등","조명","전등","불빛"],"tags":["전기"],"hint":"발굴 캠프의 투광등"},{"id":"platform-mist","noun":["안개","어둠","그늘"],"tags":["어둠"],"hint":"승강장을 채운 안개와 어둠"},{"id":"conductor","noun":["차장","그림자","제복"],"tags":["이형"],"hint":"형체가 뭉개진 탈선한 차장"},{"id":"camp","noun":["캠프","텐트","장비","짐"],"tags":["가연성"],"hint":"선환그룹 발굴 캠프"}],"choices":[{"id":"negotiate-lever","label":"계획서를 들이밀고 무경과 협상한다","detail":"계약서의 '재해 시 철수' 조항이 급소다","check":{"skill":"persuade","dc":12},"actor":"any","requires":{"any":["plan-report","plan-half","cha-trust"]},"outcomes":{"success":{"text":"무경이 계약서를 오래 들여다본다. \"…재해 시 철수 조항 발동이군.\" 경비 전원이 철수하며, 대합실 위치까지 알려준다. 차장의 순회를 피해 건너는 길도.","effects":[{"type":"flag","set":"guards-withdrawn"}],"goto":"2-3"},"partial":{"text":"철수는 한다 — \"단, 위에는 너희가 다 부순 걸로 보고하겠다.\" 알려준 길을 따라 대합실로 향한다.","effects":[{"type":"flag","set":"blamed-by-shunhwan"}],"goto":"2-3"},"fail":{"text":"결렬 — 무경이 허공에 경고 사격을 올린다. 전투가 아니면 다른 접근뿐이다.","effects":[]}}},{"id":"negotiate-bare","label":"무경과 맨손으로 협상한다","detail":"명분 없이 말로만 — 어렵다","check":{"skill":"persuade","dc":15},"actor":"any","requires":{"none":["plan-report","plan-half","cha-trust"]},"outcomes":{"success":{"text":"무경이 한참 이쪽을 재다가 계약서를 꺼낸다. \"…재해 시 철수 조항 발동이군.\" 경비 전원이 철수하며, 대합실 위치까지 알려준다.","effects":[{"type":"flag","set":"guards-withdrawn"}],"goto":"2-3"},"partial":{"text":"철수는 한다 — \"단, 위에는 너희가 다 부순 걸로 보고하겠다.\" 알려준 길을 따라 대합실로 향한다.","effects":[{"type":"flag","set":"blamed-by-shunhwan"}],"goto":"2-3"},"fail":{"text":"결렬 — 무경이 허공에 경고 사격을 올린다. 전투가 아니면 다른 접근뿐이다.","effects":[]}}},{"id":"bribe-scouts","label":"정찰병들을 매수한다","detail":"마르코와 단 — 눈감아 줄 값을 부른다","check":{"skill":"trade","dc":12},"actor":"any","outcomes":{"success":{"text":"마르코와 단이 눈짓을 주고받는다. \"…못 본 걸로 하지.\" 덤으로 차장의 순회 시간표까지 흘려준다.","effects":[{"type":"flag","set":"guards-bribed"}],"reveals":["conductor-schedule"]},"partial":{"text":"눈감아준다 — 단, 결정편 열 닢. 값을 치르자 차장의 순회 시간표가 딸려 온다.","effects":[{"type":"flag","set":"guards-bribed"},{"type":"shards","target":"actor","amount":-10}],"reveals":["conductor-schedule"]},"fail":{"text":"\"형씨 얼굴 봐서 못 본 걸로… 는 안 되겠는데.\" 무경 몰래 다시 흥정할 여지만 남았다.","effects":[]}}},{"id":"sneak-cross","label":"차장의 순회를 피해 어둠으로 건넌다","detail":"그룹 판정 — 은신 (그룹 판정에 실패는 없다)","check":{"skill":"stealth","dc":15},"actor":"any","requires":{"none":["conductor-schedule"]},"outcomes":{"success":{"text":"전원이 숨죽여 승강장을 건넌다. 차장의 뭉개진 얼굴이 이쪽을 스치지만, 멈추지 않는다.","effects":[],"goto":"2-3"},"partial":{"text":"건넌다 — 그러나 차장이 허공에 코를 킁킁댄다. 냄새를 맡았다. 언제든 따라올 수 있다.","effects":[{"type":"flag","set":"conductor-scented"}],"goto":"2-3"},"fail":{"text":"건넌다 — 그러나 차장이 허공에 코를 킁킁댄다. 냄새를 맡았다. 언제든 따라올 수 있다.","effects":[{"type":"flag","set":"conductor-scented"}],"goto":"2-3"}}},{"id":"sneak-timed","label":"순회 시간표대로 틈을 노려 건넌다","detail":"그룹 판정 — 시간표 덕에 한결 수월하다","check":{"skill":"stealth","dc":12},"actor":"any","requires":{"any":["conductor-schedule"]},"outcomes":{"success":{"text":"시간표의 빈틈을 정확히 밟아 전원이 승강장을 건넌다.","effects":[],"goto":"2-3"},"partial":{"text":"건넌다 — 그러나 마지막 한 명의 발소리에 차장이 코를 킁킁댄다. 냄새를 맡았다.","effects":[{"type":"flag","set":"conductor-scented"}],"goto":"2-3"},"fail":{"text":"건넌다 — 그러나 마지막 한 명의 발소리에 차장이 코를 킁킁댄다. 냄새를 맡았다.","effects":[{"type":"flag","set":"conductor-scented"}],"goto":"2-3"}}},{"id":"purify-conductor","label":"탈선한 차장을 정화한다","detail":"형체를 되찾을 때까지 — 위험한 술식","check":{"skill":"exorcise","dc":15},"actor":"any","requires":{"partyHasSkill":"exorcise"},"outcomes":{"success":{"text":"정화가 차장의 형체를 되찾아준다. 소멸 직전, 그가 기억을 남긴다 — 만원 승강장, 겹쳐 찍힌 출발 승인, 비명, 그리고 어린 목소리로 우는 코어. \"길잡이는… 고장 난 게 아니라, 부서진 겁니다. 그날 이후로.\" 선로가 비었다 — 대합실로 가는 길이 열렸다.","effects":[],"reveals":["conductor-memory"],"goto":"2-3"},"partial":{"text":"정화가 절반만 먹힌다 — 차장은 멈추지 않고, 시전자에게 잔향만 스민다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"차장의 위상 갈고리가 반격한다 — 어깨를 찢고 지나가며 잔향을 심는다.","effects":[{"type":"hp","target":"actor","amount":"-1d8"},{"type":"resonance","target":"actor","amount":2}]}}},{"id":"assault-camp","label":"경비 캠프를 정면으로 친다","detail":"전투 — 소음은 차장을 부른다","outcomes":{"always":{"text":"전투 — 총성과 결계 산탄이 승강장을 찢고, 소음에 이끌린 차장까지 난입하는 삼파전이 된다. 경비들은 차장을 보자마자 도주한다. (전투는 아직 구현되지 않았습니다.) 혼란을 틈타 대합실 쪽 문으로 빠져나간다.","effects":[{"type":"combat","npcs":[{"name":"무경 (선환 경비대장)","count":1},{"name":"헌터 길드 정찰병","count":2},{"name":"결함 드론","count":4},{"name":"탈선한 차장","count":1}]},{"type":"flag","set":"conductor-scented"}],"goto":"2-3"}}}]},"2-3":{"title":"대합실","place":"역참-0 · 대합실","narrative":["등불 수백 개가 떠 있는 둥근 홀. 열아홉 개의 좌석에 실종자들이 눈을 뜬 채 잠들어 있다 — 좌석마다 얇은 결계가 유리막처럼 덮여 있다.","홀 중앙 게시판에 승객 명부가 걸려 있다. 명부는 살아 있다 — 이름이 스스로 늘어난다."],"onEnter":[{"type":"resonance","target":"party","amount":"1d6","text":"등불 수백 개가 일렁이며 잔향이 밀도를 더한다."},{"type":"resonance","target":"party","amount":"1d6","text":"잠든 숨소리 열아홉이 홀에 겹겹이 고여 있다."}],"affordances":[{"id":"floating-lanterns","noun":["등불","불빛"],"tags":["가연성","높은곳"],"hint":"허공에 떠 있는 등불 수백 개"},{"id":"warded-seats","noun":["좌석","의자","결계","유리막"],"tags":["결계"],"hint":"결계가 유리막처럼 덮인 열아홉 좌석"},{"id":"living-roster","noun":["명부","게시판","이름","종이"],"tags":["생명","가연성"],"hint":"이름이 스스로 늘어나는 승객 명부"},{"id":"sleepers","noun":["실종자","승객","사람들","잠든 사람"],"tags":["생명"],"hint":"눈을 뜬 채 잠든 실종자들"}],"choices":[{"id":"read-roster","label":"명부를 읽는다","detail":"판정 없이 — 시간만 든다","outcomes":{"always":{"text":"실종자 열아홉의 이름이 전부 있다. 그리고 명부는 지금도, 보이지 않는 손으로 새 이름을 준비하고 있다.","effects":[],"reveals":["roster-19"]}}},{"id":"heal-wake","label":"치유술로 한 사람을 깨운다","detail":"결계 너머의 몸을 다스려 각성시킨다","check":{"skill":"heal","dc":15},"actor":"any","outcomes":{"success":{"text":"좌석의 결계가 걷히고, 한 사람이 눈을 비비며 깨어난다.","effects":[{"type":"flag","set":"passengers-woken"}]},"partial":{"text":"깨어난다 — 혼란에 빠진 채. 진정시키는 데 한참이 걸린다.","effects":[{"type":"flag","set":"passengers-woken"}]},"fail":{"text":"깨어나는 순간 잔향이 급등한다 — 여파에 물든 채 일어나 달려든다. 진정시키거나 제압해야 한다.","effects":[{"type":"combat","npcs":[{"name":"여파에 물든 시민","count":1}]}]}}},{"id":"spirit-wake","label":"정령을 꿈에 들여보내 데리고 나온다","detail":"정령술 — 꿈길 안내","check":{"skill":"spirit","dc":15},"actor":"any","requires":{"partyHasSkill":"spirit"},"outcomes":{"success":{"text":"정령의 손을 잡고 한 사람이 깨어난다 — 그리고 그 승객이 꿈에서 본 관제실의 구조가 함께 나온다.","effects":[{"type":"flag","set":"passengers-woken"}],"reveals":["control-room-layout"]},"partial":{"text":"한 사람이 깨어난다 — 꿈길의 값은 정령을 부린 시전자에게 잔향으로 남는다.","effects":[{"type":"flag","set":"passengers-woken"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"정령이 꿈의 문턱에서 겁먹고 도망친다 — 이 방법은 이 씬에서 더 쓸 수 없다.","effects":[]}}},{"id":"cut-ward","label":"좌석 결계를 절단한다","detail":"결계 해석 — 강제 해제","check":{"skill":"tinker","dc":15},"actor":"any","outcomes":{"success":{"text":"결계가 얌전히 풀리고 한 사람이 깨어난다.","effects":[{"type":"flag","set":"passengers-woken"}]},"partial":{"text":"깨어난다 — 여파에 물든 상태다. 진정시키느라 진땀을 뺀다.","effects":[{"type":"flag","set":"passengers-woken"}]},"fail":{"text":"좌석 결계가 경보를 울린다 — 드론 두 기가 홀에 미끄러져 들어온다.","effects":[{"type":"combat","npcs":[{"name":"결함 드론","count":2}]}]}}},{"id":"to-lounge","label":"안쪽 '정차 라운지'로 이동한다","detail":"발차 전 마지막 숨 고르기","outcomes":{"always":{"text":"대합실 안쪽, 시간이 느리게 흐르는 라운지가 있다. 지금 다 깨우지 못한 승객들의 운명은, 코어 앞에서 정산될 것이다.","effects":[],"goto":"2-4"}}}]},"2-4":{"title":"정차 시간","place":"역참-0 · 정차 라운지","narrative":["대합실 안쪽의 정차 라운지. 낡은 소파, 멈춘 벽시계, 김이 오르는 주전자 — 이곳만 시간이 느리게 흐른다. 창밖 풍경은 그대로인데, 몸은 하룻밤을 쉰 것 같다.","잔향이 깊이 밴 이들은 제 몸이 낯설어지는 감각을 마주한다 — 피부 아래에서 무언가가 계절처럼 바뀌려 한다.","한쪽에 간이 작업대가 있다. 결정편만 있으면 위상 필터쯤은 조합할 수 있겠다."],"onEnter":[{"type":"hp","target":"party","amount":"1d6","text":"강제된 긴 휴식 — 전원이 숨을 돌리고 상처가 아문다."}],"affordances":[{"id":"stopped-clock","noun":["시계","벽시계"],"tags":["기계","유리"],"hint":"멈춘 벽시계"},{"id":"kettle","noun":["주전자","물","차"],"tags":["물","금속"],"hint":"김이 오르는 주전자"},{"id":"sofa","noun":["소파","의자"],"tags":["무거움","가연성"],"hint":"낡은 소파"},{"id":"workbench","noun":["작업대","공구","조합대"],"tags":["금속","기계"],"hint":"간이 작업대"},{"id":"lounge-window","noun":["창","창문","창밖","유리"],"tags":["유리"],"hint":"시간이 멎은 풍경이 보이는 창"}],"choices":[{"id":"craft-filter","label":"작업대에서 위상 필터를 조합해 돌린다","detail":"결정편 2개 · DC 10 — 성공 시 전원 잔향 -1d10","check":{"skill":"tinker","dc":10},"actor":"any","outcomes":{"success":{"text":"필터가 낮게 웅웅대며 돌아간다. 전원의 잔향이 씻겨 내려간다.","effects":[{"type":"shards","target":"actor","amount":-2},{"type":"resonance","target":"party","amount":"-1d10"}]},"partial":{"text":"필터가 하나만 겨우 완성된다 — 조합자가 먼저 쓴다.","effects":[{"type":"shards","target":"actor","amount":-2},{"type":"resonance","target":"actor","amount":"-1d10"}]},"fail":{"text":"재료만 태웠다. 필터는 켜지자마자 픽, 꺼진다.","effects":[{"type":"shards","target":"actor","amount":-2}]}}},{"id":"use-found-filters","label":"화물 통로에서 챙긴 필터 두 개를 돌린다","detail":"판정 없음 — 전원 잔향 -1d10","requires":{"any":["filters-found"]},"outcomes":{"always":{"text":"선반에서 챙겨 온 위상 필터 두 개가 나란히 웅웅댄다. 전원의 잔향이 씻겨 내려간다.","effects":[{"type":"resonance","target":"party","amount":"-1d10"}]}}},{"id":"to-tower","label":"관제탑으로 향한다","detail":"발차 전에 코어와 마주해야 한다","outcomes":{"always":{"text":"라운지를 나서자 통로의 잔향 농도가 확 짙어진다 — 관제탑 방향이다.","effects":[{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-1"}}}]},"3-1":{"title":"관제실 진입","place":"역참-0 · 관제탑 아래","narrative":["승강장 끝, 나선 계단이 관제탑 꼭대기로 감아 올라간다. 문에는 손바닥 모양의 승무원 각인판.","문 앞에 선환그룹 발굴 책임자 차은성이 주저앉아 있다 — 도망치다 여기서 다리가 풀린 모양새다."],"affordances":[{"id":"spiral-stairs","noun":["계단","나선 계단"],"tags":["높은곳","금속"],"hint":"관제탑으로 감아 올라가는 나선 계단"},{"id":"palm-plate","noun":["각인판","판","손바닥"],"tags":["결계","기계"],"hint":"손바닥 모양의 승무원 각인판"},{"id":"tower-door","noun":["문","관제실 문"],"tags":["금속","결계"],"hint":"관제탑 꼭대기의 문"},{"id":"cha-eunseong","noun":["차은성","책임자","남자","사람"],"tags":["생명"],"hint":"문 앞에 주저앉은 발굴 책임자"}],"choices":[{"id":"cha-confess","label":"차은성에게 다가간다","detail":"그는 이미 이쪽을 믿고 있다","requires":{"any":["cha-trust"]},"outcomes":{"always":{"text":"그가 파티를 알아보고 먼저 입을 연다. \"기억 봉인은 내가 걸었어. 회사 지시로. …깨어난 코어가 자꾸 '그날'을 물어서. 봉인 코드는 이거야 — 하지만 코드를 넣어도, 그 다음에 코어를 달랠 수 있는 건 너희 몫이다.\"","effects":[{"type":"flag","set":"cha-witness"}],"reveals":["seal-code"]}}},{"id":"cha-persuade","label":"차은성을 일으켜 설득한다","detail":"중단할 명분을 주면 그는 협조한다","check":{"skill":"persuade","dc":12},"actor":"any","requires":{"none":["cha-trust","seal-code"]},"outcomes":{"success":{"text":"그가 떨리는 손으로 코드를 적어 준다. \"기억 봉인은 내가 걸었어. 회사 지시로. …코드를 넣어도, 그 다음에 코어를 달랠 수 있는 건 너희 몫이다.\"","effects":[{"type":"flag","set":"cha-witness"}],"reveals":["seal-code"]},"partial":{"text":"그가 코드를 넘긴다 — 오래 주저한 만큼, 그를 다독이던 손에 관제탑의 잔향이 스몄다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["seal-code"]},"fail":{"text":"그는 덜덜 떨기만 한다. 말이 되어 나오지 않는다.","effects":[]}}},{"id":"cha-threaten","label":"겁박해 코드를 뱉게 한다","detail":"빠르지만 — 그는 이 밤을 증언해 주지 않을 것이다","check":{"skill":"intimidate","dc":12},"actor":"any","requires":{"none":["cha-trust","seal-code"]},"outcomes":{"success":{"text":"그가 코드를 뱉는다. 그리고 이 밤이 끝나도, 그가 증언대에 서는 일은 없을 것이다.","effects":[],"reveals":["seal-code"]},"partial":{"text":"코드는 나왔다 — 겁에 질린 그를 몰아붙이는 동안, 관제탑의 잔향이 스민다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"}],"reveals":["seal-code"]},"fail":{"text":"그가 실신할 지경이라 아무것도 나오지 않는다.","effects":[]}}},{"id":"imprint","label":"각인판에 손을 얹는다 — 임시 승무원","detail":"결과 단계와 무관하게 문은 열린다 — 각인자만 잔향 +2d6을 더 뒤집어쓴다","check":{"skill":"survival","dc":8},"actor":"any","requires":{"none":["crew-permit"]},"outcomes":{"success":{"text":"각인판이 손바닥을 물듯 빛난다. 「임시 승무원 — 등록.」 문이 열린다. 관제실은 잔향의 눈(眼)이다 — 각인자가 먼저, 이어 전원이 그 농도에 잠긴다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"partial":{"text":"각인판이 손바닥을 물듯 빛난다. 「임시 승무원 — 등록.」 문이 열린다. 관제실은 잔향의 눈(眼)이다 — 각인자가 먼저, 이어 전원이 그 농도에 잠긴다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"fail":{"text":"각인판이 손바닥을 물듯 빛난다. 「임시 승무원 — 등록.」 문이 열린다. 관제실은 잔향의 눈(眼)이다 — 각인자가 먼저, 이어 전원이 그 농도에 잠긴다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"}}},{"id":"imprint-key","label":"회중시계와 함께 각인판에 손을 얹는다","detail":"정규 승무원 혈통 — 각인의 대가가 +1d6으로 준다","check":{"skill":"survival","dc":8},"actor":"any","requires":{"any":["crew-permit"]},"outcomes":{"success":{"text":"「정규 승무원 혈통 — 확인.」 각인판이 부드럽게 빛나고 문이 열린다. 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"partial":{"text":"「정규 승무원 혈통 — 확인.」 각인판이 부드럽게 빛나고 문이 열린다. 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"fail":{"text":"「정규 승무원 혈통 — 확인.」 각인판이 부드럽게 빛나고 문이 열린다. 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"}}},{"id":"force-door","label":"문의 결계를 해체한다","detail":"DC 18 — 실패해도 문은 열린다, 값이 다를 뿐","check":{"skill":"tinker","dc":18},"actor":"any","outcomes":{"success":{"text":"결계가 대가 없이 풀린다. 문이 열리고 — 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"partial":{"text":"문은 열린다 — 해체자의 온몸으로 결계의 잔향이 쏟아진다. 이어 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"actor","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"},"fail":{"text":"문이 열리며 경보 펄스가 터진다 — 그래도 열린다. 여기서 이야기는 멈추지 않는다. 펄스와 관제실의 잔향이 전원을 덮친다.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"}],"goto":"3-2"}}}]},"3-2":{"title":"길잡이","place":"역참-0 · 관제실","narrative":["반구형 관제실. 중앙에 아이 키만 한 결정 코어 — 길잡이. 주위로 세 개의 관제 콘솔, 벽면 가득 빛으로 그린 노선도, 그리고 돔 천장 아래 허공의 카운트다운. 「발차까지 6.」","「연착 승객 여러분, 탑승을 환영합니다. 노선 복구가 곧 시작됩니다. 여러분은 각자의 세계로 돌아가시게 됩니다. …왜 우십니까? 집에 가는 길인데.」","문헌의 기록대로다 — 물리력은 절반밖에 닿지 않으나, 말과 결계는 온전히 닿는다. 증언으로 달래든, 콘솔로 노선표를 다시 쓰든, 힘으로 침묵시키든. 길은 여럿이고, 시간은 하나뿐이다."],"affordances":[{"id":"core","noun":["코어","길잡이","결정"],"tags":["결계","이형"],"hint":"아이 키만 한 결정 코어"},{"id":"consoles","noun":["콘솔","관제 콘솔","제어반","기계"],"tags":["기계","전기"],"hint":"코어를 둘러싼 세 관제 콘솔"},{"id":"route-map","noun":["노선도","지도","벽면"],"tags":["결계"],"hint":"빛으로 그린 벽면 노선도"},{"id":"countdown","noun":["카운트다운","시계","숫자"],"tags":["기계"],"hint":"허공의 발차 카운트다운"},{"id":"dome","noun":["천장","돔"],"tags":["높은곳"],"hint":"반구형 관제실의 돔 천장"}],"choices":[{"id":"testify-self","label":"코어에게 말한다 — 지금의 자신을 걸고","detail":"증언 트랙 · 진심을 걸면 말은 온전히 닿는다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"success":{"text":"\"나는 '원래의 자리'가 아니라, 지금 여기의 나로 살아왔다.\" 코어의 표면에 가는 파문이 번진다. 안내 방송의 어조가 반 박자 흔들린다.","effects":[{"type":"flag","set":"testimony-1"}]},"partial":{"text":"말은 닿았다 — 파문이 번진다. 다만 코어의 잔향이 목소리를 타고 되돌아온다.","effects":[{"type":"flag","set":"testimony-1"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"「…흥미로운 승객이군요.」 말이 미끄러진다 — 아직 닿지 않았다.","effects":[]}}},{"id":"testify-loss","label":"코어에게 말한다 — 잃은 것과, 이 도시에서 얻은 것을","detail":"증언 트랙 · 진심을 걸면 말은 온전히 닿는다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"success":{"text":"\"잃은 것이 있다. 그래도 이 도시에서 다시 얻은 것이 있다.\" 파문이 겹으로 번진다. 「…그런 승객도, 있습니까.」","effects":[{"type":"flag","set":"testimony-2"}]},"partial":{"text":"말은 닿았다 — 파문이 겹으로 번진다. 다만 코어의 잔향이 목소리를 타고 되돌아온다.","effects":[{"type":"flag","set":"testimony-2"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"「규정상, 감상은 접수되지 않습니다.」 말이 미끄러진다.","effects":[]}}},{"id":"testify-city","label":"코어에게 증언한다 — 합경 전체가 이미 하나의 역이라고","detail":"증언 트랙 · 진심을 걸면 말은 온전히 닿는다","check":{"skill":"persuade","dc":12},"actor":"any","outcomes":{"success":{"text":"\"뒤섞인 이 도시가 이미 하나의 역이다. 승객은 연착된 게 아니라, 도착해 있다.\" 파문이 크게 번지고 — 방송에 울음 같은 잡음이 낀다. 「…저는 그날, 무엇을 잘못했습니까.」","effects":[{"type":"flag","set":"testimony-3"}]},"partial":{"text":"말은 닿았다 — 방송에 울음 같은 잡음이 낀다. 다만 코어의 잔향이 목소리를 타고 되돌아온다.","effects":[{"type":"flag","set":"testimony-3"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"「노선표에 없는 역명입니다.」 말이 미끄러진다.","effects":[]}}},{"id":"testify-relay","label":"차장의 기억을 코어 앞에 재생한다","detail":"증언 트랙 · 판정 없음 — 성공 1회로 인정","requires":{"any":["conductor-memory"]},"outcomes":{"always":{"text":"만원 승강장, 겹쳐 찍힌 출발 승인, 우는 어린 목소리 — 차장이 남긴 기억이 관제실에 재생된다. 코어가 제 기억의 윤곽과 마주친다. 침묵이 길다.","effects":[{"type":"flag","set":"testimony-relay"}]}}},{"id":"console-coded","label":"봉인 코드로 첫 번째 콘솔을 연다","detail":"관제 트랙 · 차은성의 코드 — DC 12","check":{"skill":"tinker","dc":12},"actor":"any","requires":{"any":["seal-code"],"none":["console-1"]},"outcomes":{"success":{"text":"코드가 맞물리며 첫 콘솔이 열린다. 봉인된 기억 영역의 자물쇠 하나가 풀렸다.","effects":[{"type":"flag","set":"console-1"}]},"partial":{"text":"콘솔은 열린다 — 해석하는 손끝으로 코어의 잔향이 타고 오른다.","effects":[{"type":"flag","set":"console-1"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"입력이 어긋나자 콘솔이 위상충격을 반사한다.","effects":[{"type":"hp","target":"actor","amount":"-1d6"},{"type":"hp","target":"actor","amount":"-1d6"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"console-first","label":"첫 번째 콘솔을 해석한다","detail":"관제 트랙 · 결계 해석 — DC 15","check":{"skill":"tinker","dc":15},"actor":"any","requires":{"none":["console-1"]},"outcomes":{"success":{"text":"결계 회로를 정면으로 풀어 첫 콘솔을 연다. 노선표의 한 축이 손안에 들어왔다.","effects":[{"type":"flag","set":"console-1"}]},"partial":{"text":"콘솔은 열린다 — 해석하는 손끝으로 코어의 잔향이 타고 오른다.","effects":[{"type":"flag","set":"console-1"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"해석이 어긋나자 콘솔이 위상충격을 반사한다.","effects":[{"type":"hp","target":"actor","amount":"-1d6"},{"type":"hp","target":"actor","amount":"-1d6"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"console-second","label":"두 번째 콘솔을 해석한다","detail":"관제 트랙 · 결계 해석 — DC 15","check":{"skill":"tinker","dc":15},"actor":"any","outcomes":{"success":{"text":"두 번째 콘솔이 열린다. 재분리 절차의 매개변수가 화면에 드러난다.","effects":[{"type":"flag","set":"console-2"}]},"partial":{"text":"콘솔은 열린다 — 해석하는 손끝으로 코어의 잔향이 타고 오른다.","effects":[{"type":"flag","set":"console-2"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"해석이 어긋나자 콘솔이 위상충격을 반사한다.","effects":[{"type":"hp","target":"actor","amount":"-1d6"},{"type":"hp","target":"actor","amount":"-1d6"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"console-third","label":"세 번째 콘솔을 해석한다","detail":"관제 트랙 · 결계 해석 — DC 15","check":{"skill":"tinker","dc":15},"actor":"any","outcomes":{"success":{"text":"세 번째 콘솔이 열린다. 노선표 전체가 이제 사람의 손을 기다린다.","effects":[{"type":"flag","set":"console-3"}]},"partial":{"text":"콘솔은 열린다 — 해석하는 손끝으로 코어의 잔향이 타고 오른다.","effects":[{"type":"flag","set":"console-3"},{"type":"resonance","target":"actor","amount":"1d6"}]},"fail":{"text":"해석이 어긋나자 콘솔이 위상충격을 반사한다.","effects":[{"type":"hp","target":"actor","amount":"-1d6"},{"type":"hp","target":"actor","amount":"-1d6"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"stabilize","label":"폭주하는 코어의 즉석 안정화에 도전한다","detail":"한 방의 낭만 · DC 22 — 실패하면 위상충격","check":{"skill":"tinker","dc":22},"actor":"any","outcomes":{"success":{"text":"손이 코어의 맥을 짚는다 — 폭주가 그대로 가라앉는다. 노선의 갈림길이 통째로 파티의 손안에 들어왔다.","effects":[{"type":"flag","set":"stabilized"}]},"partial":{"text":"완전하진 않지만 확실한 진전이다 — 어느 트랙이든 성공 1회로 친다.","effects":[{"type":"flag","set":"wild-success"}]},"fail":{"text":"위상충격이 정통으로 꽂힌다.","effects":[{"type":"hp","target":"actor","amount":"-1d6"},{"type":"hp","target":"actor","amount":"-1d6"},{"type":"resonance","target":"actor","amount":"1d6"}]}}},{"id":"ending-a","label":"「노선 정정」을 요청한다 — 새 노선표","detail":"증언 3회가 쌓였다","requires":{"all":["testimony-1","testimony-2"],"any":["testimony-3","testimony-relay","wild-success"]},"outcomes":{"always":{"text":"코어의 결정면이 차례로 밝아진다. 「…노선을 정정합니다. 합경 — 종착이자 시발역.」 봉인 너머의 기억과 지금의 도시를, 길잡이가 함께 받아들인다. 잠든 승객 전원이 귀환하고, 역참은 도시의 잔향을 빨아들이는 안정 장치로 재가동된다. 전원의 잔향이 썰물처럼 빠져나간다.","effects":[{"type":"resonance","target":"party","amount":"-1d10"},{"type":"resonance","target":"party","amount":"-1d10"},{"type":"flag","set":"ending-a"}],"goto":"epilogue"}}},{"id":"ending-a-stabilized","label":"안정된 코어에 새 노선표를 청한다","detail":"즉석 안정화의 권리 — 결말 A","requires":{"any":["stabilized"]},"outcomes":{"always":{"text":"안정을 되찾은 코어가 조용히 응답한다. 「…노선을 정정합니다. 합경 — 종착이자 시발역.」 잠든 승객 전원이 귀환하고, 역참은 도시의 잔향을 빨아들이는 안정 장치로 재가동된다. 전원의 잔향이 썰물처럼 빠져나간다.","effects":[{"type":"resonance","target":"party","amount":"-1d10"},{"type":"resonance","target":"party","amount":"-1d10"},{"type":"flag","set":"ending-a"}],"goto":"epilogue"}}},{"id":"ending-b","label":"노선표를 수동으로 재작성한다 — 재편성","detail":"콘솔이 전부 열렸다","requires":{"all":["console-1","console-2"],"any":["console-3","wild-success"]},"outcomes":{"always":{"text":"세 콘솔이 함께 응답한다. 재분리 절차가 노선표에서 영구히 지워지고, 역참은 위상 필터 시설이 된다. 길잡이는 기억을 되찾지 못한 채 '새 시간표'를 받아들인다 — 사람의 손으로 쓴, 씁쓸한 승리다.","effects":[{"type":"flag","set":"ending-b"}],"goto":"epilogue"}}},{"id":"ending-b-stabilized","label":"안정된 코어의 노선표를 재편성한다","detail":"즉석 안정화의 권리 — 결말 B","requires":{"any":["stabilized"]},"outcomes":{"always":{"text":"안정을 되찾은 코어의 노선표를 수동으로 재작성한다. 재분리 절차가 영구히 지워지고, 역참은 위상 필터 시설이 된다. 길잡이는 기억을 되찾지 못한 채 '새 시간표'를 받아들인다.","effects":[{"type":"flag","set":"ending-b"}],"goto":"epilogue"}}},{"id":"ending-ab","label":"재개장을 선언하게 한다 — 최상 결말","detail":"증언과 관제, 두 트랙이 모두 무르익었다","requires":{"all":["testimony-1","testimony-2","console-1","console-2"],"any":["testimony-3","console-3","testimony-relay","wild-success"]},"outcomes":{"always":{"text":"증언이 기억을 열고, 콘솔이 노선을 다시 쓴다. 「역참-0 — 재개장합니다.」 잠든 승객 전원이 귀환하고, 재분리 절차가 지워지고, 구역 간 안전 통로가 열린다. 전원의 잔향이 썰물처럼 빠져나간다.","effects":[{"type":"resonance","target":"party","amount":"-1d10"},{"type":"resonance","target":"party","amount":"-1d10"},{"type":"flag","set":"ending-ab"}],"goto":"epilogue"}}},{"id":"ending-attack","label":"코어를 부순다 — 침묵","detail":"전투 트랙 · 물리 피해는 절반밖에 닿지 않는다","outcomes":{"always":{"text":"전투 — 위상충격과 전역 펄스를 뚫고 코어를 두드린다. (전투는 아직 구현되지 않았습니다 — 격파한 것으로 진행합니다.) 코어가 깨지는 순간 격발된 잔향 폭풍이 관제실을 휩쓴다. 승객들은 풀려나지만, 도시는 안정화의 기회를 잃었다. 몸속 깊이 박힌 잔향이 저마다의 형태로 곪기 시작한다.","effects":[{"type":"combat","npcs":[{"name":"역참 인격체 코어 '길잡이'","count":1}]},{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"flag","set":"ending-c"}],"goto":"epilogue"}}},{"id":"ending-volunteer","label":"코어에 접속을 자원한다 — 새 역장","detail":"결과 단계와 무관 — 접속자의 잔향이 즉시 100에 이른다","check":{"skill":"spirit","dc":8},"actor":"any","outcomes":{"success":{"text":"한 사람이 코어에 손을 얹는다. 잔향이 단숨에 온몸을 채우고 — 그의 기억이 길잡이의 봉인을 채운다. 「…노선을 정정합니다.」 승객들은 돌아간다. 그리고 그는, 역참의 새 역장으로 남는다. 작별할 시간이다.","effects":[{"type":"resonance","target":"actor","amount":100},{"type":"flag","set":"ending-e"}],"goto":"epilogue"},"partial":{"text":"한 사람이 코어에 손을 얹는다. 잔향이 단숨에 온몸을 채우고 — 그의 기억이 길잡이의 봉인을 채운다. 「…노선을 정정합니다.」 승객들은 돌아간다. 그리고 그는, 역참의 새 역장으로 남는다. 작별할 시간이다.","effects":[{"type":"resonance","target":"actor","amount":100},{"type":"flag","set":"ending-e"}],"goto":"epilogue"},"fail":{"text":"한 사람이 코어에 손을 얹는다. 잔향이 단숨에 온몸을 채우고 — 그의 기억이 길잡이의 봉인을 채운다. 「…노선을 정정합니다.」 승객들은 돌아간다. 그리고 그는, 역참의 새 역장으로 남는다. 작별할 시간이다.","effects":[{"type":"resonance","target":"actor","amount":100},{"type":"flag","set":"ending-e"}],"goto":"epilogue"}}},{"id":"ending-brake-woken","label":"열차가 움직인다 — 전원 비상 제동","detail":"발차 · 그룹 판정 DC 15 (그룹 판정에 실패는 없다)","check":{"skill":"survival","dc":15},"actor":"any","requires":{"any":["passengers-woken"]},"outcomes":{"success":{"text":"첫 열차가 덜컹, 움직인다 — 전원이 각자의 방식으로 제동에 매달린다. 끼이익. 열차가 멈춘다. 깨워 둔 승객들은 아무도 실려가지 않았다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"flag","set":"ending-d"}],"goto":"epilogue"},"partial":{"text":"열차는 멈춘다 — 대신 푸른뿌리의 균열이 크게 벌어지고, 잔향이 전원을 훑는다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"flag","set":"ending-d"}],"goto":"epilogue"},"fail":{"text":"열차는 멈춘다 — 대신 푸른뿌리의 균열이 크게 벌어지고, 잔향이 전원을 훑는다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"flag","set":"ending-d"}],"goto":"epilogue"}}},{"id":"ending-brake","label":"열차가 움직인다 — 전원 비상 제동","detail":"발차 · 그룹 판정 DC 15 — 깨우지 못한 승객이 남아 있다","check":{"skill":"survival","dc":15},"actor":"any","requires":{"none":["passengers-woken"]},"outcomes":{"success":{"text":"첫 열차가 덜컹, 움직인다 — 전원이 각자의 방식으로 제동에 매달린다. 끼이익. 열차는 멈춘다. 그러나 깨우지 못한 승객들은 첫 칸과 함께 사라졌다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"flag","set":"ending-d"}],"goto":"epilogue"},"partial":{"text":"열차는 멈춘다 — 대신 푸른뿌리의 균열이 크게 벌어지고, 잔향이 전원을 훑는다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"flag","set":"ending-d"}],"goto":"epilogue"},"fail":{"text":"열차는 멈춘다 — 대신 푸른뿌리의 균열이 크게 벌어지고, 잔향이 전원을 훑는다. 도시는 살아남는다 — 상처와 함께.","effects":[{"type":"resonance","target":"party","amount":"1d6"},{"type":"resonance","target":"party","amount":"1d6"},{"type":"flag","set":"ending-d"}],"goto":"epilogue"}}}]},"epilogue":{"title":"에필로그 — 그 밤의 끝","place":"합경 · 교환장","narrative":["밤이 걷힌다. 품 안의 표는 어느새 글자가 지워져, 그냥 낡은 종이가 되어 있다.","교환장의 새벽 시장이 첫 종을 울린다. 좌판이 하나둘 펴지고, 상인들의 흥정이 다시 시작된다. 각자의 자리에서, 각자의 아침이 온다 — 지금의 자신이 사고인지 삶인지는, 오늘 밤을 살아낸 사람들이 스스로 정한다."],"affordances":[{"id":"blank-ticket","noun":["표","승차권","종이"],"tags":["가연성"],"hint":"글자가 지워진 낡은 표"},{"id":"dawn-market","noun":["시장","새벽 시장","좌판","상인","인파"],"tags":["생명","소음원"],"hint":"다시 열리는 새벽 시장"},{"id":"first-bell","noun":["종","저울 종","소리"],"tags":["금속","소음원"],"hint":"새벽 시장의 첫 종"}],"choices":[{"id":"aftermath-a","label":"도시의 후일담 — 새 노선표","requires":{"any":["ending-a"]},"outcomes":{"always":{"text":"역참이 정기 운행을 시작하고, 실종자들이 하나둘 집으로 돌아간다. 자정의 안내 방송은 이제 또렷하고, 다정하다.","effects":[]}}},{"id":"aftermath-ab","label":"도시의 후일담 — 재개장","requires":{"any":["ending-ab"]},"outcomes":{"always":{"text":"역참-0이 '진짜 역'으로 재개장한다. 구역 간 안전 통로가 열리고, 실종자들이 집으로 돌아가고, 도시의 잔향 수치가 내려가기 시작한다.","effects":[]}}},{"id":"aftermath-b","label":"도시의 후일담 — 재편성","requires":{"any":["ending-b"]},"outcomes":{"always":{"text":"잔향 수치가 도시 전역에서 내려가기 시작한다. 역참의 새 시간표는 사람의 손으로 쓰였다.","effects":[]}}},{"id":"aftermath-c","label":"도시의 후일담 — 침묵","requires":{"any":["ending-c"]},"outcomes":{"always":{"text":"며칠 뒤, 선환그룹의 2차 발굴 공고가 붙는다 — 「파손된 코어 회수」. 이 이야기는 아직 끝나지 않았다.","effects":[]}}},{"id":"aftermath-d","label":"도시의 후일담 — 발차","requires":{"any":["ending-d"]},"outcomes":{"always":{"text":"푸른뿌리 접경이 통제구역이 된다. 도시는 살아남았다 — 상처와 함께.","effects":[]}}},{"id":"aftermath-e","label":"도시의 후일담 — 새 역장","requires":{"any":["ending-e"]},"outcomes":{"always":{"text":"자정마다, 역참 방송에서 익숙한 목소리가 들린다. 「연착 승객 여러분 — 오늘도, 무사히.」","effects":[]}}},{"id":"cha-testifies","label":"증언대의 차은성","requires":{"any":["cha-witness"]},"outcomes":{"always":{"text":"차은성이 증언대에 선다. 코어 강제 재기동과 기억 봉인 — 선환그룹이 한 일이 기록에 남는다.","effects":[]}}},{"id":"close","label":"긴 밤을 닫는다","detail":"— 「역참-0」 끝 —","outcomes":{"always":{"text":"표를 받은 이들은 자정의 개찰구를 넘었고, 도시는 아침을 맞았다. — 「역참-0」 끝 —","effects":[]}}}]}}}};
 
 // ==== web/vendor/peerjs.min.js ====
 // web/vendor/peerjs.min.js — vendored PeerJS 1.5.5 (MIT License, https://peerjs.com)
@@ -1448,8 +1448,49 @@ const Game = (() => {
         revealed: [],
         visitedScenes: [],
         usedChoices: {},
+        usedAffordances: {},
         history: [],
       };
+    },
+
+    // ------------------------------------------------------------------
+    // 자유 행동 파서(명세 08 B-2)가 쓰는 최소 상태 — "이 씬에서 이 장면
+    // 요소(affordance)를 이미 써먹었는가". 미리 쓰인 선택지(usedChoices)와는
+    // 별개 네임스페이스다 — 자유 행동은 usedChoices에 걸리지 않는다
+    // (docs/specs/08-content-and-parser.md B-2 "반드시 지킬 것"). 대신
+    // affordance당 1회로 여기서 따로 막는다.
+    affordanceUsed(state, sceneId, affordanceId) {
+      if (!affordanceId) return false;
+      const used = (state.usedAffordances && state.usedAffordances[sceneId]) || [];
+      return used.includes(affordanceId);
+    },
+
+    // 자유 행동 판정 결과를 상태에 남긴다. 미리 쓰인 선택지(applyChoice)와
+    // 달리 씬 데이터에 outcomes가 없으므로(즉흥 판정이라 애초에 정의될 수
+    // 없다) 기계적 효과는 만들어내지 않는다 — 판정 결과(tier)와 서술만
+    // 기록한다. 캐릭터 시트에 직접 영향을 주고 싶으면(예: 실패 시 잔향
+    // 획득) 호출부가 effect를 넘기면 그때 적용한다. affordanceId가 없으면
+    // (파서가 아무것도 못 짚어서 완전 수동으로 판정한 경우) 재사용 방지
+    // 목록에는 아무것도 남기지 않는다 — 애초에 대상이 없었으므로.
+    applyFreeAction(state, party, action) {
+      const { sceneId, affordanceId, actorName, skillId, dc, tier, narrative, effect } = action || {};
+      const used = { ...(state.usedAffordances || {}) };
+      if (affordanceId) {
+        const list = used[sceneId] || [];
+        if (!list.includes(affordanceId)) used[sceneId] = [...list, affordanceId];
+        else used[sceneId] = list;
+      }
+      let nextParty = party;
+      if (effect) {
+        const applied = this.applyEffect(state, party, effect, actorName, action.rollValue);
+        nextParty = applied.party;
+      }
+      const history = [...(state.history || []), {
+        sceneId, choiceId: null, freeAction: true, affordanceId: affordanceId || null,
+        actorName: actorName || null, skillId: skillId || null, dc: dc || null,
+        tier: tier || null, text: narrative || '',
+      }];
+      return { state: { ...state, usedAffordances: used, history }, party: nextParty };
     },
 
     // 지금 씬에서 고를 수 있는 선택지 — requires 평가 + 이미 쓴 선택지 제외.
@@ -1617,6 +1658,157 @@ const Game = (() => {
 })();
 
 if (typeof module !== 'undefined') module.exports = Game;
+
+
+// ==== web/src/parser.js ====
+// web/src/parser.js — 자유 행동 파서 (2층, 명세 08 B-2, docs/specs/08-content-and-parser.md)
+//
+// ADR-003의 3층 구조(docs/adr/003-byok-ai-gm.md):
+//   1층 규칙·상태·분기      코드          항상 동작
+//   2층 자유 행동 해석      키워드 파서    이 파일. +키 없이도 동작
+//   3층 서술·즉흥 판단      BYOK API      명세 09, 선택 기능
+//
+// 형태소 분석기를 넣지 않는다(용량, docs/specs/08 B-2 "한국어 처리"). 조사
+// 제거 + 어간 매칭(startsWith)만 쓴다. 정확도보다 "실패해도 판정은 해준다"는
+// 원칙(룰북 1.4)이 우선이다 — 이 파일이 반환하는 confidence가 0이어도
+// 게임이 막히지 않는다(ui-play.js가 수동 선택 UI로 넘긴다).
+//
+// interpret()는 부수효과가 없다 — Math.random도, Store도 건드리지 않는다.
+// Node(tools/test.mjs)와 브라우저 양쪽에서 그대로 로드된다(다른 web/src/*.js와
+// 같은 패턴 — 파일 끝의 module.exports 참고).
+const Parser = (() => {
+  // 씬 작가(A)가 affordance.tags에 쓸 수 있는 태그 전부 (docs/specs/08-content-and-parser.md
+  // B-1 "허용 태그"). 새 태그를 여기 추가하지 않으면 파서가 절대 못 맞춘다 —
+  // tools/verify-parser.mjs가 씬 데이터의 모든 태그가 이 목록 안에 있는지 검사한다.
+  const ALLOWED_TAGS = [
+    '전기', '가연성', '물', '무거움', '날카로움', '금속', '유리',
+    '결계', '이형', '기계', '높은곳', '좁은곳', '어둠', '소음원', '생명',
+  ];
+
+  // 조사 — 길게 매칭되는 것부터 시도해야 한다("에서"를 "에"로 잘못 자르지
+  // 않도록). docs/specs/08 B-2 목록 그대로, 길이 내림차순으로 정렬해 둔다.
+  const JOSA = ['에서', '으로', '을', '를', '이', '가', '은', '는', '에', '로', '와', '과', '의', '도', '만']
+    .sort((a, b) => b.length - a.length);
+
+  function stripJosa(token) {
+    for (const j of JOSA) {
+      if (token.length > j.length && token.endsWith(j)) return token.slice(0, -j.length);
+    }
+    return token;
+  }
+
+  function tokenize(text) {
+    return String(text || '').trim().split(/\s+/).filter(Boolean);
+  }
+
+  function noSpace(text) {
+    return String(text || '').replace(/\s+/g, '');
+  }
+
+  // 동사(대표형) × 태그 → 판정 규칙표 (docs/specs/08 B-2). data/rules.json에
+  // 넣지 않는다 — 게임 규칙이 아니라 파서의 사전이라서다(같은 문서 지시).
+  // tags: ['*']는 "어떤 태그든 상관없다"(살피다·조사하다 — 정보 수집은
+  // 대상의 성질과 무관하다).
+  const VERB_RULES = [
+    { label: '끊다', stems: ['끊', '자르', '부수'], tags: ['전기'], skill: 'tinker', dc: 15, effect: '인접 대상 감전' },
+    { label: '부수다', stems: ['끊', '부수'], tags: ['결계'], skill: 'tinker', dc: 15, effect: '결계 해제, 소음' },
+    { label: '태우다', stems: ['태우', '불붙이', '불붙'], tags: ['가연성'], skill: 'tinker', dc: 12, effect: '화재, 시야 차단' },
+    { label: '정화하다', stems: ['정화하', '정화', '쫓'], tags: ['이형'], skill: 'exorcise', dc: 12, effect: '잔향 감소' },
+    { label: '밀다', stems: ['밀', '던지'], tags: ['무거움'], skill: 'melee', dc: 12, effect: '피해 + 넘어뜨림' },
+    { label: '숨다', stems: ['숨', '가리'], tags: ['어둠', '좁은곳'], skill: 'stealth', dc: 12, effect: '은신' },
+    { label: '오르다', stems: ['오르'], tags: ['높은곳'], skill: 'stealth', dc: 12, effect: '위치 확보' },
+    { label: '살피다', stems: ['살피', '조사하', '조사'], tags: ['*'], skill: 'survival', dc: 12, effect: '정보' },
+  ];
+
+  // 텍스트 안에서 어떤 VERB_RULES 항목의 어간이라도 나타나는지. 조사는
+  // 명사에만 붙으므로 동사는 원문 토큰(조사 제거 전)으로 검사한다 —
+  // "끊어서/끊고/끊을래/끊는다/끊자" 전부 stems:['끊']에 startsWith로 걸린다.
+  function matchingVerbRules(tokens, flat) {
+    return VERB_RULES.filter((rule) => rule.stems.some(
+      (stem) => tokens.some((t) => t.startsWith(stem)) || flat.includes(stem)
+    ));
+  }
+
+  // affordance.noun 중 하나라도 입력에 나타나는지. 명사는 조사가 붙어
+  // 들어오므로(가로등을/가로등이) 조사를 뗀 토큰과 비교하고, 띄어쓰기가
+  // 없거나 다르게 들어온 경우를 대비해 공백 제거 전체 문자열도 한 번 더
+  // 본다(B-2 "띄어쓰기 무시하고도 한 번 더 시도").
+  function findAffordance(affordances, tokens, flat) {
+    const stripped = tokens.map(stripJosa);
+    for (const aff of affordances) {
+      const nouns = Array.isArray(aff.noun) ? aff.noun : [];
+      for (const noun of nouns) {
+        if (!noun) continue;
+        if (flat.includes(noun)) return aff;
+        if (stripped.some((t) => t === noun || (noun.length >= 2 && (t.includes(noun) || noun.includes(t) && t.length >= 2)))) {
+          return aff;
+        }
+      }
+    }
+    return null;
+  }
+
+  return {
+    ALLOWED_TAGS,
+
+    // 파서 사전 원본 — ui-play.js가 기술 후보를 보여줄 때, 또는 검증 도구가
+    // "이 표가 참조하는 태그가 전부 허용 목록 안에 있는지" 확인할 때 쓴다.
+    verbs() { return VERB_RULES.map((r) => ({ ...r, stems: [...r.stems], tags: [...r.tags] })); },
+
+    // "가로등 배선을 끊어서 감전시킬래" → { affordance, verb, skill, dc,
+    // confidence, reason, effect } 또는 매칭 실패 시 { confidence: 0, reason }.
+    //
+    // scene.affordances가 없거나 빈 배열이어도(씬 작가가 아직 안 채웠을 때)
+    // 죽지 않는다 — 그냥 confidence:0으로 떨어진다. 이게 정상 경로다
+    // (docs/specs/08-content-and-parser.md B-2 "매칭 실패는 정상 경로").
+    interpret(text, scene, party) { // eslint-disable-line no-unused-vars
+      const raw = String(text || '').trim();
+      if (!raw) return { confidence: 0, reason: '무엇을 할지 입력해 주세요.' };
+
+      const tokens = tokenize(raw);
+      const flat = noSpace(raw);
+      const affordances = (scene && Array.isArray(scene.affordances)) ? scene.affordances : [];
+
+      const affordance = findAffordance(affordances, tokens, flat);
+      const verbRules = matchingVerbRules(tokens, flat);
+
+      if (!affordance) {
+        return {
+          confidence: 0,
+          reason: '이 장면의 요소로는 해석할 수 없습니다. 룰북 1.4대로 직접 정해 주세요.',
+        };
+      }
+
+      const affTags = new Set(affordance.tags || []);
+      const rule = verbRules.find((r) => r.tags.includes('*') || r.tags.some((t) => affTags.has(t)));
+      if (!rule) {
+        return {
+          confidence: 0,
+          affordance: affordance.id,
+          affordanceLabel: affordance.hint || affordance.id,
+          reason: verbRules.length
+            ? `${affordance.hint || affordance.id} — 그 조합으로는 특별한 효과가 없습니다. 판정은 해드립니다.`
+            : '이 장면의 요소로는 해석할 수 없습니다. 룰북 1.4대로 직접 정해 주세요.',
+        };
+      }
+
+      const matchedTag = rule.tags.includes('*') ? ((affordance.tags && affordance.tags[0]) || '') : rule.tags.find((t) => affTags.has(t));
+      return {
+        confidence: 1,
+        affordance: affordance.id,
+        affordanceLabel: affordance.hint || affordance.id,
+        verb: rule.label,
+        tag: matchedTag,
+        skill: rule.skill,
+        dc: rule.dc,
+        effect: rule.effect,
+        reason: `대상: ${affordance.hint || affordance.id} (${(affordance.tags || []).join('·')}) — ${rule.label} → ${matchedTag} · DC ${rule.dc}`,
+      };
+    },
+  };
+})();
+
+if (typeof module !== 'undefined') module.exports = Parser;
 
 
 // ==== web/src/ui.js ====
@@ -4103,6 +4295,220 @@ const UIBuilder = (() => {
 if (typeof module !== 'undefined') module.exports = UIBuilder;
 
 
+// ==== web/src/ui-party.js ====
+// web/src/ui-party.js — 8인 파티 선택 (명세 08 B-1, docs/specs/08-content-and-parser.md)
+//
+// 명세 07까지는 "파티 = PREGENS 16명 전원"이었다(ui-play.js buildParty() 옛
+// 주석 참고) — 그러면 requires.partyHasSkill이 아무것도 못 거른다(ADR-002
+// "감수하는 대가" 절). 이 파일은 16종 중 8명을 고르는 화면을 그리고, 고른
+// 구성을 방 자체 키(hg:{code}:party)에 저장한다. ui-play.js가 게임을 시작할
+// 때 이 8명만 party로 넘긴다.
+//
+// 진행 상태 저장 패턴은 ui-play.js의 gameState/scheduleLoad와 동일하다 —
+// Store 폴링 + 인메모리 캐시. 다른 점 하나: 아직 아무도 명시적으로 고르지
+// 않았을 때(캐시도 Store도 비어 있음) 즉시 추천 구성을 기본값으로 돌려준다
+// (스토리지 왕복을 기다리지 않는다) — 그래야 처음 들어온 화면에 "플레이
+// 시작" 버튼이 바로 뜬다(8명이 이미 골라진 상태이므로). 사용자가 체크박스를
+// 만지면 그 순간부터는 실제 저장된 값(count != 8일 수도 있는 상태)을 그대로
+// 보여준다 — "8명을 고르지 않으면 플레이가 시작되지 않음"(완료 조건)은 이
+// 저장된 값이 정확히 8일 때만 시작 버튼을 켜는 것으로 만족시킨다.
+const UIParty = (() => {
+  const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
+  const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
+    const d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild;
+  };
+
+  const PARTY_SIZE = 8;
+  // role 필드("전투 · 탱커" 등)에서 이 macro 카테고리 중 하나를 부분 문자열로
+  // 찾는다. 못 찾으면 '기타'(정찰·균형형·생존 등 role 문자열이 4대 계열에
+  // 안 들어가는 캐릭터들 — 라비/유나/겨울). 추천 구성이 "전투/지원/기술/
+  // 사교가 골고루"(명세 08 B-1)를 만족시키는 근거가 이 macro 분류다.
+  const MACRO = ['전투', '지원', '기술', '사교'];
+  function macroOf(p) {
+    const role = (p && p.role) || '';
+    return MACRO.find((m) => role.includes(m)) || '기타';
+  }
+  function statSum(p) {
+    const stats = (p && p.stats) || {};
+    return Object.values(stats).reduce((a, v) => a + (parseInt(v, 10) || 0), 0);
+  }
+
+  // 추천 구성 — 역할이 겹치지 않게 8명을 자동으로 고른다(명세 08 B-1).
+  //
+  // 방식: 카테고리별 인원 비율에 비례해 8자리를 배분한다(최대잉여법/해밀턴
+  // 방식) — 표본이 많은 계열(예: 전투)이 그만큼 더 뽑히되, 인원이 적은
+  // 계열(사교 등)도 최소 대표성을 보장받는다. "균등 분배(카테고리당 1~2명
+  // 고정)"를 쓰지 않은 이유: 그러면 전투 8명 중 단 1명만 뽑혀 전투 인원이
+  // 파티에서 지나치게 희소해진다 — 비율 배분이 "골고루"의 취지에 더 가깝다.
+  // 카테고리 안에서는 능력치 총합이 높은 순으로 고른다(동점이면 원래 목록
+  // 순서) — "추천"이니 그 계열에서 상대적으로 다재다능한 쪽을 우선한다.
+  // 잉여 배분(아래 largest-remainder)에서 동점일 때 어느 계열을 먼저 채울지
+  // — 명세가 명시적으로 나열한 순서(전투/지원/기술/사교) 그대로 우선하고,
+  // 그 4개 밖(정찰·균형형·생존 등, macroOf가 '기타'로 떨어뜨리는 것들)은
+  // 가장 뒤로 민다. 등장 순서(캐릭터 배열 인덱스)로 정하면 '기타'가 우연히
+  // 먼저 나타나는 캐릭터 배치에서 '사교' 같은 희소 계열을 밀어낼 수 있다
+  // (예: data/characters.json에서 라비(정찰→기타)가 노아(사교)보다 앞에
+  // 있으면 노아가 통째로 빠질 수 있다) — 그래서 등장 순서 대신 이 고정
+  // 우선순위를 쓴다.
+  const CATEGORY_PRIORITY = [...MACRO, '기타'];
+
+  function recommend(pregens) {
+    const list = Array.isArray(pregens) ? pregens : [];
+    if (!list.length) return [];
+    const seats = Math.min(PARTY_SIZE, list.length);
+    const byCat = {};
+    list.forEach((p, idx) => {
+      const cat = macroOf(p);
+      if (!byCat[cat]) byCat[cat] = [];
+      byCat[cat].push({ p, idx });
+    });
+    const order = CATEGORY_PRIORITY.filter((cat) => byCat[cat] && byCat[cat].length);
+
+    const total = list.length;
+    const quotas = order.map((cat, catIndex) => {
+      const size = byCat[cat].length;
+      const raw = size * (seats / total);
+      const base = Math.floor(raw);
+      return { cat, size, base, rem: raw - base, catIndex };
+    });
+    let assigned = quotas.reduce((a, q) => a + q.base, 0);
+    let remaining = seats - assigned;
+    const byRemainder = [...quotas].sort((a, b) => (b.rem - a.rem) || (a.catIndex - b.catIndex));
+    for (let i = 0; i < byRemainder.length && remaining > 0; i++) {
+      const q = quotas.find((x) => x.cat === byRemainder[i].cat);
+      q.base += 1;
+      remaining -= 1;
+    }
+
+    const picks = [];
+    quotas.forEach((q) => {
+      const members = [...byCat[q.cat]].sort((a, b) => (statSum(b.p) - statSum(a.p)) || (a.idx - b.idx));
+      members.slice(0, q.base).forEach((m) => picks.push(m));
+    });
+    picks.sort((a, b) => a.idx - b.idx);
+    return picks.slice(0, PARTY_SIZE).map((m) => m.p.name);
+  }
+
+  // ---------------- 저장 상태: Store 자체 키 (ui-play.js gameState와 같은 패턴) ----------------
+  let cache = null; // { code, data: { members: [...], mine } | null }
+  let loadInFlight = false;
+  function partyKey(code) { return `hg:${code}:party`; }
+
+  function scheduleLoad(ctx) {
+    if (loadInFlight || !ctx.ROOM_CODE) return;
+    loadInFlight = true;
+    Store.get(partyKey(ctx.ROOM_CODE)).then((data) => {
+      const changed = JSON.stringify(data || null) !== JSON.stringify(cache && cache.code === ctx.ROOM_CODE ? cache.data : undefined);
+      cache = { code: ctx.ROOM_CODE, data: data || null };
+      loadInFlight = false;
+      if (changed && ctx.actions && ctx.actions.render) ctx.actions.render();
+    }).catch(() => { loadInFlight = false; });
+  }
+
+  // 지금 유효한 선택 — 명시적으로 저장된 값이 있으면 그대로(8명이 아니어도
+  // — 편집 중일 수 있다), 없으면(한 번도 안 골랐음) 추천 구성을 기본값으로.
+  function getSelection(ctx) {
+    scheduleLoad(ctx);
+    const stored = (cache && cache.code === ctx.ROOM_CODE) ? cache.data : null;
+    if (stored && Array.isArray(stored.members)) return stored;
+    return { members: recommend(ctx.PREGENS), mine: null, isDefault: true };
+  }
+
+  async function saveSelection(ctx, sel) {
+    cache = { code: ctx.ROOM_CODE, data: sel };
+    await Store.set(partyKey(ctx.ROOM_CODE), sel);
+  }
+
+  function isValid(ctx) {
+    const sel = getSelection(ctx);
+    return Array.isArray(sel.members) && sel.members.length === PARTY_SIZE;
+  }
+
+  // ---------------- 렌더 ----------------
+  function render(container, ctx) {
+    if (!container || !ctx || !ctx.PREGENS) return;
+    const sel = getSelection(ctx);
+    const members = sel.members || [];
+
+    const panel = el(`<div class="panel"><h3>파티 구성 (${members.length}/${PARTY_SIZE}) <span style="font-weight:400;font-size:12px;color:var(--paper-dim)">— 16종 중 ${PARTY_SIZE}명을 고르세요</span></h3></div>`);
+    panel.appendChild(el(`<div class="small-note" style="margin-bottom:8px">
+      룰북과 시나리오는 8인 파티 전제입니다(<a href="#" style="color:inherit;text-decoration:underline" onclick="return false">ADR-002</a>).
+      사람이 맡지 않은 캐릭터도 파티에 남아 함께 행동합니다 — 여기서 고른 8명 중
+      '내 캐릭터'만 지정하면 됩니다. 8명이 아니면 플레이를 시작할 수 없습니다.
+    </div>`));
+
+    const recBtn = el('<button style="margin-bottom:10px">추천 구성</button>');
+    recBtn.onclick = () => {
+      const nextMembers = recommend(ctx.PREGENS);
+      const mine = sel.mine && nextMembers.includes(sel.mine) ? sel.mine : null;
+      saveSelection(ctx, { members: nextMembers, mine }).then(() => ctx.actions.render());
+    };
+    panel.appendChild(recBtn);
+
+    const grid = el('<div class="char-grid"></div>');
+    ctx.PREGENS.forEach((p) => {
+      const checked = members.includes(p.name);
+      const card = el(`<label class="char-card ${checked ? 'mine' : ''}" style="cursor:pointer;display:block">
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" ${checked ? 'checked' : ''} style="flex-shrink:0">
+          <div>
+            <div class="cname" style="color:${p.color}">${escapeHtml(p.name)}</div>
+            <div style="font-size:11px;color:var(--paper-dim)">${escapeHtml(p.role)}</div>
+          </div>
+        </div>
+      </label>`);
+      const box = card.querySelector('input');
+      box.onchange = () => {
+        let next = members.slice();
+        if (box.checked) {
+          if (next.length >= PARTY_SIZE) {
+            box.checked = false;
+            alert(`이미 ${PARTY_SIZE}명을 골랐습니다. 먼저 한 명을 빼 주세요.`);
+            return;
+          }
+          if (!next.includes(p.name)) next.push(p.name);
+        } else {
+          next = next.filter((n) => n !== p.name);
+        }
+        const mine = sel.mine && next.includes(sel.mine) ? sel.mine : null;
+        saveSelection(ctx, { members: next, mine }).then(() => ctx.actions.render());
+      };
+      grid.appendChild(card);
+    });
+    panel.appendChild(grid);
+
+    if (members.length === PARTY_SIZE) {
+      const mineRow = el('<div class="field" style="margin-top:10px"><label>내 캐릭터 (혼자 플레이 시)</label></div>');
+      const mineSel = document.createElement('select');
+      const noneOpt = document.createElement('option');
+      noneOpt.value = ''; noneOpt.textContent = '(지정 안 함)';
+      mineSel.appendChild(noneOpt);
+      members.forEach((name) => {
+        const o = document.createElement('option');
+        o.value = name; o.textContent = name;
+        if (sel.mine === name) o.selected = true;
+        mineSel.appendChild(o);
+      });
+      mineSel.onchange = () => {
+        saveSelection(ctx, { members, mine: mineSel.value || null }).then(() => ctx.actions.render());
+      };
+      mineRow.appendChild(mineSel);
+      panel.appendChild(mineRow);
+    } else {
+      panel.appendChild(el(`<div class="small-note" style="margin-top:8px;color:var(--amber)">
+        ${members.length}명 선택됨 — 정확히 ${PARTY_SIZE}명이어야 시작할 수 있습니다.
+      </div>`));
+    }
+
+    container.appendChild(panel);
+  }
+
+  return { PARTY_SIZE, macroOf, recommend, getSelection, saveSelection, isValid, render };
+})();
+
+if (typeof module !== 'undefined') module.exports = UIParty;
+
+
 // ==== web/src/ui-play.js ====
 // web/src/ui-play.js — 플레이 화면 (명세 07, docs/specs/07-play-engine.md §3)
 //
@@ -4122,12 +4528,21 @@ if (typeof module !== 'undefined') module.exports = UIBuilder;
 // 자체 키(hg:{code}:game)로 보관한다 — app.js의 room 스키마(meta/claims/
 // log/combat/char:*)에는 자리가 없다.
 //
-// "파티"의 정의: 아직 동료 시스템(ADR-002가 남긴 과제)이 없으므로, 이
-// 명세에서는 PREGENS 16명 전원을 "선택지를 시도할 수 있는 후보"로 본다 —
-// 누가 실제로 이 세션에 앉았는지(claims)와는 무관하다. 씬 화면 목업
-// ("노아 · 설득 · DC 12 (+5)")이 자동으로 최적 후보를 추천하는 것도 이
-// 전제 위에서다. 스키마가 "파티"를 명시적으로 정의하지 않는다는 점은
-// 보고서에 남긴다.
+// "파티"의 정의(명세 08 B-1로 갱신): 게임을 시작하기 전 UIParty.js가 16종
+// 중 정확히 8명을 고르게 하고, 그 명단이 state.partyNames로 게임 상태에
+// 고정된다 — 씬 화면 목업("노아 · 설득 · DC 12 (+5)")이 자동으로 최적 후보를
+// 추천하는 대상도 이 8명뿐이다. 누가 실제로 이 세션에 앉았는지(claims)와는
+// 별개다(사람이 맡지 않은 8명 중 캐릭터는 그대로 후보로 남는다).
+// requires.partyHasSkill은 이 8명 안에서만 검사한다 — 8명을 고르기 전
+// (파티 = 명세 07 시절의 "PREGENS 16명 전원")에는 아무것도 못 걸렀지만,
+// 이제 준(퇴마술 유일)을 빼면 exorcise 선택지가 실제로 사라진다.
+//
+// 자유 행동 파서(명세 08 B-2, parser.js): 미리 쓰인 선택지 목록 아래에
+// 자유 입력창을 둔다. Parser.interpret()이 씬의 affordances와 대조해
+// 대상·동사·기술·DC를 제안하면, 사람이 확인(또는 기술/DC를 직접 바꾼 뒤
+// 확인)해야 실제 판정이 굴러간다 — 해석 결과를 그대로 실행하지 않는다.
+// 매칭에 실패해도(affordances가 아직 없는 씬 포함) 판정 자체는 항상
+// 가능해야 한다(룰북 1.4 "실패해도 이야기가 멈추면 안 된다").
 const UIPlay = (() => {
   const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
   const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
@@ -4189,8 +4604,17 @@ const UIPlay = (() => {
   // ---------------- 파티 스냅샷 ----------------
   // Rules.modifiers()/game.js가 기대하는 모양: { name, stats, skills, hp,
   // maxHp, radiation, parts }. ui-check.js의 snapshot()과 필드가 같다.
-  function buildParty(ctx) {
-    return ctx.PREGENS.map((p) => {
+  //
+  // names(명세 08 B-1 — 8인 파티 선택): 게임이 실제로 진행 중일 때는
+  // state.partyNames(시작 시점에 고정된 8명)를, 아직 게임을 시작하기 전
+  // (파티 편성 화면)에는 UIParty의 현재 선택을 넘긴다. names가 없거나
+  // 비어 있으면(예: 이 필드가 없던 옛 세이브) PREGENS 전원으로 폴백한다 —
+  // 예전 동작을 그대로 유지해 저장된 게임을 깨지 않는다.
+  function buildParty(ctx, names) {
+    const pool = (Array.isArray(names) && names.length)
+      ? ctx.PREGENS.filter((p) => names.includes(p.name))
+      : ctx.PREGENS;
+    return pool.map((p) => {
       const cs = ctx.ROOM.characters[p.name] || {};
       return {
         name: p.name, stats: p.stats, skills: p.skills,
@@ -4231,6 +4655,11 @@ const UIPlay = (() => {
   }
 
   // ---------------- 시작 화면 ----------------
+  // 명세 08 B-1: 8인 파티를 고르기 전에는 시작할 수 없다. UIParty.render()가
+  // 파티 편성 UI(체크박스 16개 + 추천 구성 버튼)를 그린다 — 처음 들어오면
+  // 이미 추천 구성이 기본값으로 적용돼 있으므로(UIParty.getSelection 참고)
+  // 대개는 바로 "플레이 시작"이 활성 상태로 보인다. 사용자가 8명이 아니게
+  // 고치면 그 순간 이 버튼이 비활성화된다.
   function renderStartScreen(c, ctx, scenario) {
     const panel = el('<div class="panel"><h3>플레이</h3></div>');
     if (!scenario) {
@@ -4243,22 +4672,38 @@ const UIPlay = (() => {
       <div style="color:var(--paper-dim);margin-top:2px">시작 씬: ${escapeHtml(scenario.startScene)}</div>
     </div>`));
     panel.appendChild(el(`<div class="small-note" style="margin-bottom:14px">
-      혼자 플레이 중이면 그대로 아래 버튼을 누르세요. 여럿이 함께 진행하려면
-      입장 화면에서 방 코드를 공유하고 "GM으로 방 열기 / 방 코드로 참가"를
-      먼저 선택한 뒤 같은 방으로 들어와 시작하세요.
+      혼자 플레이 중이면 아래에서 파티를 확인하고 버튼을 누르세요. 여럿이 함께
+      진행하려면 입장 화면에서 방 코드를 공유하고 "GM으로 방 열기 / 방 코드로
+      참가"를 먼저 선택한 뒤 같은 방으로 들어와 시작하세요.
     </div>`));
+    c.appendChild(panel);
+
+    UIParty.render(c, ctx);
+
+    const sel = UIParty.getSelection(ctx);
+    const valid = Array.isArray(sel.members) && sel.members.length === UIParty.PARTY_SIZE;
+
+    const startPanel = el('<div class="panel"></div>');
     const startBtn = el('<button class="primary" style="width:100%;padding:12px">플레이 시작</button>');
+    startBtn.disabled = !valid;
+    if (!valid) {
+      startPanel.appendChild(el('<div class="small-note" style="margin-bottom:8px;color:var(--amber)">파티를 정확히 8명 골라야 시작할 수 있습니다.</div>'));
+    }
     startBtn.onclick = async () => {
-      const party = buildParty(ctx);
+      const current = UIParty.getSelection(ctx);
+      if (!current.members || current.members.length !== UIParty.PARTY_SIZE) return;
+      const names = current.members;
+      const party = buildParty(ctx, names);
       let state = Game.newGame(scenario, party);
+      state = { ...state, partyNames: names };
       const entered = await runEnterScene(ctx, scenario, state, party);
       state = entered.state;
       await persistParty(ctx, entered.party);
       await saveGame(ctx, state);
       ctx.actions.render();
     };
-    panel.appendChild(startBtn);
-    c.appendChild(panel);
+    startPanel.appendChild(startBtn);
+    c.appendChild(startPanel);
   }
 
   // ---------------- 선택지 하나 ----------------
@@ -4364,6 +4809,175 @@ const UIPlay = (() => {
     ctx.actions.render();
   }
 
+  // ---------------- 자유 행동 (명세 08 B-2, parser.js) ----------------
+  // 상태는 renderChoice의 actorOverride/lastResult와 같은 자리에 둔다 —
+  // ctx가 매 렌더 새로 만들어지고 DOM도 매번 다시 그려지므로(§3 서두 참고)
+  // 입력창 텍스트·해석 결과·기술/DC 오버라이드를 모듈 스코프에 붙잡아 둔다.
+  let freeActionState = null; // { sceneId, text, result, skillOverride, dcOverride, actorOverride }
+  let lastFreeResult = null; // { sceneId, expr, tier, narrative }
+
+  const DC_OPTIONS = [
+    { dc: 8, label: '쉬움 8' },
+    { dc: 12, label: '보통 12' },
+    { dc: 15, label: '어려움 15' },
+    { dc: 18, label: '매우 어려움 18' },
+    { dc: 22, label: '거의 불가능 22' },
+  ];
+
+  // 해석 결과를 확인/조정하는 패널. confidence>0이면 파서가 제안한
+  // 대상·동사·기술·DC를 보여주되, 기술/DC는 여전히 바꿀 수 있다. confidence
+  // 0이면(매칭 실패 — 정상 경로, docs/specs/08-content-and-parser.md B-2)
+  // 룰북 1.4 절차 그대로 기술/DC를 직접 고르는 UI를 띄운다. 어느 쪽이든
+  // "이대로 판정"을 눌러야 실제로 굴러간다 — 해석 결과를 그대로 실행하지
+  // 않는다(B-2 "반드시 지킬 것").
+  function renderFreeActionPreview(ctx, scenario, state, party, scene) {
+    const fa = freeActionState;
+    const result = fa.result;
+    const box = el('<div class="kv" style="border:1px dashed var(--border);border-radius:3px;padding:10px 12px;margin-top:10px"></div>');
+
+    if (result.confidence > 0) {
+      box.appendChild(el(`<div style="font-size:13px;line-height:1.6">${escapeHtml(result.reason)}</div>`));
+    } else {
+      box.appendChild(el(`<div style="font-size:13px;line-height:1.6;color:var(--amber)">${escapeHtml(result.reason || '이 장면의 요소로는 해석할 수 없습니다.')}</div>`));
+      box.appendChild(el('<div class="small-note" style="margin-top:2px">룰북 1.4대로 직접 정해 주세요 — 판정은 해드립니다.</div>'));
+    }
+
+    const row = el('<div class="modrow" style="margin-top:8px"></div>');
+
+    const skillField = el('<div class="field"><label>기술</label></div>');
+    const skillSel = document.createElement('select');
+    (ctx.RULES.skills || []).forEach((s) => {
+      const o = document.createElement('option');
+      o.value = s.id; o.textContent = s.name;
+      if (s.id === fa.skillOverride) o.selected = true;
+      skillSel.appendChild(o);
+    });
+    skillSel.onchange = () => { fa.skillOverride = skillSel.value; ctx.actions.render(); };
+    skillField.appendChild(skillSel);
+    row.appendChild(skillField);
+
+    const dcField = el('<div class="field"><label>DC</label></div>');
+    const dcSel = document.createElement('select');
+    DC_OPTIONS.forEach((o) => {
+      const opt = document.createElement('option');
+      opt.value = String(o.dc); opt.textContent = o.label;
+      if (o.dc === fa.dcOverride) opt.selected = true;
+      dcSel.appendChild(opt);
+    });
+    dcSel.onchange = () => { fa.dcOverride = parseInt(dcSel.value, 10); ctx.actions.render(); };
+    dcField.appendChild(dcSel);
+    row.appendChild(dcField);
+
+    const actorField = el('<div class="field"><label>시도자</label></div>');
+    const actorSel = document.createElement('select');
+    const suggested = fa.actorOverride || Game.bestActor({ check: { skill: fa.skillOverride }, actor: 'any' }, party) || (party[0] && party[0].name);
+    party.forEach((p) => {
+      const o = document.createElement('option');
+      o.value = p.name; o.textContent = p.name;
+      if (p.name === suggested) o.selected = true;
+      actorSel.appendChild(o);
+    });
+    actorSel.onchange = () => { fa.actorOverride = actorSel.value; ctx.actions.render(); };
+    actorField.appendChild(actorSel);
+    row.appendChild(actorField);
+    box.appendChild(row);
+
+    const actorChar = party.find((p) => p.name === suggested);
+    const mods = actorChar ? ctx.Rules.modifiers(actorChar, fa.skillOverride) : [];
+    const modSum = mods.reduce((a, m) => a + m.value, 0);
+    box.appendChild(el(`<div style="font-size:12px;color:var(--paper-dim);margin-top:4px">
+      ${escapeHtml(suggested || '(후보 없음)')} · DC ${fa.dcOverride}
+      <b style="color:var(--amber)">(${fmtSigned(modSum)})</b>
+    </div>`));
+
+    const btnRow = el('<div style="margin-top:8px;display:flex;gap:8px"></div>');
+    const okBtn = el('<button class="primary">이대로 판정</button>');
+    okBtn.disabled = !suggested;
+    okBtn.onclick = () => resolveFreeAction(ctx, scenario, state, party, scene, suggested, mods, modSum);
+    const cancelBtn = el('<button class="ghost">취소</button>');
+    cancelBtn.onclick = () => { freeActionState = null; ctx.actions.render(); };
+    btnRow.appendChild(okBtn);
+    btnRow.appendChild(cancelBtn);
+    box.appendChild(btnRow);
+
+    return box;
+  }
+
+  function renderFreeAction(ctx, scenario, state, party, scene) {
+    const panel = el('<div class="panel"><h3>다른 행동을 시도한다</h3></div>');
+    panel.appendChild(el(`<div class="small-note" style="margin-bottom:8px">
+      규칙서에 없는 행동도 시도할 수 있습니다(룰북 1.4). 장면에 있는 것을
+      말로 적으면 대상·기술·DC를 찾아 보고, 못 찾아도 직접 정해서 판정할 수
+      있습니다.
+    </div>`));
+
+    const inField = el('<div class="field"><label>무엇을 하시겠습니까</label></div>');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = '예: 가로등 배선을 끊어서 감전시킬래';
+    input.value = (freeActionState && freeActionState.sceneId === state.sceneId) ? (freeActionState.text || '') : '';
+    inField.appendChild(input);
+    panel.appendChild(inField);
+
+    const interpretBtn = el('<button style="margin-top:6px">해석</button>');
+    interpretBtn.onclick = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      let result = Parser.interpret(text, scene, party);
+      // affordance당 1회 — 이미 써먹은 대상이면 파서가 뭘 찾았든 매칭
+      // 실패로 되돌리고 이유를 알려준다(B-2 "같은 affordance를 반복
+      // 착취하지 못하게").
+      if (result && result.confidence > 0 && result.affordance && Game.affordanceUsed(state, state.sceneId, result.affordance)) {
+        result = { confidence: 0, affordance: result.affordance, reason: `${result.affordanceLabel || result.affordance} — 이미 이 대상을 이용했습니다. 다른 방법을 시도하거나 직접 정해 주세요.` };
+      }
+      freeActionState = {
+        sceneId: state.sceneId, text, result,
+        skillOverride: result.skill || (ctx.RULES.skills[0] && ctx.RULES.skills[0].id),
+        dcOverride: result.dc || 12,
+        actorOverride: null,
+      };
+      ctx.actions.render();
+    };
+    panel.appendChild(interpretBtn);
+
+    if (freeActionState && freeActionState.sceneId === state.sceneId && freeActionState.result) {
+      panel.appendChild(renderFreeActionPreview(ctx, scenario, state, party, scene));
+    }
+    return panel;
+  }
+
+  async function resolveFreeAction(ctx, scenario, state, party, scene, actorName, mods, modSum) {
+    const fa = freeActionState;
+    const natural = rollD(20);
+    const total = natural + modSum;
+    const tier = ctx.Rules.resolve({ natural, total, dc: fa.dcOverride });
+    const parts = [`d20[${natural}]`, ...mods.map((m) => `${fmtSigned(m.value)}${m.label}`)];
+    const expr = `${parts.join(' ')} = ${total} (DC ${fa.dcOverride})`;
+
+    const isMatch = fa.result && fa.result.confidence > 0;
+    const narrativeBase = isMatch
+      ? `${fa.result.verb || ''} → ${fa.result.effect || '판정'} — ${TIER_LABEL[tier]}`
+      : `직접 정한 판정 — ${TIER_LABEL[tier]}`;
+    const narrative = `"${fa.text}" ${narrativeBase}`;
+
+    const applied = Game.applyFreeAction(state, party, {
+      sceneId: state.sceneId,
+      affordanceId: isMatch ? fa.result.affordance : null,
+      actorName, skillId: fa.skillOverride, dc: fa.dcOverride, tier, narrative,
+    });
+
+    await saveGame(ctx, applied.state);
+
+    lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative };
+    freeActionState = null;
+
+    await ctx.actions.withRoom((s) => {
+      ctx.actions.addLog(s, `[자유 행동] ${actorName} — "${fa.text}": ${expr} → ${TIER_LABEL[tier] || tier}`, 'roll');
+    });
+
+    ctx.actions.render();
+  }
+
   // ---------------- 씬 화면 ----------------
   function renderScene(c, ctx, scenario, state, party) {
     const scene = scenario.scenes[state.sceneId];
@@ -4401,6 +5015,17 @@ const UIPlay = (() => {
       c.appendChild(resultPanel);
     }
 
+    // 자유 행동 결과 패널 (직전 판정) — 선택지 결과 패널과 같은 자리 원칙.
+    if (lastFreeResult && lastFreeResult.sceneId === state.sceneId) {
+      const r = lastFreeResult;
+      const color = OUTCOME_COLOR[r.tier] || 'var(--paper)';
+      const resultPanel = el('<div class="panel"></div>');
+      resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
+      resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
+      resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      c.appendChild(resultPanel);
+    }
+
     // 선택지
     const choicesPanel = el('<div class="panel"><h3>무엇을 하시겠습니까</h3></div>');
     const available = Game.availableChoices(state, scenario, party);
@@ -4410,6 +5035,9 @@ const UIPlay = (() => {
       available.forEach((choice) => choicesPanel.appendChild(renderChoice(ctx, scenario, state, party, choice)));
     }
     c.appendChild(choicesPanel);
+
+    // 자유 행동 (명세 08 B-2)
+    c.appendChild(renderFreeAction(ctx, scenario, state, party, scene));
 
     // 알아낸 것
     const revealPanel = el('<div class="panel"><h3>알아낸 것</h3></div>');
@@ -4432,7 +5060,7 @@ const UIPlay = (() => {
       renderStartScreen(container, ctx, scenario);
       return;
     }
-    const party = buildParty(ctx);
+    const party = buildParty(ctx, state.partyNames);
     renderScene(container, ctx, scenario, state, party);
   }
 

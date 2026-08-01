@@ -16,12 +16,21 @@
 // 자체 키(hg:{code}:game)로 보관한다 — app.js의 room 스키마(meta/claims/
 // log/combat/char:*)에는 자리가 없다.
 //
-// "파티"의 정의: 아직 동료 시스템(ADR-002가 남긴 과제)이 없으므로, 이
-// 명세에서는 PREGENS 16명 전원을 "선택지를 시도할 수 있는 후보"로 본다 —
-// 누가 실제로 이 세션에 앉았는지(claims)와는 무관하다. 씬 화면 목업
-// ("노아 · 설득 · DC 12 (+5)")이 자동으로 최적 후보를 추천하는 것도 이
-// 전제 위에서다. 스키마가 "파티"를 명시적으로 정의하지 않는다는 점은
-// 보고서에 남긴다.
+// "파티"의 정의(명세 08 B-1로 갱신): 게임을 시작하기 전 UIParty.js가 16종
+// 중 정확히 8명을 고르게 하고, 그 명단이 state.partyNames로 게임 상태에
+// 고정된다 — 씬 화면 목업("노아 · 설득 · DC 12 (+5)")이 자동으로 최적 후보를
+// 추천하는 대상도 이 8명뿐이다. 누가 실제로 이 세션에 앉았는지(claims)와는
+// 별개다(사람이 맡지 않은 8명 중 캐릭터는 그대로 후보로 남는다).
+// requires.partyHasSkill은 이 8명 안에서만 검사한다 — 8명을 고르기 전
+// (파티 = 명세 07 시절의 "PREGENS 16명 전원")에는 아무것도 못 걸렀지만,
+// 이제 준(퇴마술 유일)을 빼면 exorcise 선택지가 실제로 사라진다.
+//
+// 자유 행동 파서(명세 08 B-2, parser.js): 미리 쓰인 선택지 목록 아래에
+// 자유 입력창을 둔다. Parser.interpret()이 씬의 affordances와 대조해
+// 대상·동사·기술·DC를 제안하면, 사람이 확인(또는 기술/DC를 직접 바꾼 뒤
+// 확인)해야 실제 판정이 굴러간다 — 해석 결과를 그대로 실행하지 않는다.
+// 매칭에 실패해도(affordances가 아직 없는 씬 포함) 판정 자체는 항상
+// 가능해야 한다(룰북 1.4 "실패해도 이야기가 멈추면 안 된다").
 const UIPlay = (() => {
   const escapeHtml = (typeof UI !== 'undefined' && UI.escapeHtml) ? UI.escapeHtml : (s) => String(s);
   const el = (typeof UI !== 'undefined' && UI.el) ? UI.el : (html) => {
@@ -83,8 +92,17 @@ const UIPlay = (() => {
   // ---------------- 파티 스냅샷 ----------------
   // Rules.modifiers()/game.js가 기대하는 모양: { name, stats, skills, hp,
   // maxHp, radiation, parts }. ui-check.js의 snapshot()과 필드가 같다.
-  function buildParty(ctx) {
-    return ctx.PREGENS.map((p) => {
+  //
+  // names(명세 08 B-1 — 8인 파티 선택): 게임이 실제로 진행 중일 때는
+  // state.partyNames(시작 시점에 고정된 8명)를, 아직 게임을 시작하기 전
+  // (파티 편성 화면)에는 UIParty의 현재 선택을 넘긴다. names가 없거나
+  // 비어 있으면(예: 이 필드가 없던 옛 세이브) PREGENS 전원으로 폴백한다 —
+  // 예전 동작을 그대로 유지해 저장된 게임을 깨지 않는다.
+  function buildParty(ctx, names) {
+    const pool = (Array.isArray(names) && names.length)
+      ? ctx.PREGENS.filter((p) => names.includes(p.name))
+      : ctx.PREGENS;
+    return pool.map((p) => {
       const cs = ctx.ROOM.characters[p.name] || {};
       return {
         name: p.name, stats: p.stats, skills: p.skills,
@@ -125,6 +143,11 @@ const UIPlay = (() => {
   }
 
   // ---------------- 시작 화면 ----------------
+  // 명세 08 B-1: 8인 파티를 고르기 전에는 시작할 수 없다. UIParty.render()가
+  // 파티 편성 UI(체크박스 16개 + 추천 구성 버튼)를 그린다 — 처음 들어오면
+  // 이미 추천 구성이 기본값으로 적용돼 있으므로(UIParty.getSelection 참고)
+  // 대개는 바로 "플레이 시작"이 활성 상태로 보인다. 사용자가 8명이 아니게
+  // 고치면 그 순간 이 버튼이 비활성화된다.
   function renderStartScreen(c, ctx, scenario) {
     const panel = el('<div class="panel"><h3>플레이</h3></div>');
     if (!scenario) {
@@ -137,22 +160,38 @@ const UIPlay = (() => {
       <div style="color:var(--paper-dim);margin-top:2px">시작 씬: ${escapeHtml(scenario.startScene)}</div>
     </div>`));
     panel.appendChild(el(`<div class="small-note" style="margin-bottom:14px">
-      혼자 플레이 중이면 그대로 아래 버튼을 누르세요. 여럿이 함께 진행하려면
-      입장 화면에서 방 코드를 공유하고 "GM으로 방 열기 / 방 코드로 참가"를
-      먼저 선택한 뒤 같은 방으로 들어와 시작하세요.
+      혼자 플레이 중이면 아래에서 파티를 확인하고 버튼을 누르세요. 여럿이 함께
+      진행하려면 입장 화면에서 방 코드를 공유하고 "GM으로 방 열기 / 방 코드로
+      참가"를 먼저 선택한 뒤 같은 방으로 들어와 시작하세요.
     </div>`));
+    c.appendChild(panel);
+
+    UIParty.render(c, ctx);
+
+    const sel = UIParty.getSelection(ctx);
+    const valid = Array.isArray(sel.members) && sel.members.length === UIParty.PARTY_SIZE;
+
+    const startPanel = el('<div class="panel"></div>');
     const startBtn = el('<button class="primary" style="width:100%;padding:12px">플레이 시작</button>');
+    startBtn.disabled = !valid;
+    if (!valid) {
+      startPanel.appendChild(el('<div class="small-note" style="margin-bottom:8px;color:var(--amber)">파티를 정확히 8명 골라야 시작할 수 있습니다.</div>'));
+    }
     startBtn.onclick = async () => {
-      const party = buildParty(ctx);
+      const current = UIParty.getSelection(ctx);
+      if (!current.members || current.members.length !== UIParty.PARTY_SIZE) return;
+      const names = current.members;
+      const party = buildParty(ctx, names);
       let state = Game.newGame(scenario, party);
+      state = { ...state, partyNames: names };
       const entered = await runEnterScene(ctx, scenario, state, party);
       state = entered.state;
       await persistParty(ctx, entered.party);
       await saveGame(ctx, state);
       ctx.actions.render();
     };
-    panel.appendChild(startBtn);
-    c.appendChild(panel);
+    startPanel.appendChild(startBtn);
+    c.appendChild(startPanel);
   }
 
   // ---------------- 선택지 하나 ----------------
@@ -258,6 +297,175 @@ const UIPlay = (() => {
     ctx.actions.render();
   }
 
+  // ---------------- 자유 행동 (명세 08 B-2, parser.js) ----------------
+  // 상태는 renderChoice의 actorOverride/lastResult와 같은 자리에 둔다 —
+  // ctx가 매 렌더 새로 만들어지고 DOM도 매번 다시 그려지므로(§3 서두 참고)
+  // 입력창 텍스트·해석 결과·기술/DC 오버라이드를 모듈 스코프에 붙잡아 둔다.
+  let freeActionState = null; // { sceneId, text, result, skillOverride, dcOverride, actorOverride }
+  let lastFreeResult = null; // { sceneId, expr, tier, narrative }
+
+  const DC_OPTIONS = [
+    { dc: 8, label: '쉬움 8' },
+    { dc: 12, label: '보통 12' },
+    { dc: 15, label: '어려움 15' },
+    { dc: 18, label: '매우 어려움 18' },
+    { dc: 22, label: '거의 불가능 22' },
+  ];
+
+  // 해석 결과를 확인/조정하는 패널. confidence>0이면 파서가 제안한
+  // 대상·동사·기술·DC를 보여주되, 기술/DC는 여전히 바꿀 수 있다. confidence
+  // 0이면(매칭 실패 — 정상 경로, docs/specs/08-content-and-parser.md B-2)
+  // 룰북 1.4 절차 그대로 기술/DC를 직접 고르는 UI를 띄운다. 어느 쪽이든
+  // "이대로 판정"을 눌러야 실제로 굴러간다 — 해석 결과를 그대로 실행하지
+  // 않는다(B-2 "반드시 지킬 것").
+  function renderFreeActionPreview(ctx, scenario, state, party, scene) {
+    const fa = freeActionState;
+    const result = fa.result;
+    const box = el('<div class="kv" style="border:1px dashed var(--border);border-radius:3px;padding:10px 12px;margin-top:10px"></div>');
+
+    if (result.confidence > 0) {
+      box.appendChild(el(`<div style="font-size:13px;line-height:1.6">${escapeHtml(result.reason)}</div>`));
+    } else {
+      box.appendChild(el(`<div style="font-size:13px;line-height:1.6;color:var(--amber)">${escapeHtml(result.reason || '이 장면의 요소로는 해석할 수 없습니다.')}</div>`));
+      box.appendChild(el('<div class="small-note" style="margin-top:2px">룰북 1.4대로 직접 정해 주세요 — 판정은 해드립니다.</div>'));
+    }
+
+    const row = el('<div class="modrow" style="margin-top:8px"></div>');
+
+    const skillField = el('<div class="field"><label>기술</label></div>');
+    const skillSel = document.createElement('select');
+    (ctx.RULES.skills || []).forEach((s) => {
+      const o = document.createElement('option');
+      o.value = s.id; o.textContent = s.name;
+      if (s.id === fa.skillOverride) o.selected = true;
+      skillSel.appendChild(o);
+    });
+    skillSel.onchange = () => { fa.skillOverride = skillSel.value; ctx.actions.render(); };
+    skillField.appendChild(skillSel);
+    row.appendChild(skillField);
+
+    const dcField = el('<div class="field"><label>DC</label></div>');
+    const dcSel = document.createElement('select');
+    DC_OPTIONS.forEach((o) => {
+      const opt = document.createElement('option');
+      opt.value = String(o.dc); opt.textContent = o.label;
+      if (o.dc === fa.dcOverride) opt.selected = true;
+      dcSel.appendChild(opt);
+    });
+    dcSel.onchange = () => { fa.dcOverride = parseInt(dcSel.value, 10); ctx.actions.render(); };
+    dcField.appendChild(dcSel);
+    row.appendChild(dcField);
+
+    const actorField = el('<div class="field"><label>시도자</label></div>');
+    const actorSel = document.createElement('select');
+    const suggested = fa.actorOverride || Game.bestActor({ check: { skill: fa.skillOverride }, actor: 'any' }, party) || (party[0] && party[0].name);
+    party.forEach((p) => {
+      const o = document.createElement('option');
+      o.value = p.name; o.textContent = p.name;
+      if (p.name === suggested) o.selected = true;
+      actorSel.appendChild(o);
+    });
+    actorSel.onchange = () => { fa.actorOverride = actorSel.value; ctx.actions.render(); };
+    actorField.appendChild(actorSel);
+    row.appendChild(actorField);
+    box.appendChild(row);
+
+    const actorChar = party.find((p) => p.name === suggested);
+    const mods = actorChar ? ctx.Rules.modifiers(actorChar, fa.skillOverride) : [];
+    const modSum = mods.reduce((a, m) => a + m.value, 0);
+    box.appendChild(el(`<div style="font-size:12px;color:var(--paper-dim);margin-top:4px">
+      ${escapeHtml(suggested || '(후보 없음)')} · DC ${fa.dcOverride}
+      <b style="color:var(--amber)">(${fmtSigned(modSum)})</b>
+    </div>`));
+
+    const btnRow = el('<div style="margin-top:8px;display:flex;gap:8px"></div>');
+    const okBtn = el('<button class="primary">이대로 판정</button>');
+    okBtn.disabled = !suggested;
+    okBtn.onclick = () => resolveFreeAction(ctx, scenario, state, party, scene, suggested, mods, modSum);
+    const cancelBtn = el('<button class="ghost">취소</button>');
+    cancelBtn.onclick = () => { freeActionState = null; ctx.actions.render(); };
+    btnRow.appendChild(okBtn);
+    btnRow.appendChild(cancelBtn);
+    box.appendChild(btnRow);
+
+    return box;
+  }
+
+  function renderFreeAction(ctx, scenario, state, party, scene) {
+    const panel = el('<div class="panel"><h3>다른 행동을 시도한다</h3></div>');
+    panel.appendChild(el(`<div class="small-note" style="margin-bottom:8px">
+      규칙서에 없는 행동도 시도할 수 있습니다(룰북 1.4). 장면에 있는 것을
+      말로 적으면 대상·기술·DC를 찾아 보고, 못 찾아도 직접 정해서 판정할 수
+      있습니다.
+    </div>`));
+
+    const inField = el('<div class="field"><label>무엇을 하시겠습니까</label></div>');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = '예: 가로등 배선을 끊어서 감전시킬래';
+    input.value = (freeActionState && freeActionState.sceneId === state.sceneId) ? (freeActionState.text || '') : '';
+    inField.appendChild(input);
+    panel.appendChild(inField);
+
+    const interpretBtn = el('<button style="margin-top:6px">해석</button>');
+    interpretBtn.onclick = () => {
+      const text = input.value.trim();
+      if (!text) return;
+      let result = Parser.interpret(text, scene, party);
+      // affordance당 1회 — 이미 써먹은 대상이면 파서가 뭘 찾았든 매칭
+      // 실패로 되돌리고 이유를 알려준다(B-2 "같은 affordance를 반복
+      // 착취하지 못하게").
+      if (result && result.confidence > 0 && result.affordance && Game.affordanceUsed(state, state.sceneId, result.affordance)) {
+        result = { confidence: 0, affordance: result.affordance, reason: `${result.affordanceLabel || result.affordance} — 이미 이 대상을 이용했습니다. 다른 방법을 시도하거나 직접 정해 주세요.` };
+      }
+      freeActionState = {
+        sceneId: state.sceneId, text, result,
+        skillOverride: result.skill || (ctx.RULES.skills[0] && ctx.RULES.skills[0].id),
+        dcOverride: result.dc || 12,
+        actorOverride: null,
+      };
+      ctx.actions.render();
+    };
+    panel.appendChild(interpretBtn);
+
+    if (freeActionState && freeActionState.sceneId === state.sceneId && freeActionState.result) {
+      panel.appendChild(renderFreeActionPreview(ctx, scenario, state, party, scene));
+    }
+    return panel;
+  }
+
+  async function resolveFreeAction(ctx, scenario, state, party, scene, actorName, mods, modSum) {
+    const fa = freeActionState;
+    const natural = rollD(20);
+    const total = natural + modSum;
+    const tier = ctx.Rules.resolve({ natural, total, dc: fa.dcOverride });
+    const parts = [`d20[${natural}]`, ...mods.map((m) => `${fmtSigned(m.value)}${m.label}`)];
+    const expr = `${parts.join(' ')} = ${total} (DC ${fa.dcOverride})`;
+
+    const isMatch = fa.result && fa.result.confidence > 0;
+    const narrativeBase = isMatch
+      ? `${fa.result.verb || ''} → ${fa.result.effect || '판정'} — ${TIER_LABEL[tier]}`
+      : `직접 정한 판정 — ${TIER_LABEL[tier]}`;
+    const narrative = `"${fa.text}" ${narrativeBase}`;
+
+    const applied = Game.applyFreeAction(state, party, {
+      sceneId: state.sceneId,
+      affordanceId: isMatch ? fa.result.affordance : null,
+      actorName, skillId: fa.skillOverride, dc: fa.dcOverride, tier, narrative,
+    });
+
+    await saveGame(ctx, applied.state);
+
+    lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative };
+    freeActionState = null;
+
+    await ctx.actions.withRoom((s) => {
+      ctx.actions.addLog(s, `[자유 행동] ${actorName} — "${fa.text}": ${expr} → ${TIER_LABEL[tier] || tier}`, 'roll');
+    });
+
+    ctx.actions.render();
+  }
+
   // ---------------- 씬 화면 ----------------
   function renderScene(c, ctx, scenario, state, party) {
     const scene = scenario.scenes[state.sceneId];
@@ -295,6 +503,17 @@ const UIPlay = (() => {
       c.appendChild(resultPanel);
     }
 
+    // 자유 행동 결과 패널 (직전 판정) — 선택지 결과 패널과 같은 자리 원칙.
+    if (lastFreeResult && lastFreeResult.sceneId === state.sceneId) {
+      const r = lastFreeResult;
+      const color = OUTCOME_COLOR[r.tier] || 'var(--paper)';
+      const resultPanel = el('<div class="panel"></div>');
+      resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
+      resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
+      resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
+      c.appendChild(resultPanel);
+    }
+
     // 선택지
     const choicesPanel = el('<div class="panel"><h3>무엇을 하시겠습니까</h3></div>');
     const available = Game.availableChoices(state, scenario, party);
@@ -304,6 +523,9 @@ const UIPlay = (() => {
       available.forEach((choice) => choicesPanel.appendChild(renderChoice(ctx, scenario, state, party, choice)));
     }
     c.appendChild(choicesPanel);
+
+    // 자유 행동 (명세 08 B-2)
+    c.appendChild(renderFreeAction(ctx, scenario, state, party, scene));
 
     // 알아낸 것
     const revealPanel = el('<div class="panel"><h3>알아낸 것</h3></div>');
@@ -326,7 +548,7 @@ const UIPlay = (() => {
       renderStartScreen(container, ctx, scenario);
       return;
     }
-    const party = buildParty(ctx);
+    const party = buildParty(ctx, state.partyNames);
     renderScene(container, ctx, scenario, state, party);
   }
 

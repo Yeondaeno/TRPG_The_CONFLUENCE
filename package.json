@@ -11,6 +11,7 @@
     "verify:ui": "node tools/build.mjs && node tools/verify-ui.mjs",
     "verify:craft": "node tools/build.mjs && node tools/verify-craft.mjs",
     "verify:play": "node tools/build.mjs && node tools/verify-play.mjs",
+    "verify:parser": "node tools/build.mjs && node tools/verify-parser.mjs",
     "demo": "node tools/build.mjs && node tools/demo-session.mjs"
   },
   "devDependencies": {

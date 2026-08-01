@@ -53,6 +53,29 @@ const check = (name, pass, detail = '') => results.push({ name, pass, detail });
   // 씬 데이터를 통해 새지 않았는지 — "역참-0 재기동 프로젝트" 같은 GM 전용
   // 배경 설명은 씬 1-1의 플레이어 선택지/결과 어디에도 등장하지 않는다.
   check('[소스] GM 전용 진상 문구("재기동 프로젝트")가 씬 데이터에 없음', !html.includes('재기동 프로젝트'));
+
+  // 씬 그래프 무결성 — 명세 08-A로 씬 0~에필로그가 전부 채워졌으므로
+  // "goto 대상이 없다"는 상태가 정본 데이터에는 하나도 없어야 하고,
+  // 시작 씬에서 출발해 모든 씬에 닿을 수 있어야 한다(막다른 씬 없음).
+  const scenesFile = JSON.parse(readFileSync(join(process.cwd(), 'data/scenarios/station-0.scenes.json'), 'utf8'));
+  const sceneIds = new Set(Object.keys(scenesFile.scenes));
+  const gotos = (id) => (scenesFile.scenes[id].choices || [])
+    .flatMap((c) => Object.values(c.outcomes || {}))
+    .map((o) => o.goto).filter(Boolean);
+  const dangling = [...sceneIds].flatMap((id) => gotos(id).filter((g) => !sceneIds.has(g)).map((g) => `${id}→${g}`));
+  check('[소스] 정본 씬 데이터에 대상 없는 goto가 없음', dangling.length === 0, dangling.join(', '));
+
+  const seen = new Set([scenesFile.startScene]);
+  for (const id of seen) gotos(id).forEach((g) => sceneIds.has(g) && seen.add(g));
+  const unreachable = [...sceneIds].filter((id) => !seen.has(id));
+  check('[소스] 시작 씬에서 모든 씬에 도달 가능(고립된 씬 없음)', unreachable.length === 0, unreachable.join(', '));
+  check('[소스] 시작 씬이 도입 씬 0', scenesFile.startScene === '0', `실제: ${scenesFile.startScene}`);
+
+  // goto 대상이 없을 때의 정직한 안내는 정본 데이터로는 더 이상 재현되지
+  // 않는다(위 dangling 검사가 0을 보장하므로). 코드 경로가 사라지지 않았는지
+  // 문자열로 확인하고, 실제 동작은 아래 브라우저 검사에서 합성 데이터로 본다.
+  check('[소스] "다음 씬은 아직 작성되지 않았습니다" 안내 문구가 산출물에 살아 있음',
+    html.includes('다음 씬은 아직 작성되지 않았습니다'));
 }
 
 const browser = await chromium.launch({ executablePath: chromePath() });
@@ -101,9 +124,17 @@ const activeTabAtJoin = await p1.evaluate(() => document.querySelector('.tab-btn
 check('입장 직후 기본 탭이 "플레이"(첫 화면)', activeTabAtJoin === 'play', `실제: ${activeTabAtJoin}`);
 check('시작 화면에 "플레이 시작" 버튼이 보임', (await playSlot(p1).innerText()).includes('플레이 시작'));
 
-// ── 플레이 시작 → onEnter(잔향 +1d6) ────────────────────────────────────
-await queueRandom(p1, [randFor(4, 6)]); // onEnter 1d6 → 4
+// ── 플레이 시작 → 도입 씬 0 → onEnter(잔향 +1d6) ───────────────────────
+await queueRandom(p1, [randFor(2, 6)]); // 씬 0 onEnter 1d6 → 2
 await p1.click('button:has-text("플레이 시작")');
+await p1.waitForTimeout(400);
+
+const opening1 = await playSlot(p1).innerText();
+check('플레이가 도입 씬 0("표가 도착한 밤")에서 시작함', opening1.includes('표가 도착한 밤') && opening1.includes('0번 승강장'));
+
+// ── 씬 0 → 1-1 (판정 없는 이동 선택지) ─────────────────────────────────
+await queueRandom(p1, [randFor(4, 6)]); // 씬 1-1 onEnter 1d6 → 4
+await choiceBox(p1, '실종 현장으로 향한다').locator('button:has-text("선택")').click();
 await p1.waitForTimeout(400);
 
 const sceneText1 = await playSlot(p1).innerText();
@@ -138,7 +169,7 @@ await p1.waitForTimeout(300);
 await p1.locator('.char-card', { hasText: '노아' }).first().click();
 await p1.waitForTimeout(300);
 const radVal = await p1.locator('#f-rad').inputValue();
-check('onEnter의 잔향 +1d6(굴림값 4)이 파티 전원(노아 포함)에게 실제로 적용됨', radVal === '4', `실제 값: ${radVal}`);
+check('두 씬의 onEnter 잔향(씬 0의 2 + 씬 1-1의 4)이 파티 전원(노아 포함)에게 누적 적용됨', radVal === '6', `실제 값: ${radVal}`);
 
 // ── 새로고침해도 진행 상태가 유지됨 ─────────────────────────────────────
 await p1.reload();
@@ -150,11 +181,33 @@ const afterReload = await playSlot(p1).innerText();
 check('새로고침 후에도 씬 진행 상태가 유지됨(시작 화면으로 안 돌아감)', !afterReload.includes('플레이 시작') && afterReload.includes('바닥의 발자국'));
 check('새로고침 후에도 알아낸 것이 유지됨', afterReload.includes('노점상의 증언'));
 
-// ── goto 대상 씬이 아직 없을 때 정직하게 알림 ───────────────────────────
+// ── goto로 다음 씬(1-2)에 실제로 도착 ───────────────────────────────────
+// 명세 07 시점에는 1-2가 없어서 "아직 작성되지 않았습니다"를 확인하는 검사였다.
+// 명세 08-A가 1-2~에필로그를 채웠으므로 이제는 **실제로 이동하는지**를 본다.
+// 대상 없는 goto의 정직한 안내는 아래에서 합성 데이터로 따로 확인한다.
 await choiceBox(p1, '개찰구로 향한다').locator('button:has-text("선택")').click();
 await p1.waitForTimeout(400);
 const afterLeave = await playSlot(p1).innerText();
-check('다음 씬 미작성 시 "다음 씬은 아직 작성되지 않았습니다"로 정직하게 안내', afterLeave.includes('다음 씬은 아직 작성되지 않았습니다'));
+check('goto로 씬 1-2에 실제로 도착함', afterLeave.includes('세 갈래 조사') && afterLeave.includes('길이 세 방향으로 갈라진다'));
+check('도착한 씬이 막다른 곳이 아님 — 다음 갈래가 보임', afterLeave.includes('자정의 개찰구'));
+
+// 대상 없는 goto — 정본 데이터에는 없으므로(위 [소스] dangling 검사) 합성
+// 씬 데이터로 엔진을 직접 불러 nextSceneMissing 경로가 살아 있는지 본다.
+const missingProbe = await p1.evaluate(() => {
+  const data = {
+    scenarioId: 'probe', startScene: 'a',
+    scenes: { a: { title: 'A', place: '', narrative: [], choices: [
+      { id: 'go', label: '가기', outcomes: { always: { text: '이동', goto: '없는씬' } } },
+    ] } },
+  };
+  const party = [{ name: '테스트', stats: {}, skills: [], hp: 10, maxHp: 10, radiation: 0, parts: 0 }];
+  const st = Game.newGame(data, party);
+  const r = Game.applyChoice(st, data, party, 'go', null, null, []);
+  return { moved: r.moved, missing: r.nextSceneMissing, sceneId: r.state.sceneId };
+});
+check('goto 대상이 없으면 이동하지 않고 nextSceneMissing으로 정직하게 알림',
+  missingProbe.missing === true && missingProbe.moved === false && missingProbe.sceneId === 'a',
+  JSON.stringify(missingProbe));
 
 check('방 1: 페이지 에러 없음', errs1.length === 0, errs1.join('; '));
 
@@ -165,8 +218,13 @@ check('방 1: 페이지 에러 없음', errs1.length === 0, errs1.join('; '));
 const { page: p2, consoleErrors: errs2 } = await newPage();
 await joinRoom(p2, '플레이어B', 'PLAY02');
 
-await queueRandom(p2, [randFor(2, 6)]); // onEnter 1d6 → 2
+// 두 씬의 onEnter를 1씩 굴려 씬 1-1 도착 시점의 잔향을 2로 맞춘다 — 아래
+// 아이린(2+6=8)·준(2) 검사가 그 값을 기준으로 한다.
+await queueRandom(p2, [randFor(1, 6)]); // 씬 0 onEnter 1d6 → 1
 await p2.click('button:has-text("플레이 시작")');
+await p2.waitForTimeout(400);
+await queueRandom(p2, [randFor(1, 6)]); // 씬 1-1 onEnter 1d6 → 1
+await choiceBox(p2, '실종 현장으로 향한다').locator('button:has-text("선택")').click();
 await p2.waitForTimeout(400);
 
 check('방 2: 시작 직후 "개찰구로 향한다"는 안 보임(requires 미충족)', !(await playSlot(p2).innerText()).includes('개찰구로 향한다'));
