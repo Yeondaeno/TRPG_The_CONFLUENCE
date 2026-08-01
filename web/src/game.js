@@ -317,8 +317,11 @@ const Game = (() => {
       }
 
       if (effect.type === 'combat') {
-        // 자리만 잡는다(docs/specs/07-play-engine.md §1) — 실제 턴제 전투는
-        // 명세 09. 여기서는 "전투가 시작되어야 한다"는 사실만 상태에 남긴다.
+        // "전투가 시작되어야 한다"는 사실만 상태에 남긴다. 실제 턴제 전투는
+        // combat.js(순수 엔진)와 ui-combat.js(화면)가 맡는다 —
+        // docs/specs/10-combat-and-dice.md. game.js는 전투의 내부를 모른다.
+        // ui-play.js가 pendingCombat을 보고 씬 화면 대신 전투 화면을 그리고,
+        // 끝나면 pendingCombat을 지운다.
         return { state: { ...state, pendingCombat: effect.npcs || [] }, party };
       }
 

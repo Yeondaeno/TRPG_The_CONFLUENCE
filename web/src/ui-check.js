@@ -322,6 +322,9 @@ const UICheck = (() => {
           ⚠ GM 상기: 원하는 걸 주되 반드시 대가를 붙이세요 — 소음 · 부상 · 자원 소모 · 잔향 획득 중 하나.
         </div>` : ''}
       </div>`);
+      // 주사위 애니메이션 (명세 10 §3). 결과 문자열은 위에서 이미 DOM에
+      // 들어갔고, 이건 곁들이는 시각 요소다 — 결과를 지연시키지 않는다.
+      Dice.tray(resultBox, [{ sides: 20, value: r.natural, label: `${p.name}의 ${r.skillLabel}` }]);
       panel.appendChild(resultBox);
     }
 

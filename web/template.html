@@ -147,10 +147,71 @@
   .store-badge.mode-memory { border-color: var(--danger); color: var(--danger); }
   .net-badge { display:inline-block; font-size:11px; padding:2px 8px; border-radius:10px; margin-left:8px; border:1px solid var(--border); color: var(--paper-dim); }
 
+  /* 주사위 애니메이션 — web/src/ui-dice.js (명세 10 §3).
+     눈이 구르는 동안 die-rolling, 멈추면 die-settled로 한 번 튀어오른다.
+     굴림 값 자체는 JS가 프레임 카운터로 정한다(Math.random을 쓰지 않는
+     이유는 ui-dice.js 머리말 참고). */
+  .dice-tray { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 2px; }
+  .die {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border: 1px solid var(--border); border-radius: 8px;
+    background: linear-gradient(160deg, var(--panel2), var(--panel));
+    color: var(--die-tone, var(--paper));
+    font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 17px; font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(227,216,190,.06);
+  }
+  .die-face { line-height: 1; }
+  .die-tag {
+    position: absolute; bottom: -7px; right: -4px; font-size: 9px; letter-spacing: .04em;
+    color: var(--paper-dim); background: var(--bg); padding: 0 3px; border-radius: 4px;
+  }
+  .die-rolling { animation: die-tumble .62s cubic-bezier(.3,.7,.4,1) 1; }
+  .die-settled { animation: die-land .26s ease-out 1; border-color: var(--die-tone, var(--border)); }
+  /* 자연 20 / 자연 1 — 판정의 두 특이점만 색으로 구분한다 */
+  .die-crit { border-color: var(--amber); box-shadow: 0 0 10px rgba(232,163,61,.35); }
+  .die-botch { border-color: var(--danger); color: var(--danger); }
+
+  @keyframes die-tumble {
+    0%   { transform: rotate(-16deg) scale(.86); }
+    30%  { transform: rotate(12deg)  scale(1.06); }
+    60%  { transform: rotate(-8deg)  scale(.97); }
+    100% { transform: rotate(0)      scale(1); }
+  }
+  @keyframes die-land {
+    0%   { transform: scale(1.22); }
+    60%  { transform: scale(.95); }
+    100% { transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .die-rolling, .die-settled { animation: none; }
+  }
+
+  /* 전투 화면 — web/src/ui-combat.js (명세 10 §2) */
+  .cbt-row {
+    display: grid; grid-template-columns: 34px 1fr 92px 62px; gap: 8px; align-items: center;
+    padding: 7px 8px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px;
+    font-size: 13px; background: var(--panel2);
+  }
+  .cbt-row.is-turn { border-color: var(--amber); box-shadow: 0 0 0 1px rgba(232,163,61,.25); }
+  .cbt-row.is-down { opacity: .45; }
+  .cbt-row.is-target { border-color: var(--rust); }
+  .cbt-init { font-family: 'JetBrains Mono', ui-monospace, monospace; color: var(--paper-dim); text-align: center; }
+  .cbt-side-enemy .cbt-name { color: var(--rust); }
+  .cbt-hpbar { height: 6px; border-radius: 3px; background: var(--bg); overflow: hidden; margin-top: 3px; }
+  .cbt-hpbar > i { display: block; height: 100%; background: var(--olive); }
+  .cbt-hpbar.low > i { background: var(--danger); }
+  .cbt-tag { font-size: 10px; padding: 1px 6px; border-radius: 9px; border: 1px solid var(--border); color: var(--paper-dim); margin-left: 6px; }
+  .cbt-tag.wound { border-color: var(--amber); color: var(--amber); }
+  .cbt-tag.dying { border-color: var(--danger); color: var(--danger); }
+  .cbt-log { font-size: 12px; line-height: 1.7; max-height: 190px; overflow-y: auto; }
+  .cbt-log > div { padding: 3px 0; border-bottom: 1px solid var(--border); }
+
   @media (max-width: 640px) {
     .stat-row { grid-template-columns: repeat(3,1fr); }
     .track-row { grid-template-columns: 1fr; }
     .init-item { grid-template-columns: 32px 1fr 50px 60px 24px; }
+    .cbt-row { grid-template-columns: 28px 1fr 72px; }
+    .cbt-row > .cbt-act { grid-column: 1 / -1; }
   }
 </style>
 </head>

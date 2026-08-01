@@ -26,6 +26,9 @@ const Parser = require(join(root, 'web/src/parser.js'));
 const UIParty = require(join(root, 'web/src/ui-party.js'));
 const SCENES = require(join(root, 'data/scenarios/station-0.scenes.json'));
 const CHARACTERS = require(join(root, 'data/characters.json'));
+const Combat = require(join(root, 'web/src/combat.js'));
+const MONSTERS = require(join(root, 'data/monsters.json'));
+const STATION0 = require(join(root, 'data/scenarios/station-0.json'));
 
 // ---- 테스트용 가짜 백엔드 ----
 function makeFakeLocalStorage({ throwOnKey } = {}) {
@@ -888,5 +891,314 @@ describe('Game.affordanceUsed / applyFreeAction — affordance당 1회 (명세 0
     const state = newGameAt11(party());
     const r = Game.applyFreeAction(state, party(), { sceneId: '1-1', affordanceId: 'streetlamp', tier: 'success' });
     assert.deepEqual(r.state.usedChoices, {});
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// 전투 엔진 — 명세 10 (docs/specs/10-combat-and-dice.md)
+//
+// combat.js는 game.js와 같은 계약이다: 순수하고 Math.random을 부르지
+// 않는다. 그래서 여기서 굴림 값을 직접 넣어 결과를 확정적으로 본다.
+// ══════════════════════════════════════════════════════════════════════
+const COMBAT_DATA = {
+  rules: RULES,
+  statPools: [MONSTERS, STATION0.npcs],
+  isProficient: (c, skillId) => Rules.isProficient(c, skillId),
+};
+function pc(name) {
+  const c = CHARACTERS.find((x) => x.name === name);
+  return {
+    name: c.name, stats: c.stats, skills: c.skills, hp: c.maxHp, maxHp: c.maxHp,
+    radiation: 0, parts: c.startParts, ac: c.ac, equip: c.equip,
+  };
+}
+
+describe('Combat — 자유 문장 → 수치 (명세 10 §1)', () => {
+  test('monsters.json의 atk 문장에서 명중 보정과 피해 주사위를 뽑는다', () => {
+    assert.deepEqual(Combat.parseAtk('d20+2, 1d4 피해'), { toHit: 2, damage: { count: 1, sides: 4, flat: 0 } });
+    assert.deepEqual(Combat.parseAtk('d20+4, 1d8 (구속 사슬)'), { toHit: 4, damage: { count: 1, sides: 8, flat: 0 } });
+    assert.deepEqual(Combat.parseAtk('d20+5, 2d6 (위상충격)'), { toHit: 5, damage: { count: 2, sides: 6, flat: 0 } });
+  });
+
+  test('audit S-2가 지적한 비표준 표기(비무장 (d20+0, 1d4))도 읽어낸다', () => {
+    assert.deepEqual(Combat.parseAtk('비무장 (d20+0, 1d4)'), { toHit: 0, damage: { count: 1, sides: 4, flat: 0 } });
+  });
+
+  test('씬의 적 이름 전부가 실제 스탯 표에서 찾아진다(괄호 주석 차이 포함)', () => {
+    const pools = [MONSTERS, STATION0.npcs];
+    const names = ['결함 드론', '여파에 물든 시민', '헌터 길드 정찰병', '개찰기 7호',
+      '무경 (선환 경비대장)', '탈선한 차장', "역참 인격체 코어 '길잡이'"];
+    names.forEach((n) => assert.ok(Combat.findStat(n, pools), `${n} 스탯을 못 찾음`));
+    // '결함 드론'은 표에 '결함 드론 (다수)'로 있다 — 괄호를 떼고 맞춘다.
+    assert.equal(Combat.findStat('결함 드론', pools).hp, 6);
+  });
+
+  test('없는 이름은 지어내지 않고 null을 돌려준다', () => {
+    assert.equal(Combat.findStat('있을 리 없는 적', [MONSTERS, STATION0.npcs]), null);
+  });
+
+  test('equip 문장에서 무기 능력치를 rules.json weapons[]로 되짚는다', () => {
+    const idn = Combat.weaponFor(pc('이든'), RULES);   // 룬각인 대검(1d6+3)
+    assert.equal(idn.ability, 'STR');
+    assert.deepEqual(idn.damage, { count: 1, sides: 6, flat: 3 });
+    const hayun = Combat.weaponFor(pc('하윤'), RULES);  // 레일건형 저격총(1d8)
+    assert.equal(hayun.ability, 'AGI');
+    assert.equal(hayun.damage.sides, 8);
+  });
+
+  test('무기 표기가 없는 캐릭터(파블로)는 규칙서의 맨손 1d4로 떨어진다 — 지어낸 값이 아님', () => {
+    const w = Combat.weaponFor(pc('파블로'), RULES);
+    assert.equal(w.weaponId, 'unarmed');
+    assert.deepEqual(w.damage, { count: 1, sides: 4, flat: 0 });
+    const unarmed = RULES.weapons.find((x) => x.id === 'unarmed');
+    assert.equal(`${w.damage.count}d${w.damage.sides}`, unarmed.damage);
+  });
+
+  test('STR 무기는 근접전투, 그 밖에는 사격 숙련을 본다', () => {
+    assert.equal(Combat.attackSkillFor('STR'), 'melee');
+    assert.equal(Combat.attackSkillFor('AGI'), 'ranged');
+  });
+});
+
+describe('Combat.start — 선제권과 스탯 (명세 10 §2)', () => {
+  const npcs = [{ name: '개찰기 7호', count: 1 }, { name: '결함 드론', count: 4 }];
+
+  test('씬 2-1의 적 구성이 그대로 참가자로 들어간다(1 + 4 = 5기)', () => {
+    const cs = Combat.start(npcs, [pc('이든')], COMBAT_DATA, [10, 10, 10, 10, 10, 10]);
+    const enemies = cs.combatants.filter((c) => c.side === 'enemy');
+    assert.equal(enemies.length, 5);
+    assert.equal(enemies.filter((e) => e.name.startsWith('결함 드론')).length, 4);
+  });
+
+  test('적 HP/AC가 데이터의 값과 정확히 같다 — 지어낸 수치 0개', () => {
+    const cs = Combat.start(npcs, [pc('이든')], COMBAT_DATA, [10, 10, 10, 10, 10, 10]);
+    const gate = cs.combatants.find((c) => c.name === '개찰기 7호');
+    const src = STATION0.npcs.find((n) => n.name === '개찰기 7호');
+    assert.equal(gate.hp, src.hp);
+    assert.equal(gate.ac, src.ac);
+    const drone = cs.combatants.find((c) => c.name === '결함 드론 1');
+    const dsrc = MONSTERS.find((m) => m.name === '결함 드론 (다수)');
+    assert.equal(drone.hp, dsrc.hp);
+    assert.equal(drone.ac, dsrc.ac);
+  });
+
+  test('선제권은 d20 + AGI로 계산되고 내림차순으로 정렬된다', () => {
+    // 하윤 AGI +2, 이든 AGI +1. d20은 둘 다 10 → 12 vs 11.
+    const cs = Combat.start([], [pc('이든'), pc('하윤')], COMBAT_DATA, [10, 10]);
+    assert.equal(cs.combatants[0].name, '하윤');
+    assert.equal(cs.combatants[0].init, 12);
+    assert.equal(cs.combatants[1].init, 11);
+  });
+
+  test('적 선제권에는 보정을 지어내지 않는다 — d20 그대로', () => {
+    const cs = Combat.start([{ name: '결함 드론', count: 1 }], [], COMBAT_DATA, [7]);
+    assert.equal(cs.combatants[0].init, 7);
+    assert.match(cs.combatants[0].initExpr, /AGI 데이터 없음/);
+  });
+
+  test('스탯을 못 찾은 적은 조용히 기본값을 갖지 않고 statMissing으로 드러난다', () => {
+    const cs = Combat.start([{ name: '없는 적', count: 1 }], [], COMBAT_DATA, [10]);
+    assert.equal(cs.combatants[0].statMissing, true);
+  });
+});
+
+describe('Combat.attack — rules.json combat.attack 공식', () => {
+  const data = COMBAT_DATA;
+  const setup = () => Combat.start([{ name: '결함 드론', count: 1 }], [pc('이든')], data, [10, 5]);
+
+  test('d20 + 능력치 + 숙련(+2) >= AC면 명중', () => {
+    const cs = setup();
+    const me = cs.combatants.find((c) => c.isPC);
+    // 이든: STR +3, 근접전투(숙련) → +2. 드론 AC 11.
+    assert.equal(me.abilityValue, 3);
+    assert.equal(me.proficient, true);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const r = Combat.attack(cs, me.id, foe.id, { natural: 6, damageRolls: [4, 4] }, RULES); // 6+5=11 >= 11
+    assert.equal(r.hit, true);
+    assert.equal(r.damage, 7); // 1d6[4] +3
+  });
+
+  test('AC에 1 모자라면 빗나가고 피해가 0이다', () => {
+    const cs = setup();
+    const me = cs.combatants.find((c) => c.isPC);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const r = Combat.attack(cs, me.id, foe.id, { natural: 5, damageRolls: [4] }, RULES); // 5+5=10 < 11
+    assert.equal(r.hit, false);
+    assert.equal(r.damage, 0);
+    assert.equal(Combat.byId(r.state, foe.id).hp, 6);
+  });
+
+  test('자연 20은 total과 무관하게 명중하고 피해 주사위를 두 배로 굴린다', () => {
+    const cs = Combat.start([{ name: "역참 인격체 코어 '길잡이'", count: 1 }], [pc('파블로')], data, [10, 10]);
+    const me = cs.combatants.find((c) => c.isPC); // 맨손 1d4, STR +0
+    const foe = cs.combatants.find((c) => !c.isPC); // AC 15
+    const r = Combat.attack(cs, me.id, foe.id, { natural: 20, damageRolls: [3, 4] }, RULES);
+    assert.equal(r.hit, true);
+    assert.equal(r.crit, true);
+    assert.equal(r.damage, 7); // 1d4를 2개 굴린다
+  });
+
+  test('자연 1은 total과 무관하게 빗나간다', () => {
+    const cs = setup();
+    const me = cs.combatants.find((c) => c.isPC);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const r = Combat.attack(cs, me.id, foe.id, { natural: 1, damageRolls: [6] }, RULES);
+    assert.equal(r.hit, false);
+  });
+
+  test('HP가 0이 되면 적은 쓰러진다', () => {
+    const cs = setup();
+    const me = cs.combatants.find((c) => c.isPC);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const r = Combat.attack(cs, me.id, foe.id, { natural: 15, damageRolls: [6] }, RULES); // 6+3=9 > hp 6
+    assert.equal(Combat.byId(r.state, foe.id).hp, 0);
+    assert.equal(Combat.byId(r.state, foe.id).dead, true);
+  });
+
+  test('원본 상태를 변경하지 않는다(순수)', () => {
+    const cs = setup();
+    const me = cs.combatants.find((c) => c.isPC);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const before = foe.hp;
+    Combat.attack(cs, me.id, foe.id, { natural: 20, damageRolls: [6, 6] }, RULES);
+    assert.equal(cs.combatants.find((c) => !c.isPC).hp, before);
+  });
+});
+
+describe('Combat — 부상 · 빈사 (rules.json combat.woundTiers / dyingCheck)', () => {
+  test('HP가 절반 밑이면 중상 −2가 공격 굴림에 실제로 반영된다', () => {
+    const hurt = { ...pc('이든'), hp: 10 }; // 22의 절반 미만
+    const cs = Combat.start([{ name: '결함 드론', count: 1 }], [hurt], COMBAT_DATA, [10, 5]);
+    const me = cs.combatants.find((c) => c.isPC);
+    const mods = Combat.attackMods(cs, me, RULES);
+    assert.ok(mods.some((m) => m.label === '중상' && m.value === -2), JSON.stringify(mods));
+    const foe = cs.combatants.find((c) => !c.isPC);
+    // 6 + (3 + 2 - 2) = 9 < AC 11 — 멀쩡했다면 명중했을 굴림이 빗나간다.
+    assert.equal(Combat.attack(cs, me.id, foe.id, { natural: 6, damageRolls: [4] }, RULES).hit, false);
+  });
+
+  test('정확히 절반은 경상이다 — Rules.woundTier와 같은 경계', () => {
+    const half = { ...pc('이든'), hp: 11 }; // 22의 정확히 절반
+    const cs = Combat.start([], [half], COMBAT_DATA, [10]);
+    assert.equal(Combat.woundModifier(cs.combatants[0], RULES), 0);
+    assert.equal(Rules.woundTier(11, 22), 'light');
+  });
+
+  test('사망 판정: d20이 10 미만이면 사망, 이상이면 버틴다', () => {
+    const down = { ...pc('노아'), hp: 0 };
+    const cs = Combat.start([], [down], COMBAT_DATA, [10]);
+    const id = cs.combatants[0].id;
+    assert.equal(Combat.dyingCheck(cs, id, 9, RULES).died, true);
+    assert.equal(Combat.dyingCheck(cs, id, 10, RULES).died, false);
+    // 임계값을 코드에 박지 않았는지 — rules.json과 같은 값인지 확인한다.
+    assert.equal(RULES.combat.dyingCheck.dieOnBelow, 10);
+  });
+
+  test('치유술 성공으로 안정화되면 사망 판정을 더 굴리지 않는다', () => {
+    const down = { ...pc('노아'), hp: 0 };
+    const cs = Combat.start([], [down, pc('소민')], COMBAT_DATA, [10, 10]);
+    const target = cs.combatants.find((c) => c.name === '노아');
+    const medic = cs.combatants.find((c) => c.name === '소민');
+    const ok = Combat.stabilize(cs, medic.id, target.id, 'success', RULES);
+    assert.equal(Combat.byId(ok.state, target.id).stable, true);
+    assert.equal(Combat.dyingCheck(ok.state, target.id, 1, RULES).skipped, true);
+    // 실패는 아무것도 바꾸지 않는다
+    assert.equal(Combat.byId(Combat.stabilize(cs, medic.id, target.id, 'fail', RULES).state, target.id).stable, false);
+  });
+});
+
+describe('Combat — 적 AI · 차례 · 종료 조건', () => {
+  test('적은 의식이 있는 파티원 중 HP가 가장 낮은 쪽을 친다', () => {
+    const cs = Combat.start([{ name: '결함 드론', count: 1 }],
+      [pc('이든'), { ...pc('노아'), hp: 4 }, pc('하윤')], COMBAT_DATA, [10, 10, 10, 10]);
+    assert.equal(Combat.chooseTarget(cs).name, '노아');
+  });
+
+  test('빈사인 파티원은 이미 쓰러졌으므로 대상에서 빠진다', () => {
+    const cs = Combat.start([], [pc('이든'), { ...pc('노아'), hp: 0 }], COMBAT_DATA, [10, 10]);
+    assert.equal(Combat.chooseTarget(cs).name, '이든');
+  });
+
+  test('적이 실제로 공격해 파티원 HP가 줄어든다', () => {
+    const cs = Combat.start([{ name: '헌터 길드 정찰병', count: 1 }], [pc('노아')], COMBAT_DATA, [10, 10]);
+    const foe = cs.combatants.find((c) => !c.isPC);
+    const r = Combat.enemyTurn(cs, foe.id, { natural: 15, damageRolls: [5, 5] }, RULES); // 15+4=19 >= AC 11
+    assert.equal(r.hit, true);
+    assert.equal(Combat.byId(r.state, 'pc:노아').hp, 13 - 5);
+  });
+
+  test('한 바퀴 돌면 라운드가 오르고, 쓰러진 적은 차례를 건너뛴다', () => {
+    let cs = Combat.start([{ name: '결함 드론', count: 1 }], [pc('이든')], COMBAT_DATA, [15, 5]);
+    assert.equal(cs.round, 1);
+    assert.equal(cs.combatants[cs.turnIndex].name, '이든');
+    cs = Combat.endTurn(cs);
+    assert.equal(cs.combatants[cs.turnIndex].side, 'enemy');
+    assert.equal(cs.round, 1);
+    cs = Combat.endTurn(cs);
+    assert.equal(cs.combatants[cs.turnIndex].name, '이든');
+    assert.equal(cs.round, 2);
+    // 드론을 쓰러뜨리면 그 자리는 건너뛴다 — 라운드만 오른다.
+    const foe = cs.combatants.find((c) => !c.isPC);
+    cs = Combat.attack(cs, 'pc:이든', foe.id, { natural: 20, damageRolls: [6, 6] }, RULES).state;
+    cs = Combat.endTurn(cs);
+    assert.equal(cs.combatants[cs.turnIndex].name, '이든');
+    assert.equal(cs.round, 3);
+  });
+
+  test('적 전원이 쓰러지면 victory, 파티 전원이 쓰러지면 defeat', () => {
+    const cs = Combat.start([{ name: '결함 드론', count: 1 }], [pc('이든')], COMBAT_DATA, [15, 5]);
+    assert.equal(Combat.outcome(cs), 'ongoing');
+    const won = Combat.attack(cs, 'pc:이든', 'npc:0', { natural: 20, damageRolls: [6, 6] }, RULES).state;
+    assert.equal(Combat.outcome(won), 'victory');
+    const lost = { ...cs, combatants: cs.combatants.map((c) => (c.isPC ? { ...c, hp: 0 } : c)) };
+    assert.equal(Combat.outcome(lost), 'defeat');
+  });
+
+  test('전투 후 HP가 파티 스냅샷으로 되돌아간다', () => {
+    const party = [pc('노아')];
+    const cs = Combat.start([{ name: '헌터 길드 정찰병', count: 1 }], party, COMBAT_DATA, [10, 10]);
+    const after = Combat.enemyTurn(cs, 'npc:0', { natural: 18, damageRolls: [6, 6] }, RULES).state;
+    assert.equal(Combat.applyToParty(after, party)[0].hp, 13 - 6);
+    assert.equal(party[0].hp, 13); // 원본은 그대로
+  });
+});
+
+// ══════════════════════════════════════════════════════════════════════
+// 캐릭터 성별 (gender)
+//
+// 원본 「합경_기성캐릭터.docx」는 성별을 거의 적지 않았다 — 16명 중 확정
+// 근거가 있는 건 아이린 한 명뿐이다(겨울의 비밀 문구 "아이린의 스승을
+// 대신해 몰래 **그녀**를 지켜보고 있다"). 나머지 15명은 이 저장소가
+// 정한 값이고, docs/characters.md의 표에 그 사실을 남겨 두었다.
+// ══════════════════════════════════════════════════════════════════════
+describe('캐릭터 성별 — data/characters.json의 gender', () => {
+  test('16명 전원에게 gender가 있고 값은 남/여 둘 중 하나다', () => {
+    assert.equal(CHARACTERS.length, 16);
+    CHARACTERS.forEach((c) => {
+      assert.ok(['남', '여'].includes(c.gender), `${c.name}: ${c.gender}`);
+    });
+  });
+
+  test('원본에 유일하게 근거가 있는 아이린은 여성이다("그녀를 지켜보고 있다")', () => {
+    assert.equal(CHARACTERS.find((c) => c.name === '아이린').gender, '여');
+    // 그 근거 문장 자체가 겨울의 비밀에 그대로 남아 있는지도 확인한다 —
+    // 이 문장이 바뀌면 아이린의 성별 근거가 사라진다.
+    assert.match(CHARACTERS.find((c) => c.name === '겨울').secret, /그녀/);
+  });
+
+  test('구역마다 남녀가 한 명씩이다(구역당 2명 구성 그대로)', () => {
+    const byDistrict = {};
+    CHARACTERS.forEach((c) => { (byDistrict[c.district] = byDistrict[c.district] || []).push(c.gender); });
+    assert.equal(Object.keys(byDistrict).length, 8);
+    Object.entries(byDistrict).forEach(([d, gs]) => {
+      assert.deepEqual(gs.slice().sort(), ['남', '여'], `${d}: ${gs.join(',')}`);
+    });
+  });
+
+  test('gender는 게임 수치가 아니므로 판정 보정에 아무 영향이 없다', () => {
+    const noa = CHARACTERS.find((c) => c.name === '노아');
+    const before = Rules.modifiers({ ...noa, hp: noa.maxHp }, 'persuade');
+    const flipped = Rules.modifiers({ ...noa, gender: '여', hp: noa.maxHp }, 'persuade');
+    assert.deepEqual(before, flipped);
   });
 });

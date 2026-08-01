@@ -34,7 +34,7 @@ docs/
   specs/                 구현 명세
 data/              ← 정본(single source of truth)
   rules.json       DC표, 4단계 결과, 무기, 위상잔향, 여파화 표, 조합, 구역
-  characters.json  사전 제작 캐릭터 16종
+  characters.json  사전 제작 캐릭터 16종 (성별 포함 — docs/pregens.md의 단서 참고)
   monsters.json    몬스터/NPC 스탯
   scenarios/
     station-0.json 시나리오 「역참-0」 — Act·씬·NPC·잔향 곡선
@@ -49,6 +49,9 @@ tools/
   test.mjs         판정 엔진 단위 테스트
   verify-ui.mjs    브라우저 검증
   verify-craft.mjs 조합·빌더 브라우저 검증
+  verify-play.mjs  플레이 엔진 브라우저 검증
+  verify-parser.mjs 파티 편성·자유 행동 파서 브라우저 검증
+  verify-combat.mjs 전투·주사위 애니메이션 브라우저 검증
   demo-session.mjs 시연 영상 녹화 (npm run demo)
 assets/original/   원본 docx / html — 변경하지 않고 보존
 ```
@@ -76,7 +79,13 @@ R-*는 전부 [`docs/errata.md`](docs/errata.md)에 배경과 선택지를 정�
 - **캐릭터시트** — 16종 점유, HP·위상잔향·결정편·메모
 - **판정** — 기술과 DC를 고르면 능력치·숙련·부상·잔향 보정을 자동 합산하고
   룰북 1.4의 4단계 결과를 판정합니다. 8인 그룹 판정도 여기서 집계합니다
-- **전투** — 선제권 트래커, 몬스터 스탯
+- **전투** — 씬이 부르면 실제로 턴제 전투가 열립니다. 선제권(d20+AGI) 순으로
+  차례가 돌고, 적이 실제로 공격하며, 중상 −2·빈사 사망 판정·치유술 안정화가
+  규칙서대로 굴러갑니다. **적 스탯은 전부 `monsters.json`/시나리오 `npcs`에서
+  그대로 옵니다 — 지어낸 수치가 하나도 없습니다** ([명세 10](docs/specs/10-combat-and-dice.md)).
+  GM용 선제권 트래커도 그대로 있습니다
+- **주사위 애니메이션** — 모든 굴림에서 눈이 굴러가다 멈춥니다.
+  자연 20/자연 1은 색으로 구분되고, `prefers-reduced-motion`을 존중합니다
 - **시나리오 진행** (GM 전용) — Act·씬 목록과 목표 시간, 지연 경고,
   **씬의 NPC를 트래커에 한 번에 투입**, 잔향 곡선 대비 파티 평균
 - **즉석 조합** — 룰북 4.2 레시피 5종. 결정편 자동 차감, 위상 필터 사용까지
@@ -102,6 +111,7 @@ npm run verify:ui     # 브라우저 검증
 npm run verify:craft  # 조합·빌더 브라우저 검증
 npm run verify:play   # 플레이 엔진(씬 진행·판정·저장) 브라우저 검증
 npm run verify:parser # 8인 파티 편성 + 자유 행동 파서 브라우저 검증
+npm run verify:combat # 턴제 전투 + 주사위 애니메이션 브라우저 검증
 npm run demo          # 시나리오 오프닝을 실제로 굴려 영상으로 녹화 (약 2분)
 ```
 

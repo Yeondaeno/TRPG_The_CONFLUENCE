@@ -110,6 +110,9 @@ const UIPlay = (() => {
         maxHp: p.maxHp,
         radiation: typeof cs.radiation === 'number' ? cs.radiation : 0,
         parts: typeof cs.parts === 'number' ? cs.parts : p.startParts,
+        // 전투(명세 10)가 쓰는 두 필드. game.js는 이 둘을 읽지 않지만
+        // combat.js가 AC와 무기(equip 문장)를 알아야 한다.
+        ac: p.ac, equip: p.equip,
       };
     });
   }
@@ -260,14 +263,16 @@ const UIPlay = (() => {
       const tier = ctx.Rules.resolve({ natural, total, dc: choice.check.dc });
       const parts = [`d20[${natural}]`, ...mods.map((m) => `${fmtSigned(m.value)}${m.label}`)];
       const expr = `${parts.join(' ')} = ${total} (DC ${choice.check.dc})`;
-      runChoice(ctx, scenario, state, party, choice, actorName, tier, expr);
+      runChoice(ctx, scenario, state, party, choice, actorName, tier, expr, [{ sides: 20, value: natural }]);
     };
     box.appendChild(btn);
     return box;
   }
 
   // ---------------- 선택 실행 ----------------
-  async function runChoice(ctx, scenario, state, party, choice, actorName, tier, expr) {
+  // shownDice: 화면에 굴려 보여줄 주사위(명세 10 §3). 판정 없는 선택지는
+  // 비어 있다 — 굴리지 않았으니 보여줄 것도 없다.
+  async function runChoice(ctx, scenario, state, party, choice, actorName, tier, expr, shownDice) {
     const dice = Game.diceNeededForChoice(scenario, state.sceneId, choice.id, tier);
     const rolls = dice.map((d) => rollD(d.sides));
     const result = Game.applyChoice(state, scenario, party, choice.id, actorName, tier, rolls);
@@ -287,6 +292,8 @@ const UIPlay = (() => {
     lastResult = {
       sceneId: state.sceneId, choiceId: choice.id, expr: expr || null, tier: tier || null,
       narrative: result.narrative, nextSceneMissing: result.nextSceneMissing,
+      // 판정 d20에 더해 효과가 요구한 주사위(잔향 1d6 등)도 함께 굴러간다.
+      dice: (shownDice || []).concat(dice.map((d, i) => ({ sides: d.sides, value: rolls[i] }))),
     };
 
     await ctx.actions.withRoom((s) => {
@@ -456,7 +463,7 @@ const UIPlay = (() => {
 
     await saveGame(ctx, applied.state);
 
-    lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative };
+    lastFreeResult = { sceneId: state.sceneId, expr, tier, narrative, dice: [{ sides: 20, value: natural }] };
     freeActionState = null;
 
     await ctx.actions.withRoom((s) => {
@@ -490,6 +497,9 @@ const UIPlay = (() => {
       const r = lastResult;
       const color = r.tier ? (OUTCOME_COLOR[r.tier] || 'var(--paper)') : 'var(--olive)';
       const resultPanel = el('<div class="panel"></div>');
+      // 주사위 애니메이션 (명세 10 §3) — 결과 문자열보다 먼저 놓아 시선이
+      // 주사위 → 결과 순으로 흐르게 한다. 문자열 자체는 지연되지 않는다.
+      if (Array.isArray(r.dice) && r.dice.length) Dice.tray(resultPanel, r.dice);
       if (r.expr) {
         resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
       }
@@ -508,6 +518,7 @@ const UIPlay = (() => {
       const r = lastFreeResult;
       const color = OUTCOME_COLOR[r.tier] || 'var(--paper)';
       const resultPanel = el('<div class="panel"></div>');
+      if (Array.isArray(r.dice) && r.dice.length) Dice.tray(resultPanel, r.dice);
       resultPanel.appendChild(el(`<div class="mono" style="font-size:13px;color:var(--paper-dim)">${escapeHtml(r.expr)}</div>`));
       resultPanel.appendChild(el(`<div style="font-size:18px;font-weight:700;color:${color};margin-top:4px">${escapeHtml(TIER_LABEL[r.tier] || r.tier)}</div>`));
       resultPanel.appendChild(el(`<div style="margin-top:6px;line-height:1.6">${escapeHtml(r.narrative)}</div>`));
@@ -549,6 +560,18 @@ const UIPlay = (() => {
       return;
     }
     const party = buildParty(ctx, state.partyNames);
+
+    // 전투 중이면 씬 대신 전투 화면(명세 10). combat 효과가 나오면 game.js가
+    // state.pendingCombat을 세우고, ui-combat.js가 끝나면 지운다.
+    if (state.pendingCombat && state.pendingCombat.length) {
+      UICombat.render(container, ctx, state, party, {
+        save: (next) => saveGame(ctx, next).then(() => ctx.actions.render()),
+        // 전투 중 HP는 전투 상태가 진실이다 — 그걸 캐릭터시트에 되먹인다.
+        syncParty: (cs) => persistParty(ctx, Combat.applyToParty(cs, party)),
+      });
+      return;
+    }
+
     renderScene(container, ctx, scenario, state, party);
   }
 

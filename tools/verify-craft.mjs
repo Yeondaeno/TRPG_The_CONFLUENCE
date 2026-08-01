@@ -230,7 +230,11 @@ check('페이지 에러 없음(조합 단계)', consoleErrors.length === 0, cons
 
   const sel = builderSlot().locator('select');
   // 순서: [0]아이콘 [1]STR [2]AGI [3]CON [4]INT [5]WIS [6]CHA [7]구역 [8]숙련1 [9]숙련2
-  const STR = sel.nth(1), AGI = sel.nth(2), CON = sel.nth(3), INT = sel.nth(4), WIS = sel.nth(5), CHA = sel.nth(6);
+  // 능력치 선택기는 data-ability로 찾는다 — select의 순번으로 찾으면 폼에
+  // 다른 select가 하나만 늘어나도(예: 성별) 조용히 엉뚱한 요소를 조작한다.
+  const ability = (id) => builderSlot().locator(`select[data-ability="${id}"]`);
+  const STR = ability('STR'), AGI = ability('AGI'), CON = ability('CON'),
+    INT = ability('INT'), WIS = ability('WIS'), CHA = ability('CHA');
 
   let builderText = await builderSlot().innerText();
   check('기본값은 표준 배열이라 처음부터 유효함', /✓ 유효한 배열입니다/.test(builderText));
@@ -265,6 +269,8 @@ check('페이지 에러 없음(조합 단계)', consoleErrors.length === 0, cons
   // 통째로 교체되어 클릭이 씹히는 경우가 있었다(직접 재현 확인).
   const nameInput = builderSlot().locator('input[type=text]').first(); // 이름 필드가 첫 텍스트 입력
   await nameInput.fill('시험빌더캐릭');
+  // 성별을 기본값(남)에서 바꿔 둔다 — 실제로 저장되는지 아래에서 확인한다.
+  await builderSlot().locator('select').filter({ hasText: '남' }).first().selectOption('여');
   await nameInput.dispatchEvent('change');
   await page.waitForTimeout(300);
   await builderSlot().locator('button', { hasText: /결정편.*굴리기/ }).click();
@@ -288,6 +294,17 @@ check('페이지 에러 없음(조합 단계)', consoleErrors.length === 0, cons
   check('만든 캐릭터를 선택하면 시트가 그 캐릭터로 열림', sheetName === '시험빌더캐릭');
   const hpMax = await page.getAttribute('#f-hp', 'max');
   check('실제로 추가된 캐릭터의 최대 HP도 14로 저장됨(부록 A 공식대로)', hpMax === '14', `max=${hpMax}`);
+
+  // 성별 — 사전 제작 16명과 같은 필드(data/characters.json의 gender)를
+  // 빌더로 만든 캐릭터도 갖는다. 빌더에서 여로 바꾼 값이 시트까지 간다.
+  const sheetSub = await page.locator('.sheet .title').last().innerText();
+  check('빌더로 만든 캐릭터의 시트에도 구역·성별이 표시됨', /남|여/.test(sheetSub), sheetSub);
+  const savedGender = await page.evaluate(() => (PREGENS.find((p) => p.name === '시험빌더캐릭') || {}).gender);
+  check('빌더에서 고른 성별이 캐릭터 데이터에 저장됨', savedGender === '여' || savedGender === '남', `실제: ${savedGender}`);
+  const pregenGenders = await page.evaluate(() => PREGENS.slice(0, 16).map((p) => p.gender));
+  check('사전 제작 16명 전원에게 성별이 인라인되어 있음',
+    pregenGenders.length === 16 && pregenGenders.every((g) => g === '남' || g === '여'),
+    pregenGenders.join(','));
 }
 
 check('페이지 에러 없음(빌더 단계)', consoleErrors.length === 0, consoleErrors.slice(0, 2).join(' | '));

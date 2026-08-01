@@ -72,7 +72,7 @@ const UIBuilder = (() => {
   // ---------------- 빌더 세션 상태 (모듈 전역, 렌더마다 유지) ----------------
   const S = {
     open: false,
-    name: '', title: '', role: '', bg: '',
+    name: '', title: '', role: '', bg: '', gender: '남',
     district: null,
     stats: null,        // { STR:3, AGI:2, ... } — null이면 아직 기본값을 안 채운 것
     skillIds: [null, null],
@@ -156,6 +156,18 @@ const UIBuilder = (() => {
     roleInp.type = 'text'; roleInp.value = S.role; roleInp.placeholder = '예: 지원 · 정비';
     roleInp.onchange = () => { S.role = roleInp.value; actions.render(); };
     roleField.appendChild(roleInp); row1.appendChild(roleField);
+
+    // 성별 — 사전 제작 16명과 같은 필드를 갖게 한다(data/characters.json의
+    // gender). 게임 수치가 아니라 서술·호칭용이다.
+    const genderField = el('<div class="field"><label>성별</label></div>');
+    const genderSel = document.createElement('select');
+    ['남', '여'].forEach((g) => {
+      const o = document.createElement('option');
+      o.value = g; o.textContent = g; o.selected = S.gender === g;
+      genderSel.appendChild(o);
+    });
+    genderSel.onchange = () => { S.gender = genderSel.value; actions.render(); };
+    genderField.appendChild(genderSel); row1.appendChild(genderField);
     panel.appendChild(row1);
 
     const bgField = el('<div class="field" style="margin-bottom:14px"><label>배경 (한두 문장)</label></div>');
@@ -200,6 +212,11 @@ const UIBuilder = (() => {
         if (S.stats[a.id] === v) o.selected = true;
         sel.appendChild(o);
       });
+      // 능력치 선택기에 안정적인 이름을 달아 둔다. 검증 스크립트가
+      // 예전에는 `select`의 순번(nth(1)~nth(6))으로 이 여섯 개를 찾았는데,
+      // 폼에 다른 select를 하나 추가하기만 해도 조용히 엉뚱한 요소를
+      // 조작하게 된다(성별 선택기를 넣다가 실제로 겪었다).
+      sel.dataset.ability = a.id;
       sel.onchange = () => { S.stats[a.id] = parseInt(sel.value, 10); actions.render(); };
       box.appendChild(sel);
       statsGrid.appendChild(box);
@@ -343,6 +360,7 @@ const UIBuilder = (() => {
         name: S.name,
         title: S.title || '(무제)',
         district: districtDef2 ? districtDef2.name : S.district,
+        gender: S.gender,
         role: S.role || '',
         color: S.color,
         icon: S.icon,

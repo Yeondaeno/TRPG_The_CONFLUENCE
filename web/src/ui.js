@@ -184,6 +184,7 @@ const UI = (() => {
           <div>
             <p class="name" style="color:${p.color};margin:0">${escapeHtml(p.name)}</p>
             <p class="title" style="margin:2px 0 0">${escapeHtml(p.title)} · ${escapeHtml(p.role)}</p>
+            <p class="title" style="margin:1px 0 0;color:var(--paper-dim)">${escapeHtml(p.district)}${p.gender ? ' · ' + escapeHtml(p.gender) : ''}</p>
           </div>
         </div>
         <p class="bg-text">${escapeHtml(p.bg)}</p>
@@ -266,6 +267,8 @@ const UI = (() => {
     if (ctx.lastRoll) {
       resultBox.querySelector('.big').textContent = ctx.lastRoll.total;
       resultBox.querySelector('.expr').textContent = ctx.lastRoll.expr;
+      // 주사위 애니메이션 (명세 10 §3) — 굴린 눈이 있으면 그림으로도 보여준다.
+      if (Array.isArray(ctx.lastRoll.dice) && ctx.lastRoll.dice.length) Dice.tray(resultBox, ctx.lastRoll.dice);
     }
     panel.appendChild(resultBox);
 
@@ -299,7 +302,7 @@ const UI = (() => {
       const total = sum + mod;
       const label = document.getElementById('mod-label').value.trim();
       const expr = `${count}d${sides} [${rolls.join(', ')}] ${mod >= 0 ? '+' : ''}${mod} = ${total}`;
-      ctx.actions.setLastRoll({ total, expr });
+      ctx.actions.setLastRoll({ total, expr, dice: rolls.map((v) => ({ sides, value: v })) });
       ctx.actions.render();
       ctx.actions.withRoom((state) => {
         ctx.actions.addLog(state, `${ctx.PLAYER_NAME}${label ? ' — ' + label : ''}: ${expr}`, 'roll');

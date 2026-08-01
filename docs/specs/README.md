@@ -17,8 +17,10 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 08-content-and-parser ✅  나머지 10개 씬 + 8인 파티 선택 + 자유 행동 파서(2층)
         │             (씬 0~에필로그 14개, 도입 씬 0에서 시작)
         ▼
+10-combat-and-dice ✅  턴제 전투 + 주사위 애니메이션
+        │             (적 스탯은 전부 기존 데이터에서 온다)
+        ▼
 09-byok-ai            AI GM 연동 — 사용자 계정(BYOK) 다중 공급자 (3층)  ← 다음
-10 전투               적이 실제로 행동하는 턴제
 ```
 
 **AI는 3층입니다** — [ADR-003](../adr/003-byok-ai-gm.md). 작은 모델을 내장하는
@@ -53,6 +55,8 @@ Sonnet 5가 실행할 작업 명세입니다. 각 명세는 **독립적으로 �
 | 05 | `data/scenarios/**`, `web/src/ui-scenario.js`, `tools/build.mjs`, `tools/audit.mjs` |
 | 06 | `web/src/ui-craft.js`, `web/src/ui-builder.js`, `web/src/rules.js`(추가만), `tools/verify-craft.mjs` |
 | 07 | `web/src/game.js`, `ui-play.js`, `data/scenarios/*.scenes.json`, `tools/verify-play.mjs` + **공용 파일 허용** (새 진입점이라 슬롯으로 우회 불가) |
+| 08 | A: `data/scenarios/*.scenes.json` / B: `web/src/parser.js`·`ui-party.js`·`ui-play.js`·`game.js`, `tools/verify-parser.mjs` |
+| 10 | `web/src/combat.js`·`ui-combat.js`·`ui-dice.js`(신규), `ui-play.js`·`ui-check.js`·`ui-builder.js`·`ui.js`·`rules.js`(추가만)·`template.html`, `tools/verify-combat.mjs` |
 
 02와 03은 **`app.js`·`ui.js`·`store.js`를 수정하지 않습니다.** 01이 미리
 호출 지점을 만들어 두기 때문입니다. 만약 수정이 꼭 필요하다고 판단되면

@@ -163,6 +163,20 @@ const Rules = (() => {
       return ratio >= cfg.successThreshold ? cfg.onMajority : cfg.onMinority;
     },
 
+    // ── 아래 둘은 명세 10(전투)이 추가했다. 이미 이 파일 안에 있던
+    // findSkillById/isProficient를 밖으로 노출할 뿐, 새 규칙은 없다.
+    // combat.js가 명중 굴림의 숙련(+2) 여부를 판단하는 데 쓴다
+    // (rules.json combat.attack: `d20 + ability + (proficient ? 2 : 0)`).
+
+    // 기술 id → rules.json의 기술 객체(없으면 null).
+    skill(skillId) { return findSkillById(skillId); },
+
+    // 캐릭터가 이 기술에 숙련인지. skills[].aliases까지 본다 —
+    // modifiers()가 내부적으로 쓰던 것과 정확히 같은 판단이다.
+    isProficient(character, skillId) {
+      return isProficient(character, findSkillById(skillId));
+    },
+
     // HP → 부상 단계 ('light' | 'serious' | 'dying')
     // 경계: 중상은 "50% 미만"이므로 정확히 50%는 light다(hpRatioAtLeast 우선 평가).
     woundTier(hp, maxHp) {
